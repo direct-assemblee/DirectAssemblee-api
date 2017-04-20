@@ -1,32 +1,25 @@
-/**
- * DeputesController
- *
- * @description :: Server-side logic for managing deputes
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
- */
-
 const actionUtil = require('../../node_modules/sails/lib/hooks/blueprints/actionUtil')
 
 var self = module.exports = {
-	getDeputes: function(req, res) {
-		Depute.find().sort('lastname ASC')
+	getDeputies: function(req, res) {
+		Deputy.find().sort('lastname ASC')
 		.limit(actionUtil.parseLimit(req))
 		.skip(actionUtil.parseSkip(req))
-		.then(function(err, deputes) {
+		.then(function(err, deputies) {
 			if (err) {
 				return res.json(err);
 			}
-			return res.json(deputes)
+			return res.json(deputies)
 		});
 	},
 
-	getDeputeWithId: function(req, res) {
-		DeputeService.getDeputeInfosWithId(req.param('id'))
-		.then(function(depute) {
-			if (!depute) {
-				return res.notFound('Could not find depute, sorry.');
+	getDeputyWithId: function(req, res) {
+		DeputyService.getDeputyWithId(req.param('id'))
+		.then(function(deputy) {
+			if (!deputy) {
+				return res.notFound('Could not find deputy, sorry.');
 			}
-			return res.json(depute);
+			return res.json(deputy);
 		}).catch(function(err) {
       sails.log.error(err);
 			return res.negotiate(err);
@@ -34,7 +27,7 @@ var self = module.exports = {
 	},
 
 	getDeputesFromDepartmentCode: function(req, res) {
-		var subDep = req.param('subDepartment');
+		var subDep = req.param('circonscription');
 		Department.findOne({
 			code: req.param('departmentCode')
 		}).then(function(department) {
@@ -46,14 +39,14 @@ var self = module.exports = {
 		});
 	},
 
-	getDeputesFromDepartmentId: function(departmentId, subDepartment, res) {
+	getDeputesFromDepartmentId: function(departmentId, circonscription, res) {
 		var criteria = {};
 		criteria.departmentId = departmentId;
-		if (subDepartment > 0) {
-			criteria.subDepartment = subDepartment;
+		if (circonscription > 0) {
+			criteria.circonscription = circonscription;
 		}
 
-		Depute.find().sort('lastname ASC')
+		Deputy.find().sort('lastname ASC')
 		.limit(actionUtil.parseLimit(req))
 		.skip(actionUtil.parseSkip(req))
 		.where(criteria)

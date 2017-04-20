@@ -14,7 +14,7 @@
 module.exports.bootstrap = function(cb) {
   sails.on('lifted', function() {
     // Start scanning for new votes service
-    LastVotesService.findNewVotes();
+    // LastVotesService.findNewVotes();
   });
 
   // It's very important to trigger this callback method when you are finished

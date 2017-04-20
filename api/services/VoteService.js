@@ -1,6 +1,12 @@
 var Promise = require("bluebird");
 
 var self = module.exports = {
+	findAllVotes: function(deputyId) {
+		console.log(deputyId)
+		return Vote.find()
+		.where({ deputyId: deputyId });
+	},
+
 	getVotesForDeputeId: function(deputeId, limit, skip) {
 		return Vote.find()
 		.where({ deputeId: deputeId })

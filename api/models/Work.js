@@ -7,12 +7,20 @@ module.exports = {
       primaryKey: true,
       autoIncrement: true
     },
-    value: {
+    title: {
       type: 'string'
     },
-    ballotId: {
+    officialId: {
       type: 'int',
-      model: 'Ballot'
+    },
+    date: {
+      type: 'date'
+    },
+    url: {
+      type: 'string'
+    },
+    description: {
+      type: 'string'
     },
     deputyId: {
       type: 'int',

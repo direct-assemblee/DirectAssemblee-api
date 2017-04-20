@@ -46,15 +46,15 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-'GET /api/deputes': 'DeputeController.getDeputes',
-'GET /api/deputes/:id': 'DeputeController.getDeputeWithId',
-'GET /api/deputes/department/:departmentCode': 'DeputeController.getDeputesFromDepartmentCode',
-'GET /api/deputes/department/:departmentCode/:subDepartment': 'DeputeController.getDeputesFromDepartmentCode',
-'GET /api/departments': 'DepartmentController.getDepartments',
-'GET /api/laws': 'LawController.getLaws',
-'GET /api/laws/:id': 'LawController.getLawWithId',
-'GET /api/votes': 'VoteController.getVotes',
-'GET /api/votes/:deputeId': 'VoteController.getVotesForDeputeId',
-'POST /api/subscribe/:deputeId' : 'SubscriberController.addSubscriberToDepute'
+'GET /api/deputies': 'DeputyController.getDeputies',
+'GET /api/deputies/:id': 'DeputyController.getDeputyWithId',
+// 'GET /api/deputies/department/:departmentCode': 'DeputyController.getDeputiesFromDepartmentCode',
+// 'GET /api/deputies/department/:departmentCode/:circonscription': 'DeputyController.getDeputiesFromDepartmentCode',
+// 'GET /api/departments': 'DepartmentController.getDepartments',
+// 'GET /api/laws': 'LawController.getLaws',
+// 'GET /api/laws/:id': 'LawController.getLawWithId',
+// 'GET /api/votes': 'VoteController.getVotes',
+// 'GET /api/votes/:deputeId': 'VoteController.getVotesForDeputeId',
+// 'POST /api/subscribe/:deputeId' : 'SubscriberController.addSubscriberToDepute'
 
 };
