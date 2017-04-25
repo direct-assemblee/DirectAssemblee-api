@@ -1,9 +1,14 @@
 var Promise = require("bluebird");
 
-module.exports = {
-  getBallotsIdFromDate: function(searchedDate) {
+var self = module.exports = {
+  findBallotsFromDate: function(searchedDate, solemnOnly) {
+    var options = solemnOnly ? { date: { '>': searchedDate }, type: 'SSO' } : { date: { '>': searchedDate } };
     return Ballot.find()
-    .where({ date: { '>': searchedDate } })
+    .where(options)
+  },
+
+  findBallotsIdFromDate: function(searchedDate, solemnOnly) {
+    return self.findBallotsFromDate(searchedDate, solemnOnly)
     .then(function(ballots) {
       var ballotsIds = [];
       for (i in ballots) {

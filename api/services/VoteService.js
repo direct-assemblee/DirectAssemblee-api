@@ -2,9 +2,54 @@ var Promise = require("bluebird");
 
 var self = module.exports = {
 	findAllVotes: function(deputyId) {
-		console.log(deputyId)
 		return Vote.find()
-		.where({ deputyId: deputyId });
+		.where({ deputyId: deputyId })
+		.populate('ballotId');
+	},
+
+	findVotes: function(deputyId, solemnOnly) {
+		return self.findAllVotes(deputyId)
+		.then(function (votesForDepute) {
+			if (solemnOnly) {
+				var votesArray = [];
+				var vote;
+				for (i in votesForDepute) {
+					vote = votesForDepute[i];
+					if (vote.ballotId.type === 'SSO') {
+						votesArray.push(vote);
+					}
+				}
+				return votesArray;
+			} else {
+				return votesForDepute;
+			}
+		})
+	},
+
+	findVotesFromDate: function(deputyId, startDate) {
+		return Vote.find()
+		.where({ deputeId: deputeId })
+		.populate('ballotId')
+		.then(function (votesForDepute) {
+			var votesArray = [];
+			var vote;
+			for (i in votesForDepute) {
+				vote = votesForDepute[i]
+				if (vote.ballotId.date > startDate) {
+					var extendedVote = {
+						type: "vote",
+						voteValue: vote.value,
+						date: vote.ballotId.date,
+						ballotId: vote.ballotId.id,
+						ballotTitle: vote.ballotId.title,
+						ballotTheme: vote.ballotId.theme,
+						ballotAdopted: vote.ballotId.yesVotes > vote.ballotId.noVotes
+					}
+					votesArray.push(extendedVote)
+				}
+			}
+			return Promise.resolve(votesArray);
+		})
 	},
 
 	getVotesForDeputeId: function(deputeId, limit, skip) {

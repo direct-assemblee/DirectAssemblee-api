@@ -1,11 +1,12 @@
 var DateHelper = require('./helpers/DateHelper.js');
+var MathHelper = require('./helpers/MathHelper.js');
 
 const PARAM_DEPUTY_ID = "{deputy_id}";
 const MANDATE_NUMBER = "14";
 const BASE_URL = "http://www2.assemblee-nationale.fr/";
 const DEPUTY_PHOTO_URL = BASE_URL + "static/tribun/" + MANDATE_NUMBER + "/photos/" + PARAM_DEPUTY_ID + ".jpg"
 
-self = module.exports = {
+var self = module.exports = {
 	getDeputyWithId: function(id) {
 		return Deputy.findOne().where({
 			id: id
@@ -27,13 +28,13 @@ self = module.exports = {
 			})
 		})
 		.then(function(deputy) {
-			return findMissingRate(deputy)
+			return findMissingRate(deputy, false)
 			.then(function(missingRate) {
 				deputy.missingRate = missingRate;
 				return deputy;
 			})
 		})
-	},
+	}
 };
 
 var removeUnwantedFields = function(deputy) {
@@ -44,67 +45,13 @@ var removeUnwantedFields = function(deputy) {
 	return deputy;
 }
 
-var findMissingRate = function(deputy) {
-	var deputyStartDate = DateHelper.formatDate("21/01/2014");
-	return BallotService.getBallotsIdFromDate(deputyStartDate)
+var findMissingRate = function(deputy, solemnBallotsOnly) {
+	return BallotService.findBallotsIdFromDate(deputy.currentMandateStartDate, solemnBallotsOnly)
 	.then(function(ballots) {
-		return VoteService.findAllVotes(deputy.id)
+		return VoteService.findVotes(deputy.id, solemnBallotsOnly)
 		.then(function(votes) {
-			return votes.length * 100 / ballots.length;
+			var rate = 100 - (votes.length * 100 / ballots.length);
+			return MathHelper.roundToTwoDecimals(rate);
 		})
 	})
 }
-
-	// getDeputeInfosWithId: function(id) {
-	// 	return self.getDeputeWithId(id)
-	// 	.then(function(depute) {
-	// 		console.log(depute)
-	// 		if (depute) {
-	// 			return DeputeInfos.findOne().where({
-	// 				officialId: depute.officialId
-	// 			}).then(function(deputeInfos) {
-	// 				var birthdate = moment(deputeInfos.birthdate).format("DD/MM/YYYY");
-	// 				var mandateStartingDate = moment(deputeInfos.mandateStartingDate).format("DD/MM/YYYY");
-	// 	    	var photoUrl = DEPUTE_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputeInfos.officialId)
-	// 				return {
-	// 					'id': id,
-	// 					'firstname': deputeInfos.firstname,
-	// 					'lastname': deputeInfos.lastname,
-	// 					'location': {
-	// 						'department': {
-	// 							'number' : deputeInfos.departmentNumber,
-	// 							'name' : ""
-	// 						},
-	// 						'circonscription': {
-	// 							'number' : deputeInfos.circonscriptionNumber,
-	// 							'name' : deputeInfos.circonscriptionName,
-	// 						}
-	// 					},
-	// 					'party': {
-	// 						'name': deputeInfos.party,
-	// 						'nameShort': deputeInfos.partyShort,
-	// 						'role': deputeInfos.roleInParty
-	// 					},
-	// 					'photoUrl': photoUrl,
-	// 					'numberOfMandates': deputeInfos.numberOfMandates
-	//
-	// 					// 'birthdate': birthdate,
-	// 					// 'birthplace': deputeInfos.birthplace,
-	// 					// 'mandateStartingDate': mandateStartingDate,
-	// 					// 'responsabilities': deputeInfos.responsabilities,
-	// 					// 'responsabilities_out_of_parliament': deputeInfos.responsabilities_out_of_parliament,
-	// 					// 'parliament_groups': deputeInfos.parliament_groups,
-	// 					// 'websites': deputeInfos.websites,
-	// 					// 'emails': deputeInfos.emails,
-	// 					// 'addresses': deputeInfos.addresses,
-	// 					// 'previousMandates': deputeInfos.previousMandates,
-	// 					// 'otherMandates': deputeInfos.otherMandates,
-	// 					// 'previousOtherMandates': deputeInfos.previousOtherMandates,
-	// 					// 'job': deputeInfos.job,
-	// 					// 'officialUrl': deputeInfos.officialUrl,
-	// 					// 'twitter': deputeInfos.twitter
-	// 				};
-	// 			})
-	// 		}
-	// 	})
-	// }
