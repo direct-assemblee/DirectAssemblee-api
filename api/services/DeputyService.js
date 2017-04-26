@@ -6,8 +6,8 @@ const MANDATE_NUMBER = "14";
 const BASE_URL = "http://www2.assemblee-nationale.fr/";
 const DEPUTY_PHOTO_URL = BASE_URL + "static/tribun/" + MANDATE_NUMBER + "/photos/" + PARAM_DEPUTY_ID + ".jpg"
 
-const TIMELINE_PAGE_ITEMS_COUNT = 40;
-const TIMELINE_MONTHS_INCREMENT_STEP = 6;
+const TIMELINE_PAGE_ITEMS_COUNT = 20;
+const TIMELINE_MONTHS_INCREMENT_STEP = 4;
 
 var self = module.exports = {
 	getDeputyWithId: function(deputyId) {
@@ -40,48 +40,49 @@ var self = module.exports = {
 	},
 
 	getDeputyTimelineForPage: function(deputyId, offset) {
-		var minDate = DateHelper.formattedNow();
-		var maxDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
-		var itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
-		return getDeputyTimeline(deputyId, minDate, maxDate, itemsOffset, []);
+		return self.getDeputyWithId(deputyId)
+		.then(function(deputy) {
+			var mandateStartDate = deputy.currentMandateStartDate;
+			mandateStartDate = DateHelper.formatDate(mandateStartDate)
+			var minDate = DateHelper.formattedNow();
+			var maxDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
+			var itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
+			return getDeputyTimeline(deputyId, mandateStartDate, minDate, maxDate, itemsOffset, []);
+		})
 	}
 };
 
-var getDeputyTimeline = function(deputyId, minDate, maxDate, itemsOffset, timelineItems) {
-	console.log("getDeputyTimeline : " + minDate + " to " + maxDate + " - offset = " + itemsOffset)
+var getDeputyTimeline = function(deputyId, mandateStartDate, minDate, maxDate, itemsOffset, timelineItems) {
 	return findTimelineItems(deputyId, minDate, maxDate)
 	.then(function(foundItems) {
-		if (foundItems.length == 0) {
-			console.log("- getDeputyTimeline no more " + timelineItems.length)
+		if (foundItems.length == 0 && maxDate < mandateStartDate) {
 			return timelineItems;
 		}
 		var offset = itemsOffset - foundItems.length;
-		console.log("offset : " + offset)
 		if (offset > 0) {
-			return nextDeputyTimeline(deputyId, minDate, maxDate, offset, timelineItems);
+			return nextDeputyTimeline(deputyId, mandateStartDate, minDate, maxDate, offset, timelineItems);
 		}
 
 		var sortedItems = sortTimelineItems(foundItems);
-		console.log("sorted "  + sortedItems.length)
 		var count = 0;
-		for (var i = itemsOffset ; i < sortedItems.length && timelineItems.length < TIMELINE_PAGE_ITEMS_COUNT ; i++) {
+		for (var i = itemsOffset ; i < sortedItems.length && timelineItems && timelineItems.length < TIMELINE_PAGE_ITEMS_COUNT ; i++) {
 			count++;
-			timelineItems.push(sortedItems[i]);
+			if (sortedItems[i]) {
+				timelineItems.push(sortedItems[i]);
+			}
 		}
-		console.log("- getDeputyTimeline pushed " + count + " items");
 		 if (timelineItems.length == TIMELINE_PAGE_ITEMS_COUNT) {
-			console.log("- getDeputyTimeline done " + timelineItems.length)
 			return timelineItems;
 		} else {
-			return nextDeputyTimeline(deputyId, minDate, maxDate, itemsOffset, timelineItems);
+			return nextDeputyTimeline(deputyId, mandateStartDate, minDate, maxDate, itemsOffset - count, timelineItems);
 		}
 	})
 }
 
-var nextDeputyTimeline = function(deputyId, minDate, maxDate, itemsOffset, timelineItems) {
+var nextDeputyTimeline = function(deputyId, mandateStartDate, minDate, maxDate, itemsOffset, timelineItems) {
 	var newMinDate = DateHelper.substractMonthsAndFormat(minDate, TIMELINE_MONTHS_INCREMENT_STEP);
 	var newMaxDate = DateHelper.substractMonthsAndFormat(maxDate, TIMELINE_MONTHS_INCREMENT_STEP);
-	return getDeputyTimeline(deputyId, newMinDate, newMaxDate, itemsOffset, timelineItems);
+	return getDeputyTimeline(deputyId, mandateStartDate, newMinDate, newMaxDate, itemsOffset, timelineItems);
 }
 
 var sortTimelineItems = function(items) {
@@ -94,14 +95,8 @@ var sortTimelineItems = function(items) {
 var findTimelineItems = function(deputyId, minDate, maxDate) {
 	return VoteService.findVotesFromDate(deputyId, minDate, maxDate)
 	.then(function(extendedVotes) {
-		// for (i in extendedVotes) {
-		// 	console.log("extendedVotes : " + extendedVotes[i].date + " - " + extendedVotes[i].title);
-		// }
 		return WorkService.findWorksForDeputyFromDate(deputyId, minDate, maxDate)
 		.then(function(works) {
-			// for (i in works) {
-			// 	console.log("works : " + works[i].date + " - " + works[i].title);
-			// }
 			return works.concat(extendedVotes);
 		})
 	})
