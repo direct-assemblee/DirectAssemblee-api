@@ -1,4 +1,19 @@
 var Promise = require("bluebird");
+var DateHelper = require('./helpers/DateHelper.js');
+
+var createExtendedVoteForTimeline = function(vote) {
+	return {
+		type: "vote",
+		date: DateHelper.formatDate(vote.ballotId.date),
+		title: vote.ballotId.title,
+		description: vote.ballotId.theme,
+		"voteExtrasInfos": {
+			ballotId: vote.ballotId.id,
+			voteValue: vote.value,
+			ballotAdopted: vote.ballotId.yesVotes > vote.ballotId.noVotes
+		}
+	}
+}
 
 var self = module.exports = {
 	findAllVotes: function(deputyId) {
@@ -26,25 +41,18 @@ var self = module.exports = {
 		})
 	},
 
-	findVotesFromDate: function(deputyId, startDate) {
+	findVotesFromDate: function(deputyId, minDate, maxDate) {
 		return Vote.find()
-		.where({ deputeId: deputeId })
+		.where({ deputyId: deputyId })
 		.populate('ballotId')
 		.then(function (votesForDepute) {
 			var votesArray = [];
 			var vote;
 			for (i in votesForDepute) {
 				vote = votesForDepute[i]
-				if (vote.ballotId.date > startDate) {
-					var extendedVote = {
-						type: "vote",
-						voteValue: vote.value,
-						date: vote.ballotId.date,
-						ballotId: vote.ballotId.id,
-						ballotTitle: vote.ballotId.title,
-						ballotTheme: vote.ballotId.theme,
-						ballotAdopted: vote.ballotId.yesVotes > vote.ballotId.noVotes
-					}
+				voteDate = DateHelper.formatDate(vote.ballotId.date)
+				if (voteDate <= minDate && voteDate > maxDate) {
+					var extendedVote = createExtendedVoteForTimeline(vote)
 					votesArray.push(extendedVote)
 				}
 			}

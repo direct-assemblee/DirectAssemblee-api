@@ -13,9 +13,11 @@ module.exports = {
       for (i in declarations) {
         delete declarations[i].deputyId;
         delete declarations[i].id;
+        delete declarations[i].createdAt;
+        delete declarations[i].updatedAt;
         declarations[i].date = DateHelper.formatDate(declarations[i].date);
       }
-      return declarations
+      return declarations;
     })
   }
 }
