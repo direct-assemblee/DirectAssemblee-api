@@ -49,7 +49,7 @@ module.exports.routes = {
 'GET /api/deputies': 'DeputyController.getDeputies',
 'GET /api/deputies/:id': 'DeputyController.getDeputyWithId',
 'GET /api/deputies/:id/timeline': 'DeputyController.getDeputyTimeline',
-'GET /api/deputies/:id/timeline/:offset': 'DeputyController.getDeputyTimeline',
+'GET /api/timeline/:deputyId/:offset': 'TimelineController.getTimeline',
 // 'GET /api/deputies/department/:departmentCode': 'DeputyController.getDeputiesFromDepartmentCode',
 // 'GET /api/deputies/department/:departmentCode/:circonscription': 'DeputyController.getDeputiesFromDepartmentCode',
 // 'GET /api/departments': 'DepartmentController.getDepartments',
