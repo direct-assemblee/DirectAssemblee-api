@@ -41,6 +41,10 @@ var self = module.exports = {
 				return deputy;
 			})
 		})
+		.then(function(deputy) {
+			deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
+			return deputy;
+		})
 	}
 };
 

@@ -5,6 +5,10 @@ var self = module.exports = {
     return self.formatDateWithTemplate(dateString, "DD/MM/YYYY", "YYYY-MM-DD");
   },
 
+  formatDateForWS: function(dateString) {
+    return self.formatDateWithTemplate(dateString, "DD/MM/YYYY", "DD/MM/YYYY");
+  },
+
   formatWrittenDate: function(dateString) {
     return self.formatDateWithTemplate(dateString, "DD MMMM YYYY", "YYYY-MM-DD");
   },
