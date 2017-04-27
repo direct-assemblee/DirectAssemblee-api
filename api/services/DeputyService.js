@@ -6,9 +6,6 @@ const MANDATE_NUMBER = "14";
 const BASE_URL = "http://www2.assemblee-nationale.fr/";
 const DEPUTY_PHOTO_URL = BASE_URL + "static/tribun/" + MANDATE_NUMBER + "/photos/" + PARAM_DEPUTY_ID + ".jpg"
 
-const TIMELINE_PAGE_ITEMS_COUNT = 20;
-const TIMELINE_MONTHS_INCREMENT_STEP = 4;
-
 var self = module.exports = {
 	getDeputyWithId: function(deputyId) {
 		return Deputy.findOne().where({
@@ -34,6 +31,13 @@ var self = module.exports = {
 			return findMissingRate(deputy, false)
 			.then(function(missingRate) {
 				deputy.missingRate = missingRate;
+				return deputy;
+			})
+		})
+		.then(function(deputy) {
+			return ExtraPositionService.getSalaryForDeputy(deputy.id)
+			.then(function(salary) {
+				deputy.salary = salary;
 				return deputy;
 			})
 		})
