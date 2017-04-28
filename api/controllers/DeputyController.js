@@ -26,6 +26,19 @@ var self = module.exports = {
     });
 	},
 
+	getDeputiesWithCoordinates: function(req, res) {
+		DeputyService.getDeputiesWithCoordinates(req.param('latitude'), req.param('longitude'))
+		.then(function(deputies) {
+			if (!deputies) {
+				return res.notFound('Could not find deputy, sorry.');
+			}
+			return res.json({ "deputies" : deputies });
+		}).catch(function(err) {
+      sails.log.error(err);
+			return res.negotiate(err);
+    });
+	},
+
 	getDeputyTimeline: function(req, res) {
 		var offset = req.param('offset');
 		if (!offset) {
