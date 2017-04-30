@@ -11,6 +11,10 @@ const DEPUTY_PHOTO_URL = BASE_URL + "static/tribun/" + PARAM_MANDATE_NUMBER + "/
 const GEOLOC_URL = "http://localhost:1339/address/" + PARAM_LATITUDE + "/" + PARAM_LONGITUDE;
 
 var self = module.exports = {
+	getDeputyWithId: function(id) {
+		return getDeputyWithId(id);
+	},
+
 	getDeputiesWithCoordinates: function(latitude, longitude) {
 		var url = GEOLOC_URL.replace(PARAM_LATITUDE, latitude).replace(PARAM_LONGITUDE, longitude)
 		return request(url)

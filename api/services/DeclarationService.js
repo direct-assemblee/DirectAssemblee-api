@@ -15,7 +15,7 @@ module.exports = {
         delete declarations[i].id;
         delete declarations[i].createdAt;
         delete declarations[i].updatedAt;
-        declarations[i].date = DateHelper.formatDate(declarations[i].date);
+        declarations[i].date = DateHelper.formatDateForWS(declarations[i].date);
       }
       return declarations;
     })
