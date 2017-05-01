@@ -60,6 +60,19 @@ var self = module.exports = {
 		})
 	},
 
+	findVotesForBallot: function(ballotId, value) {
+		return Vote.find()
+		.where({ ballotId: ballotId , value: value })
+	},
+
+	findVoteForDeputyAndBallot: function(deputyId, ballotId) {
+		return Vote.findOne()
+		.where({ ballotId: ballotId, deputyId: deputyId })
+		.then(function (vote) {
+			return vote;
+		})
+	},
+
 	getVotesForDeputeId: function(deputeId, limit, skip) {
 		return Vote.find()
 		.where({ deputeId: deputeId })

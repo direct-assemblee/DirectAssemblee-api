@@ -17,28 +17,4 @@ var self = module.exports = {
 			return res.negotiate(err);
     });
 	},
-
-	create: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	update: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	destroy: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	populate: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	add: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	remove: function(req, res) {
-		return res.json(404, "not found")
-	}
 };

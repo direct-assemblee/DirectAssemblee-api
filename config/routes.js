@@ -51,11 +51,11 @@ module.exports.routes = {
 'GET /api/deputies/:latitude/:longitude': 'DeputyController.getDeputiesWithCoordinates',
 'GET /api/deputies/:id/timeline': 'DeputyController.getDeputyTimeline',
 'GET /api/timeline/:deputyId/:offset': 'TimelineController.getTimeline',
+'GET /api/ballots/:id/:departmentId/:circonscription': 'BallotController.getBallotWithId',
 // 'GET /api/deputies/department/:departmentCode': 'DeputyController.getDeputiesFromDepartmentCode',
 // 'GET /api/deputies/department/:departmentCode/:circonscription': 'DeputyController.getDeputiesFromDepartmentCode',
 // 'GET /api/departments': 'DepartmentController.getDepartments',
 // 'GET /api/laws': 'LawController.getLaws',
-// 'GET /api/laws/:id': 'LawController.getLawWithId',
 // 'GET /api/votes': 'VoteController.getVotes',
 // 'GET /api/votes/:deputeId': 'VoteController.getVotesForDeputeId',
 // 'POST /api/subscribe/:deputeId' : 'SubscriberController.addSubscriberToDepute'

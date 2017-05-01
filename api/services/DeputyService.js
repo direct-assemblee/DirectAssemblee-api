@@ -15,6 +15,24 @@ var self = module.exports = {
 		return getDeputyWithId(id);
 	},
 
+	findDeputyForCirconscriptionAndDate: function(departmentId, circonscription, date) {
+		return Deputy.find()
+		.where({ departmentId: departmentId, circonscription: circonscription })
+		.then(function(deputies) {
+			var smallestDiff;
+			var deputy;
+			for (i in deputies) {
+				var deputyDate = DateHelper.formatDateForWS( deputies[i].currentMandateStartDate)
+				var diff = DateHelper.getDiff(date, deputyDate);
+				if (diff > 0 && (diff < smallestDiff || !smallestDiff)) {
+					smallestDiff = diff;
+					deputy = deputies[i];
+				}
+			}
+			return deputy;
+		})
+	},
+
 	getDeputiesWithCoordinates: function(latitude, longitude) {
 		var url = GEOLOC_URL.replace(PARAM_LATITUDE, latitude).replace(PARAM_LONGITUDE, longitude)
 		return request(url)

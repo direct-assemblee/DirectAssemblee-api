@@ -20,11 +20,15 @@ var self = module.exports = {
   },
 
   getDurationInDays: function(start, end) {
-    var dur = 0;
-    if (start && end) {
-      dur = moment(end).diff(moment(start), 'days');
+    return self.diff(end, start)
+  },
+
+  getDiff: function(date1, date2) {
+    var diff = 0;
+    if (date1 && date2) {
+      diff = moment(date1, "DD/MM/YYYY").diff(moment(date2, "DD/MM/YYYY"), 'days');
     }
-    return dur;
+    return diff;
   },
 
   convertDaysToYears: function(days) {
