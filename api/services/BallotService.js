@@ -46,6 +46,11 @@ var self = module.exports = {
       }
       return ballotsIds;
     })
+  },
+
+  findBallotsBetweenDates: function(minDate, maxDate) {
+    return Ballot.find()
+    .where({ date: { '<=': minDate }, date: { '>': maxDate} })
   }
 };
 

@@ -58,11 +58,39 @@ var sortTimelineItems = function(items) {
 }
 
 var findTimelineItems = function(deputyId, minDate, maxDate) {
-	return VoteService.findVotesFromDate(deputyId, minDate, maxDate)
-	.then(function(extendedVotes) {
-		return WorkService.findWorksForDeputyFromDate(deputyId, minDate, maxDate)
-		.then(function(works) {
-			return works.concat(extendedVotes);
-		})
-	})
+  return BallotService.findBallotsBetweenDates(minDate, maxDate)
+  .then(function(ballots) {
+    var promises = [];
+    for (i in ballots) {
+      promises.push(VoteService.findVoteValueForDeputyAndBallot(deputyId, ballots[i].id))
+    }
+    return Promise.all(promises)
+    .then(function(votesValues) {
+      var extendedVotes = [];
+      for (i in votesValues) {
+        extendedVotes.push(createExtendedVoteForTimeline(ballots[i], votesValues[i]))
+      }
+      return extendedVotes;
+    })
+    .then(function(extendedVotes) {
+  		return WorkService.findWorksForDeputyFromDate(deputyId, minDate, maxDate)
+  		.then(function(works) {
+  			return works.concat(extendedVotes);
+  		})
+  	})
+  })
+}
+
+var createExtendedVoteForTimeline = function(ballot, voteValue) {
+	return {
+		type: "vote",
+		date: DateHelper.formatDate(ballot.date),
+		title: ballot.title,
+		description: ballot.theme,
+		voteExtrasInfos: {
+			ballotId: ballot.id,
+			voteValue: voteValue,
+			ballotAdopted: ballot.yesVotes > ballot.noVotes
+		}
+	}
 }

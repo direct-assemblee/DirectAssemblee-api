@@ -27,36 +27,16 @@ var self = module.exports = {
 		})
 	},
 
-	findVotesFromDate: function(deputyId, minDate, maxDate) {
-		return Vote.find()
-		.where({ deputyId: deputyId })
-		.populate('ballotId')
-		.then(function (votesForDepute) {
-			var votesArray = [];
-			var vote;
-			for (i in votesForDepute) {
-				vote = votesForDepute[i]
-				voteDate = DateHelper.formatDate(vote.ballotId.date)
-				if (voteDate <= minDate && voteDate > maxDate) {
-					var extendedVote = createExtendedVoteForTimeline(vote)
-					votesArray.push(extendedVote)
-				}
-			}
-			return Promise.resolve(votesArray);
-		})
-	},
-
 	findVotesForBallot: function(ballotId, value) {
 		return Vote.find()
 		.where({ ballotId: ballotId , value: value })
 	},
 
-	findVoteForDeputyAndBallot: function(deputyId, ballotId) {
+	findVoteValueForDeputyAndBallot: function(deputyId, ballotId) {
 		return Vote.findOne()
 		.where({ ballotId: ballotId, deputyId: deputyId })
 		.then(function(vote) {
-			vote.value = getVoteValueForWs(vote);
-			return vote;
+			return getVoteValueForWs(vote);
 		})
 	},
 
@@ -151,38 +131,25 @@ var self = module.exports = {
 	}
 };
 
-var createExtendedVoteForTimeline = function(vote) {
-	return {
-		type: "vote",
-		date: DateHelper.formatDate(vote.ballotId.date),
-		title: vote.ballotId.title,
-		description: vote.ballotId.theme,
-		voteExtrasInfos: {
-			ballotId: vote.ballotId.id,
-			voteValue: getVoteValueForWs(vote),
-			ballotAdopted: vote.ballotId.yesVotes > vote.ballotId.noVotes
-		}
-	}
-}
-
 var getVoteValueForWs = function(vote) {
-	var value;
-	switch (vote.value) {
-		case undefined:
-			voteValueForWs = 'missing';
-			break;
-		case 'pour':
-			voteValueForWs = 'for';
-			break;
-		case 'contre':
-			voteValueForWs = 'against';
-			break;
-		case 'abstention':
-			voteValueForWs = 'blank';
-			break;
-		case 'non-votant':
-			voteValueForWs = 'non-voting';
-			break;
+	var voteValueForWs;
+	if (vote) {
+		switch (vote.value) {
+			case 'pour':
+				voteValueForWs = 'for';
+				break;
+			case 'contre':
+				voteValueForWs = 'against';
+				break;
+			case 'abstention':
+				voteValueForWs = 'blank';
+				break;
+			case 'non-votant':
+				voteValueForWs = 'non-voting';
+				break;
+		}
+	} else {
+		voteValueForWs = 'missing';
 	}
 	return voteValueForWs;
 }

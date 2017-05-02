@@ -32,10 +32,10 @@ var self = module.exports = {
 				} else {
 		      DeputyService.findDeputyForCirconscriptionAndDate(departmentId, circonscription, ballot.date)
 		      .then(function(deputy) {
-		        return VoteService.findVoteForDeputyAndBallot(deputy.id, ballot.id)
-		        .then(function(vote) {
+		        return VoteService.findVoteValueForDeputyAndBallot(deputy.id, ballot.id)
+		        .then(function(voteValue) {
 		          ballot.userDeputyVote = {
-		            'voteValue': vote.value,
+		            'voteValue': voteValue,
 		            'deputy': {
 		              'firstname': deputy.firstname,
 		              'lastname': deputy.lastname
