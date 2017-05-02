@@ -1,20 +1,6 @@
 var Promise = require("bluebird");
 var DateHelper = require('./helpers/DateHelper.js');
 
-var createExtendedVoteForTimeline = function(vote) {
-	return {
-		type: "vote",
-		date: DateHelper.formatDate(vote.ballotId.date),
-		title: vote.ballotId.title,
-		description: vote.ballotId.theme,
-		voteExtrasInfos: {
-			ballotId: vote.ballotId.id,
-			voteValue: vote.value,
-			ballotAdopted: vote.ballotId.yesVotes > vote.ballotId.noVotes
-		}
-	}
-}
-
 var self = module.exports = {
 	findAllVotes: function(deputyId) {
 		return Vote.find()
@@ -68,7 +54,8 @@ var self = module.exports = {
 	findVoteForDeputyAndBallot: function(deputyId, ballotId) {
 		return Vote.findOne()
 		.where({ ballotId: ballotId, deputyId: deputyId })
-		.then(function (vote) {
+		.then(function(vote) {
+			vote.value = getVoteValueForWs(vote);
 			return vote;
 		})
 	},
@@ -163,3 +150,39 @@ var self = module.exports = {
 		return votesByDepute;
 	}
 };
+
+var createExtendedVoteForTimeline = function(vote) {
+	return {
+		type: "vote",
+		date: DateHelper.formatDate(vote.ballotId.date),
+		title: vote.ballotId.title,
+		description: vote.ballotId.theme,
+		voteExtrasInfos: {
+			ballotId: vote.ballotId.id,
+			voteValue: getVoteValueForWs(vote),
+			ballotAdopted: vote.ballotId.yesVotes > vote.ballotId.noVotes
+		}
+	}
+}
+
+var getVoteValueForWs = function(vote) {
+	var value;
+	switch (vote.value) {
+		case undefined:
+			voteValueForWs = 'missing';
+			break;
+		case 'pour':
+			voteValueForWs = 'for';
+			break;
+		case 'contre':
+			voteValueForWs = 'against';
+			break;
+		case 'abstention':
+			voteValueForWs = 'blank';
+			break;
+		case 'non-votant':
+			voteValueForWs = 'non-voting';
+			break;
+	}
+	return voteValueForWs;
+}

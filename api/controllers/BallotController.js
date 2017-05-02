@@ -35,7 +35,7 @@ var self = module.exports = {
 		        return VoteService.findVoteForDeputyAndBallot(deputy.id, ballot.id)
 		        .then(function(vote) {
 		          ballot.userDeputyVote = {
-		            'voteValue': vote.value ? vote.value : 'missing',
+		            'voteValue': vote.value,
 		            'deputy': {
 		              'firstname': deputy.firstname,
 		              'lastname': deputy.lastname
