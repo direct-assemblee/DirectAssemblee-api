@@ -17,7 +17,8 @@ var self = module.exports = {
 					return res.notFound('Could not find timeline items, sorry.');
 				}
 				return res.json(timelineItems);
-			}).catch(function(err) {
+			})
+			.catch(function(err) {
 				sails.log.error(err);
 				return res.negotiate(err);
 			});

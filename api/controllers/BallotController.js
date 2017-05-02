@@ -2,11 +2,22 @@ const actionUtil = require('../../node_modules/sails/lib/hooks/blueprints/action
 
 var self = module.exports = {
 	getBallots: function(req, res) {
-		var offset = req.param('offset');
+		var offset = req.param('page');
 		if (!offset) {
 			offset = 0;
 		}
 
+		BallotService.getBallots(parseInt(offset))
+		.then(function(ballots) {
+			if (!ballots) {
+				return res.notFound('Could not find any ballots')
+			}
+			return res.json(ballots)
+		})
+		.catch(function(err) {
+			sails.log.error(err);
+			return res.negotiate(err);
+		});
 	},
 
 	getBallotDetails: function(req, res) {

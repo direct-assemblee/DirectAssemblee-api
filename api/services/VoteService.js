@@ -7,7 +7,7 @@ var createExtendedVoteForTimeline = function(vote) {
 		date: DateHelper.formatDate(vote.ballotId.date),
 		title: vote.ballotId.title,
 		description: vote.ballotId.theme,
-		"voteExtrasInfos": {
+		voteExtrasInfos: {
 			ballotId: vote.ballotId.id,
 			voteValue: vote.value,
 			ballotAdopted: vote.ballotId.yesVotes > vote.ballotId.noVotes
