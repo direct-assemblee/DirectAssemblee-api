@@ -2,19 +2,41 @@ const actionUtil = require('../../node_modules/sails/lib/hooks/blueprints/action
 
 var self = module.exports = {
 	getDeputies: function(req, res) {
-		Deputy.find().sort('lastname ASC')
-		.limit(actionUtil.parseLimit(req))
-		.skip(actionUtil.parseSkip(req))
-		.then(function(err, deputies) {
-			if (err) {
-				return res.json(err);
-			}
-			return res.json(deputies)
-		});
+		if (req.param('latitude') || req.param('longitude')) {
+		 	self.getDeputiesWithCoordinates(req, res);
+		} else {
+			self.getAllDeputies(req, res);
+		}
+	},
+
+	getDeputy: function(req, res) {
+		if (req.param('id')) {
+			self.getDeputyWithId(req, res);
+		} else {
+			var departmentId = req.param('departmentId');
+			var circonscription = req.param('circonscription');
+			DeputyService.findDeputiesForCirconscription(departmentId, circonscription)
+			.then(function(deputies) {
+				if (deputies) {
+					if (deputies.length > 0) {
+						deputies.sort(function(a, b) {
+							return new Date(b.currentMandateStartDate).getTime() - new Date(a.currentMandateStartDate).getTime()
+						});
+					}
+					self.getDeputyWithId(deputies[0].id, res);
+				} else {
+					return res.notFound('Could not find deputy, sorry.');
+				}
+			})
+		}
 	},
 
 	getDeputyWithId: function(req, res) {
-		DeputyService.getDeputyWithId(req.param('id'))
+		self.getDeputyWithId(req.param('id'), res);
+	},
+
+	getDeputyWithId: function(id, res) {
+		DeputyService.getDeputyWithId(id)
 		.then(function(deputy) {
 			if (!deputy) {
 				return res.notFound('Could not find deputy, sorry.');
@@ -39,56 +61,16 @@ var self = module.exports = {
     });
 	},
 
-	getDeputyTimeline: function(req, res) {
-		var offset = req.param('offset');
-		if (!offset) {
-			offset = 0;
-		}
-		DeputyService.getDeputyTimelineForPage(req.param('id'), parseInt(offset))
-		.then(function(timelineItems) {
-			if (!timelineItems) {
-				return res.notFound('Could not find timeline items, sorry.');
-			}
-			return res.json(timelineItems);
-		}).catch(function(err) {
-      sails.log.error(err);
-			return res.negotiate(err);
-    });
-	},
-
-	getDeputesFromDepartmentCode: function(req, res) {
-		var subDep = req.param('circonscription');
-		Department.findOne({
-			code: req.param('departmentCode')
-		}).then(function(department) {
-			if (!department) {
-				return res.notFound('Could not find department, sorry.');
-			} else {
-				return self.getDeputesFromDepartmentId(department.id, subDep, res);
-			}
-		});
-	},
-
-	getDeputesFromDepartmentId: function(departmentId, circonscription, res) {
-		var criteria = {};
-		criteria.departmentId = departmentId;
-		if (circonscription > 0) {
-			criteria.circonscription = circonscription;
-		}
-
+	getAllDeputies: function(req, res) {
 		Deputy.find().sort('lastname ASC')
 		.limit(actionUtil.parseLimit(req))
 		.skip(actionUtil.parseSkip(req))
-		.where(criteria)
-		.then(function(err, deputes) {
+		.then(function(err, deputies) {
 			if (err) {
 				return res.json(err);
 			}
-			return res.json(deputes);
-		}).catch(function(err) {
-      sails.log.error(err);
-      return res.negotiate(err);
-    });
+			return res.json(deputies)
+		});
 	},
 
 	create: function(req, res) {

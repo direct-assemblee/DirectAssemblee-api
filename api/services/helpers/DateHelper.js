@@ -20,7 +20,7 @@ var self = module.exports = {
   },
 
   getDurationInDays: function(start, end) {
-    return self.diff(end, start)
+    return self.getDiff(end, start)
   },
 
   getDiff: function(date1, date2) {

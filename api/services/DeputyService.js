@@ -15,9 +15,13 @@ var self = module.exports = {
 		return getDeputyWithId(id);
 	},
 
-	findDeputyForCirconscriptionAndDate: function(departmentId, circonscription, date) {
+	findDeputiesForCirconscription: function(departmentId, circonscription) {
 		return Deputy.find()
 		.where({ departmentId: departmentId, circonscription: circonscription })
+	},
+
+	findDeputyForCirconscriptionAndDate: function(departmentId, circonscription, date) {
+		return self.findDeputiesForCirconscription(departmentId, circonscription)
 		.then(function(deputies) {
 			var smallestDiff;
 			var deputy;
@@ -41,7 +45,7 @@ var self = module.exports = {
 			var deputies = []
       if (circonscriptions && circonscriptions.length > 0) {
 				for (i in circonscriptions) {
-					deputies.push(getDeputyForCirconscription(circonscriptions[i]));
+					deputies.push(getDeputyForGeoCirconscription(circonscriptions[i]));
 				}
 			}
 			return Promise.all(deputies)
@@ -61,7 +65,7 @@ var self = module.exports = {
 	}
 };
 
-var getDeputyForCirconscription = function(circonscription) {
+var getDeputyForGeoCirconscription = function(circonscription) {
 	var departmentCode = circonscription.department;
 	var circNumber = circonscription.circonscriptionNumber;
 	return DepartmentService.findDepartmentIdWithCode(departmentCode)
@@ -74,9 +78,9 @@ var getDeputyForCirconscription = function(circonscription) {
 	.then(function(deputies) {
 		var deputiesInfos = [];
 		for (i in deputies) {
-			deputiesInfos.push(getDeputyWithId(deputies[i].id));
+			deputiesInfos.push(simplifyDeputy(deputies[i]));
 		}
-		return Promise.all(deputiesInfos)
+		return deputiesInfos;
 	})
 }
 
@@ -86,11 +90,10 @@ var getDeputyWithId = function(deputyId) {
 	})
 	.then(function(deputy) {
 		deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
-		var clearedDeputy = removeUnwantedFields(deputy);
-		return MandateService.getPoliticalAgeOfDeputy(clearedDeputy.id)
+		return MandateService.getPoliticalAgeOfDeputy(deputy.id)
 		.then(function(parliamentAgeInYears) {
-			clearedDeputy.parliamentAgeInYears = parliamentAgeInYears;
-			return clearedDeputy;
+			deputy.parliamentAgeInYears = parliamentAgeInYears;
+			return deputy;
 		})
 	})
 	.then(function(deputy) {
@@ -111,12 +114,9 @@ var getDeputyWithId = function(deputyId) {
 		return ExtraPositionService.getSalaryForDeputy(deputy.id)
 		.then(function(salary) {
 			deputy.salary = salary;
-			return deputy;
+			deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
+			return prepareDeputyResponse(deputy);
 		})
-	})
-	.then(function(deputy) {
-		deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
-		return deputy;
 	})
 }
 
@@ -131,10 +131,23 @@ var findMissingRate = function(deputy, solemnBallotsOnly) {
 	})
 }
 
-var removeUnwantedFields = function(deputy) {
+var simplifyDeputy = function(deputy) {
+	deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
+	deputy = prepareDeputyResponse(deputy);
+	delete deputy.commission;
+	delete deputy.phone;
+	delete deputy.email;
+	delete deputy.job;
+	delete deputy.currentMandateStartDate;
+	return deputy;
+}
+
+var prepareDeputyResponse = function(deputy) {
 	delete deputy.officialId;
 	delete deputy.gender;
 	delete deputy.createdAt;
 	delete deputy.updatedAt;
+	deputy.departmentId = parseInt(deputy.departmentId)
+	deputy.circonscription = parseInt(deputy.circonscription)
 	return deputy;
 }

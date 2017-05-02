@@ -9,7 +9,7 @@ const BALLOT_TYPE_OTHER = { "shortname" : "AUT", "name" : "others" };
 const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER ];
 
 var self = module.exports = {
-  getBallotWithId: function(id, departmentId, circonscription) {
+  getBallotWithId: function(id) {
     return Ballot.findOne({ id: id})
     .then(function(ballot){
       var clearedBallot = removeUnwantedFields(ballot);
@@ -20,27 +20,13 @@ var self = module.exports = {
     .then(function(ballot) {
       return VoteService.findVotesForBallot(ballot.id, "non-votant")
       .then(function(nonVoting) {
+        ballot.totalVotes = parseInt(ballot.totalVotes);
+        ballot.yesVotes = parseInt(ballot.yesVotes);
+        ballot.noVotes = parseInt(ballot.noVotes);
         ballot.nonVoting = nonVoting.length;
         ballot.blankVotes = ballot.totalVotes - ballot.yesVotes - ballot.noVotes;
         ballot.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes;
         return ballot;
-      })
-    })
-    .then(function(ballot) {
-      return DeputyService.findDeputyForCirconscriptionAndDate(departmentId, circonscription, ballot.date)
-      .then(function(deputy) {
-        return VoteService.findVoteForDeputyAndBallot(deputy.id, ballot.id)
-        .then(function(vote) {
-          console.log("vote + " + vote.value)
-          ballot.userDeputyVote = {
-            'voteValue': vote.value ? vote.value : 'missing',
-            'deputy': {
-              'firstname': deputy.firstname,
-              'lastname': deputy.lastname
-            }
-          }
-          return ballot;
-        })
       })
     })
   },

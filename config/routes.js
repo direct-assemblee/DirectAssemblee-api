@@ -46,12 +46,11 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-'GET /api/deputies': 'DeputyController.getDeputies',
-'GET /api/deputies/:id': 'DeputyController.getDeputyWithId',
-'GET /api/deputies/:latitude/:longitude': 'DeputyController.getDeputiesWithCoordinates',
-'GET /api/deputies/:id/timeline': 'DeputyController.getDeputyTimeline',
-'GET /api/timeline/:deputyId/:offset': 'TimelineController.getTimeline',
-'GET /api/ballots/:id/:departmentId/:circonscription': 'BallotController.getBallotWithId',
+'GET /api/deputies': 'DeputyController.getDeputies',  // optional ?latitude=XXX&longitude=YYY
+'GET /api/deputy': 'DeputyController.getDeputy',  // &departmentId=13&circonscription=12
+'GET /api/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
+'GET /api/ballots': 'BallotController.getBallots', // ?offset=XXX
+'GET /api/ballotDetails': 'BallotController.getBallotDetails', // ?id=id&departmentId=13&circonscription=12
 // 'GET /api/deputies/department/:departmentCode': 'DeputyController.getDeputiesFromDepartmentCode',
 // 'GET /api/deputies/department/:departmentCode/:circonscription': 'DeputyController.getDeputiesFromDepartmentCode',
 // 'GET /api/departments': 'DepartmentController.getDepartments',
