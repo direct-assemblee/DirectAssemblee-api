@@ -13,7 +13,7 @@
       "type": "vote",
       "voteExtraInfos":  {
         "ballotId": "1222",
-        "voteValue": "pour",
+        "voteValue": "for",
         "ballotAdopted": true,
       },
     },

@@ -36,7 +36,7 @@ var self = module.exports = {
 		return Vote.findOne()
 		.where({ ballotId: ballotId, deputyId: deputyId })
 		.then(function(vote) {
-			return getVoteValueForWs(vote);
+			return vote ? vote.value : 'missing';
 		})
 	},
 
@@ -47,7 +47,6 @@ var self = module.exports = {
 		.skip(skip)
 		.populate('lawId')
 		.then(function (votesForDepute) {
-			console.log(votesForDepute)
 			votesForDepute.sort(function(a, b) {
   			return new Date(a.lawId.date).getTime() - new Date(b.lawId.date).getTime()
 			});
@@ -130,26 +129,3 @@ var self = module.exports = {
 		return votesByDepute;
 	}
 };
-
-var getVoteValueForWs = function(vote) {
-	var voteValueForWs;
-	if (vote) {
-		switch (vote.value) {
-			case 'pour':
-				voteValueForWs = 'for';
-				break;
-			case 'contre':
-				voteValueForWs = 'against';
-				break;
-			case 'abstention':
-				voteValueForWs = 'blank';
-				break;
-			case 'non-votant':
-				voteValueForWs = 'non-voting';
-				break;
-		}
-	} else {
-		voteValueForWs = 'missing';
-	}
-	return voteValueForWs;
-}

@@ -24,7 +24,7 @@ var self = module.exports = {
 			return clearedBallot;
     })
     .then(function(ballot) {
-      return VoteService.findVotesForBallot(ballot.id, "non-votant")
+      return VoteService.findVotesForBallot(ballot.id, "non-voting")
       .then(function(nonVoting) {
         ballot.totalVotes = parseInt(ballot.totalVotes);
         ballot.yesVotes = parseInt(ballot.yesVotes);
