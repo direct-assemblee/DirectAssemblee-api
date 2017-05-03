@@ -14,7 +14,7 @@
       "voteExtraInfos":  {
         "ballotId": "1222",
         "voteValue": "for",
-        "ballotAdopted": true,
+        "isAdopted": true,
       },
     },
   ]

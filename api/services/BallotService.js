@@ -1,7 +1,7 @@
 var Promise = require("bluebird");
 var DateHelper = require('./helpers/DateHelper.js');
 
-const NUMBER_OF_DEPUTIES = 569;
+const NUMBER_OF_DEPUTIES = 577;
 const BALLOTS_PAGE_ITEMS_COUNT = 30;
 
 const BALLOT_TYPE_ORDINARY = { "shortname" : "SOR", "name" : "ordinary" };
@@ -33,6 +33,7 @@ var self = module.exports = {
         ballot.nonVoting = nonVoting.length;
         ballot.blankVotes = ballot.totalVotes - ballot.yesVotes - ballot.noVotes;
         ballot.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes;
+        ballot.isAdopted = ballot.isAdopted ? true : false;
         return ballot;
       })
     })
@@ -75,7 +76,7 @@ var getSimplifiedBallot = function(ballot) {
     title: ballot.title,
     theme: ballot.theme,
     type: getBallotTypeName(ballot.type),
-    ballotAdopted: ballot.yesVotes > ballot.noVotes
+    isAdopted: ballot.isAdopted ? true : false
   }
 }
 

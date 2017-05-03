@@ -90,7 +90,7 @@ var createExtendedVoteForTimeline = function(ballot, voteValue) {
 		voteExtrasInfos: {
 			ballotId: ballot.id,
 			voteValue: voteValue,
-			ballotAdopted: ballot.yesVotes > ballot.noVotes
+      isAdopted: ballot.isAdopted ? true : false
 		}
 	}
 }

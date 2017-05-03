@@ -35,6 +35,9 @@ module.exports = {
     noVotes: {
       type: 'int'
     },
+    isAdopted: {
+      type: 'bool'
+    },
     analysisUrl: {
       type: 'string'
     },
