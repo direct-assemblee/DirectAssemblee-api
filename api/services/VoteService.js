@@ -32,11 +32,15 @@ var self = module.exports = {
 		.where({ ballotId: ballotId , value: value })
 	},
 
-	findVoteValueForDeputyAndBallot: function(deputyId, ballotId) {
+	findVoteValueForDeputyAndBallot: function(deputyId, ballotId, ballotType) {
 		return Vote.findOne()
 		.where({ ballotId: ballotId, deputyId: deputyId })
 		.then(function(vote) {
-			return vote ? vote.value : 'missing';
+			if (ballotType === "motion_of_censure") {
+				return vote && vote.value === "for" ? "signed" : "not_signed" 
+			} else {
+				return vote ? vote.value : 'missing';
+			}
 		})
 	},
 

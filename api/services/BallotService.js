@@ -7,7 +7,8 @@ const BALLOTS_PAGE_ITEMS_COUNT = 30;
 const BALLOT_TYPE_ORDINARY = { "shortname" : "SOR", "name" : "ordinary" };
 const BALLOT_TYPE_SOLEMN = { "shortname" : "SSO", "name" : "solemn" };
 const BALLOT_TYPE_OTHER = { "shortname" : "AUT", "name" : "others" };
-const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER ];
+const BALLOT_TYPE_CENSURE = { "shortname" : "motion_of_censure", "name" : "motion_of_censure" };
+const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
 
 var self = module.exports = {
   getBallots: function(page) {
