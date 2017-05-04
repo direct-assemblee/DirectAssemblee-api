@@ -88,7 +88,9 @@ var formatDeputyResponse = function(deputy) {
 			return ExtraPositionService.getSalaryForDeputy(deputy.id)
 			.then(function(salary) {
 				deputy.salary = salary;
-				deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
+				if (deputy.currentMandateStartDate) {
+					deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
+				}
 				return prepareDeputyResponse(deputy);
 			})
 		})

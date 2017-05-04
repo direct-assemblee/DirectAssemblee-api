@@ -1,4 +1,5 @@
 const actionUtil = require('../../node_modules/sails/lib/hooks/blueprints/actionUtil')
+var DateHelper = require('../services/helpers/DateHelper.js');
 
 var self = module.exports = {
 	getDeputies: function(req, res) {
@@ -10,26 +11,28 @@ var self = module.exports = {
 	},
 
 	getDeputy: function(req, res) {
-		if (req.param('id')) {
-			return getDeputyWithId(req.param('id'), res);
-		} else {
-			var departmentId = req.param('departmentId');
-			var circonscription = req.param('circonscription');
-			if (departmentId && circonscription) {
-				return DeputyService.findDeputiesForCirconscription(departmentId, circonscription, true)
-				.then(function(deputies) {
-					if (deputies && deputies.length > 0) {
-						deputies.sort(function(a, b) {
-							return new Date(b.currentMandateStartDate).getTime() - new Date(a.currentMandateStartDate).getTime()
-						});
+		var departmentId = req.param('departmentId');
+		var circonscription = req.param('circonscription');
+		if (departmentId && circonscription) {
+			return DeputyService.findDeputiesForCirconscription(departmentId, circonscription, false)
+			.then(function(deputies) {
+				if (deputies && deputies.length > 0) {
+					deputies.sort(function(a, b) {
+						var diff = DateHelper.getDiff(b.currentMandateStartDate, a.currentMandateStartDate);
+						return diff < 0 ? -1 : 1;
+					});
+					var mostRecentDeputy = deputies[0];
+					if (mostRecentDeputy.currentMandateStartDate) {
 						return getDeputyWithId(deputies[0].id, res);
 					} else {
-						return res.notFound('Could not find deputy, sorry.');
+						return res.notFound('Found deputy, but mandate has ended.');
 					}
-				})
-			} else {
-				return res.badRequest('Must provide id or departmentId and circonscription arguments')
-			}
+				} else {
+					return res.notFound('Could not find deputy, sorry.');
+				}
+			})
+		} else {
+			return res.badRequest('Must provide departmentId and circonscription arguments')
 		}
 	}
 }
