@@ -15,6 +15,22 @@ var self = module.exports = {
 		return getDeputyWithId(id);
 	},
 
+	getDeputyForGeoCirconscription: function(circonscription) {
+		var departmentCode = circonscription.department;
+		var circNumber = circonscription.circonscriptionNumber;
+		return DepartmentService.findDepartmentIdWithCode(departmentCode)
+		.then(function(departmentId) {
+			return self.findDeputiesForCirconscription(departmentId, circNumber, true);
+		})
+		.then(function(deputies) {
+			var deputiesInfos = [];
+			for (i in deputies) {
+				deputiesInfos.push(simplifyDeputy(deputies[i]));
+			}
+			return deputiesInfos;
+		})
+	},
+
 	findDeputiesForCirconscription: function(departmentId, circonscription, onlyMandateInProgress) {
 		var options;
 		if (onlyMandateInProgress) {
@@ -41,49 +57,8 @@ var self = module.exports = {
 			}
 			return deputy;
 		})
-	},
-
-	getDeputiesWithCoordinates: function(latitude, longitude) {
-		return GeolocService.getAddress(latitude, longitude)
-		.then(function(circonscriptions) {
-			var deputies = []
-      if (circonscriptions && circonscriptions.length > 0) {
-				for (i in circonscriptions) {
-					deputies.push(getDeputyForGeoCirconscription(circonscriptions[i]));
-				}
-			}
-			return Promise.all(deputies)
-			.then(function(deputies) {
-				var deputiesArray = [];
-				for (i in deputies) {
-					for (j in deputies[i]) {
-						deputiesArray.push(deputies[i][j]);
-					}
-				}
-				return deputiesArray;
-			})
-		})
-		.catch(function (err) {
-			console.log("err : " + err)
-		});
 	}
 };
-
-var getDeputyForGeoCirconscription = function(circonscription) {
-	var departmentCode = circonscription.department;
-	var circNumber = circonscription.circonscriptionNumber;
-	return DepartmentService.findDepartmentIdWithCode(departmentCode)
-	.then(function(departmentId) {
-		return self.findDeputiesForCirconscription(departmentId, circNumber, true);
-	})
-	.then(function(deputies) {
-		var deputiesInfos = [];
-		for (i in deputies) {
-			deputiesInfos.push(simplifyDeputy(deputies[i]));
-		}
-		return deputiesInfos;
-	})
-}
 
 var getDeputyWithId = function(deputyId) {
 	return Deputy.findOne().where({

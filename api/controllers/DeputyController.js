@@ -47,16 +47,27 @@ var self = module.exports = {
 	},
 
 	getDeputiesWithCoordinates: function(req, res) {
-		DeputyService.getDeputiesWithCoordinates(req.param('latitude'), req.param('longitude'))
-		.then(function(deputies) {
-			if (!deputies) {
-				return res.notFound('Could not find deputy, sorry.');
+		return GeolocService.getAddress(req.param('latitude'), req.param('longitude'))
+		.then(function(circonscriptions) {
+      if (circonscriptions && circonscriptions.length > 0) {
+				var deputies = []
+					for (i in circonscriptions) {
+					deputies.push(DeputyService.getDeputyForGeoCirconscription(circonscriptions[i]));
+				}
+				return Promise.all(deputies)
+				.then(function(deputies) {
+					var deputiesArray = [];
+					for (i in deputies) {
+						for (j in deputies[i]) {
+							deputiesArray.push(deputies[i][j]);
+						}
+					}
+					return res.json({ "deputies" : deputiesArray });
+				})
+			} else {
+				return res.notFound("Sorry, no circonscription found")
 			}
-			return res.json({ "deputies" : deputies });
-		}).catch(function(err) {
-      sails.log.error(err);
-			return res.negotiate(err);
-    });
+		})
 	},
 
 	getAllDeputies: function(req, res) {
