@@ -6,16 +6,19 @@ var self = module.exports = {
 		if (!deputyId) {
 			return res.json(400, 'Must provide deputyId as a parameter.');
 		} else {
-			var offset = req.param('page');
-			if (!offset) {
-				offset = 0;
-			}
-			return TimelineService.getTimeline(deputyId, parseInt(offset))
-			.then(function(timelineItems) {
-				if (!timelineItems) {
-					return res.json(404, 'No items found for deputy with id : ' + deputyId);
+			var offset = req.param('page') ? req.param('page') : 0;
+			return DeputyService.findDeputyWithId(deputyId)
+			.then(function(deputy) {
+		    if (!deputy) {
+					return res.json(404, 'No deputy found with id : ' + deputyId);
+				} else if (!deputy.currentMandateStartDate) {
+					return res.json(404, 'Mandate has ended for deputy with id : ' + deputyId);
+				} else {
+					return TimelineService.getTimeline(deputy, parseInt(offset))
+					.then(function(timelineItems) {
+						return res.json(timelineItems);
+					})
 				}
-				return res.json(timelineItems);
 			})
 		}
 	}
