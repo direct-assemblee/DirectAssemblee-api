@@ -11,7 +11,7 @@ var self = module.exports = {
 
 	getDeputy: function(req, res) {
 		if (req.param('id')) {
-			self.getDeputyWithId(req, res);
+			self.findDeputyWithId(req, res);
 		} else {
 			var departmentId = req.param('departmentId');
 			var circonscription = req.param('circonscription');
@@ -21,7 +21,7 @@ var self = module.exports = {
 					deputies.sort(function(a, b) {
 						return new Date(b.currentMandateStartDate).getTime() - new Date(a.currentMandateStartDate).getTime()
 					});
-					self.getDeputyWithId(deputies[0].id, res);
+					self.findDeputyWithId(deputies[0].id, res);
 				} else {
 					return res.notFound('Could not find deputy, sorry.');
 				}
@@ -34,7 +34,7 @@ var self = module.exports = {
 	},
 
 	getDeputyWithId: function(id, res) {
-		DeputyService.getDeputyWithId(id)
+		DeputyService.findDeputyWithId(id)
 		.then(function(deputy) {
 			if (!deputy) {
 				return res.notFound('Could not find deputy, sorry.');

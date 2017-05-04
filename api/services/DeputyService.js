@@ -11,8 +11,13 @@ const DEPUTY_PHOTO_URL = BASE_URL + "static/tribun/" + PARAM_MANDATE_NUMBER + "/
 const GEOLOC_URL = "http://localhost:1339/address/" + PARAM_LATITUDE + "/" + PARAM_LONGITUDE;
 
 var self = module.exports = {
-	getDeputyWithId: function(id) {
-		return getDeputyWithId(id);
+	findDeputyWithId: function(id) {
+		return Deputy.findOne().where({
+			id: deputyId
+		})
+		.then(function(deputy) {
+			return formatDeputyResponse(deputy);
+		})
 	},
 
 	getDeputyForGeoCirconscription: function(circonscription) {
@@ -25,24 +30,22 @@ var self = module.exports = {
 		.then(function(deputies) {
 			var deputiesInfos = [];
 			for (i in deputies) {
-				deputiesInfos.push(simplifyDeputy(deputies[i]));
+				deputiesInfos.push(prepareSimpleDeputyResponse(deputies[i]));
 			}
 			return deputiesInfos;
 		})
 	},
 
 	findDeputiesForCirconscription: function(departmentId, circonscription, onlyMandateInProgress) {
-		var options;
+		var options = { departmentId: departmentId, circonscription: circonscription };
 		if (onlyMandateInProgress) {
-			options = { departmentId: departmentId, circonscription: circonscription, currentMandateStartDate: {'!': null} };
-		} else {
-			options = { departmentId: departmentId, circonscription: circonscription };
+			options.currentMandateStartDate = {'!': null};
 		}
 		return Deputy.find()
 		.where(options)
 	},
 
-	findDeputyForCirconscriptionAndDate: function(departmentId, circonscription, date) {
+	findDeputyAtDateForCirconscription: function(departmentId, circonscription, date) {
 		return self.findDeputiesForCirconscription(departmentId, circonscription, false)
 		.then(function(deputies) {
 			var smallestDiff;
@@ -60,40 +63,39 @@ var self = module.exports = {
 	}
 };
 
-var getDeputyWithId = function(deputyId) {
-	return Deputy.findOne().where({
-		id: deputyId
-	})
-	.then(function(deputy) {
+var formatDeputyResponse = function(deputy) {
+	if (deputy) {
 		deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
 		return MandateService.getPoliticalAgeOfDeputy(deputy.id)
 		.then(function(parliamentAgeInYears) {
 			deputy.parliamentAgeInYears = parliamentAgeInYears;
 			return deputy;
 		})
-	})
-	.then(function(deputy) {
-		return DeclarationService.getDeclarationsForDeputy(deputy.id)
-		.then(function(declarations) {
-			deputy.declarations = declarations;
-			return deputy;
+		.then(function(deputy) {
+			return DeclarationService.getDeclarationsForDeputy(deputy.id)
+			.then(function(declarations) {
+				deputy.declarations = declarations;
+				return deputy;
+			})
 		})
-	})
-	.then(function(deputy) {
-		return findMissingRate(deputy, false)
-		.then(function(missingRate) {
-			deputy.missingRate = missingRate;
-			return deputy;
+		.then(function(deputy) {
+			return findMissingRate(deputy, false)
+			.then(function(missingRate) {
+				deputy.missingRate = missingRate;
+				return deputy;
+			})
 		})
-	})
-	.then(function(deputy) {
-		return ExtraPositionService.getSalaryForDeputy(deputy.id)
-		.then(function(salary) {
-			deputy.salary = salary;
-			deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
-			return prepareDeputyResponse(deputy);
+		.then(function(deputy) {
+			return ExtraPositionService.getSalaryForDeputy(deputy.id)
+			.then(function(salary) {
+				deputy.salary = salary;
+				deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
+				return prepareDeputyResponse(deputy);
+			})
 		})
-	})
+	} else {
+		return deputy;
+	}
 }
 
 var findMissingRate = function(deputy, solemnBallotsOnly) {
@@ -107,7 +109,7 @@ var findMissingRate = function(deputy, solemnBallotsOnly) {
 	})
 }
 
-var simplifyDeputy = function(deputy) {
+var prepareSimpleDeputyResponse = function(deputy) {
 	deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
 	deputy = prepareDeputyResponse(deputy);
 	delete deputy.commission;

@@ -5,7 +5,7 @@ const TIMELINE_MONTHS_INCREMENT_STEP = 4;
 
 module.exports = {
   getTimeline: function(deputyId, offset) {
-    return DeputyService.getDeputyWithId(deputyId)
+    return DeputyService.findDeputyWithId(deputyId)
     .then(function(deputy) {
       var mandateStartDate = deputy.currentMandateStartDate;
       mandateStartDate = DateHelper.formatDate(mandateStartDate)

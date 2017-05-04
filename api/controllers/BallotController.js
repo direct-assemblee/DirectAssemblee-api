@@ -30,7 +30,7 @@ var self = module.exports = {
 				if (!ballot) {
 					return res.notFound('Could not find ballot, sorry.');
 				} else {
-		      DeputyService.findDeputyForCirconscriptionAndDate(departmentId, circonscription, ballot.date)
+		      DeputyService.findDeputyAtDateForCirconscription(departmentId, circonscription, ballot.date)
 		      .then(function(deputy) {
 		        return VoteService.findVoteValueForDeputyAndBallot(deputy.id, ballot.id, ballot.type)
 		        .then(function(voteValue) {
