@@ -1,6 +1,5 @@
 var DateHelper = require('./helpers/DateHelper.js');
 var MathHelper = require('./helpers/MathHelper.js');
-var request = require('request-promise')
 
 const PARAM_DEPUTY_ID = "{deputy_id}";
 const PARAM_MANDATE_NUMBER = "14";
@@ -11,7 +10,7 @@ const DEPUTY_PHOTO_URL = BASE_URL + "static/tribun/" + PARAM_MANDATE_NUMBER + "/
 const GEOLOC_URL = "http://localhost:1339/address/" + PARAM_LATITUDE + "/" + PARAM_LONGITUDE;
 
 var self = module.exports = {
-	findDeputyWithId: function(id) {
+	findDeputyWithId: function(deputyId) {
 		return Deputy.findOne().where({
 			id: deputyId
 		})
