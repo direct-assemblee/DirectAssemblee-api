@@ -18,7 +18,7 @@ var self = module.exports = {
 			DeputyService.findDeputiesForCirconscription(departmentId, circonscription, true)
 			.then(function(deputies) {
 				if (deputies && deputies.length > 0) {
-						deputies.sort(function(a, b) {
+					deputies.sort(function(a, b) {
 						return new Date(b.currentMandateStartDate).getTime() - new Date(a.currentMandateStartDate).getTime()
 					});
 					self.getDeputyWithId(deputies[0].id, res);
@@ -69,29 +69,5 @@ var self = module.exports = {
 			}
 			return res.json(deputies)
 		});
-	},
-
-	create: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	update: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	destroy: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	populate: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	add: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	remove: function(req, res) {
-		return res.json(404, "not found")
 	}
 };

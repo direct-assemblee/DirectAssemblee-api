@@ -52,29 +52,5 @@ var self = module.exports = {
 		} else {
 			return res.badRequest('Must provide id, departmentId and circonscription as parameters.');
 		}
-	},
-
-	create: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	update: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	destroy: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	populate: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	add: function(req, res) {
-		return res.json(404, "not found")
-	},
-
-	remove: function(req, res) {
-		return res.json(404, "not found")
 	}
 };

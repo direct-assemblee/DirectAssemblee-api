@@ -8,13 +8,6 @@
 const actionUtil = require('../../node_modules/sails/lib/hooks/blueprints/actionUtil')
 
 var self = module.exports = {
-
-	  _config: {
-	    actions: false,
-	    shortcuts: false,
-	    rest: false
-	  },
-
 	getVotes: function(req, res) {
 		Vote.find()
 			.limit(actionUtil.parseLimit(req))

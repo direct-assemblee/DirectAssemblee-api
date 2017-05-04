@@ -23,5 +23,5 @@ var self = module.exports = {
 				return res.negotiate(err);
 			});
 		}
-	},
+	}
 };
