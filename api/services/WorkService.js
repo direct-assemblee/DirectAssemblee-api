@@ -9,7 +9,7 @@ var findWorksForDeputy = function(deputyId) {
 var createWorkForTimeline = function(work) {
   return {
     type: work.type,
-		date: DateHelper.formatDate(work.date),
+		date: DateHelper.formatDateForWS(work.date),
     title: work.title,
     description: work.description
   }

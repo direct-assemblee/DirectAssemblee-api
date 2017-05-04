@@ -80,7 +80,7 @@ var sortTimelineItems = function(items) {
 var createExtendedVoteForTimeline = function(ballot, voteValue) {
 	return {
 		type: "vote",
-		date: DateHelper.formatDate(ballot.date),
+		date: DateHelper.formatDateForWS(ballot.date),
 		title: ballot.title,
 		description: ballot.theme,
 		voteExtrasInfos: {
