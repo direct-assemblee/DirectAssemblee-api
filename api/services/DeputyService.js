@@ -44,10 +44,8 @@ var self = module.exports = {
 	},
 
 	getDeputiesWithCoordinates: function(latitude, longitude) {
-		var url = GEOLOC_URL.replace(PARAM_LATITUDE, latitude).replace(PARAM_LONGITUDE, longitude)
-		return request(url)
-		.then(function(body) {
-			var circonscriptions = JSON.parse(body).circonscriptions;
+		return GeolocService.getAddress(latitude, longitude)
+		.then(function(circonscriptions) {
 			var deputies = []
       if (circonscriptions && circonscriptions.length > 0) {
 				for (i in circonscriptions) {
@@ -76,7 +74,7 @@ var getDeputyForGeoCirconscription = function(circonscription) {
 	var circNumber = circonscription.circonscriptionNumber;
 	return DepartmentService.findDepartmentIdWithCode(departmentCode)
 	.then(function(departmentId) {
-		return findDeputiesForCirconscription(departmentId, circNumber, true);
+		return self.findDeputiesForCirconscription(departmentId, circNumber, true);
 	})
 	.then(function(deputies) {
 		var deputiesInfos = [];

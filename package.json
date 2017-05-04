@@ -28,7 +28,8 @@
     "request-promise": "^4.2.0",
     "sails": "~0.12.11",
     "sails-disk": "~0.10.9",
-    "sails-mysql": "^0.11.5"
+    "sails-mysql": "^0.11.5",
+    "@turf/turf": "^4.1.0"
   },
   "scripts": {
     "debug": "node debug app.js",
