@@ -6,7 +6,7 @@ var self = module.exports = {
 		if (req.param('latitude') || req.param('longitude')) {
 		 	return getDeputiesWithCoordinates(req, res);
 		} else {
-			return res.badRequest('Must provide latitude and longitude arguments')
+			return res.json(400, 'Must provide latitude and longitude arguments')
 		}
 	},
 
@@ -25,14 +25,14 @@ var self = module.exports = {
 					if (mostRecentDeputy.currentMandateStartDate) {
 						return getDeputyWithId(deputies[0].id, res);
 					} else {
-						return res.notFound('Found deputy, but mandate has ended.');
+						return res.json(404, 'Found deputy, but mandate has ended.');
 					}
 				} else {
-					return res.notFound('Could not find deputy, sorry.');
+					return res.json(404, 'Could not find deputy, sorry.');
 				}
 			})
 		} else {
-			return res.badRequest('Must provide departmentId and circonscription arguments')
+			return res.json(400, 'Must provide departmentId and circonscription arguments')
 		}
 	}
 }
@@ -56,7 +56,7 @@ var getDeputiesWithCoordinates = function(req, res) {
 				return res.json({ "deputies" : deputiesArray });
 			})
 		} else {
-			return res.notFound("Sorry, no circonscription found")
+			return res.json(404, "Sorry, no circonscription found")
 		}
 	})
 }
@@ -65,7 +65,7 @@ var getDeputyWithId = function(id, res) {
 	return DeputyService.findDeputyWithId(id)
 	.then(function(deputy) {
 		if (!deputy) {
-			return res.notFound('Could not find deputy, sorry.');
+			return res.json(404, 'Could not find deputy, sorry.');
 		}
 		return res.json(deputy);
 	})
