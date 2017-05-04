@@ -15,14 +15,12 @@ var self = module.exports = {
 		} else {
 			var departmentId = req.param('departmentId');
 			var circonscription = req.param('circonscription');
-			DeputyService.findDeputiesForCirconscription(departmentId, circonscription)
+			DeputyService.findDeputiesForCirconscription(departmentId, circonscription, true)
 			.then(function(deputies) {
-				if (deputies) {
-					if (deputies.length > 0) {
+				if (deputies && deputies.length > 0) {
 						deputies.sort(function(a, b) {
-							return new Date(b.currentMandateStartDate).getTime() - new Date(a.currentMandateStartDate).getTime()
-						});
-					}
+						return new Date(b.currentMandateStartDate).getTime() - new Date(a.currentMandateStartDate).getTime()
+					});
 					self.getDeputyWithId(deputies[0].id, res);
 				} else {
 					return res.notFound('Could not find deputy, sorry.');

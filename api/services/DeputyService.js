@@ -15,13 +15,19 @@ var self = module.exports = {
 		return getDeputyWithId(id);
 	},
 
-	findDeputiesForCirconscription: function(departmentId, circonscription) {
+	findDeputiesForCirconscription: function(departmentId, circonscription, onlyMandateInProgress) {
+		var options;
+		if (onlyMandateInProgress) {
+			options = { departmentId: departmentId, circonscription: circonscription, currentMandateStartDate: {'!': null} };
+		} else {
+			options = { departmentId: departmentId, circonscription: circonscription };
+		}
 		return Deputy.find()
-		.where({ departmentId: departmentId, circonscription: circonscription })
+		.where(options)
 	},
 
 	findDeputyForCirconscriptionAndDate: function(departmentId, circonscription, date) {
-		return self.findDeputiesForCirconscription(departmentId, circonscription)
+		return self.findDeputiesForCirconscription(departmentId, circonscription, false)
 		.then(function(deputies) {
 			var smallestDiff;
 			var deputy;
@@ -70,10 +76,7 @@ var getDeputyForGeoCirconscription = function(circonscription) {
 	var circNumber = circonscription.circonscriptionNumber;
 	return DepartmentService.findDepartmentIdWithCode(departmentCode)
 	.then(function(departmentId) {
-		return Deputy.find().where({
-			departmentId: departmentId,
-			circonscription: circNumber
-		})
+		return findDeputiesForCirconscription(departmentId, circNumber, true);
 	})
 	.then(function(deputies) {
 		var deputiesInfos = [];
@@ -147,6 +150,8 @@ var prepareDeputyResponse = function(deputy) {
 	delete deputy.gender;
 	delete deputy.createdAt;
 	delete deputy.updatedAt;
+	delete deputy.mandateEndDate;
+	delete deputy.mandateEndReason;
 	deputy.departmentId = parseInt(deputy.departmentId)
 	deputy.circonscription = parseInt(deputy.circonscription)
 	return deputy;
