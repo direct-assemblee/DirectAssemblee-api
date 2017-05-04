@@ -7,12 +7,16 @@ module.exports = {
   getTimeline: function(deputyId, offset) {
     return DeputyService.findDeputyWithId(deputyId)
     .then(function(deputy) {
-      var mandateStartDate = deputy.currentMandateStartDate;
-      mandateStartDate = DateHelper.formatDate(mandateStartDate)
-      var minDate = DateHelper.formattedNow();
-      var maxDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
-      var itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
-      return getDeputyTimeline(deputyId, mandateStartDate, minDate, maxDate, itemsOffset, []);
+      var timeline;
+      if (deputy) {
+        var mandateStartDate = deputy.currentMandateStartDate;
+        mandateStartDate = DateHelper.formatDate(mandateStartDate)
+        var minDate = DateHelper.formattedNow();
+        var maxDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
+        var itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
+        timeline = getDeputyTimeline(deputyId, mandateStartDate, minDate, maxDate, itemsOffset, []);
+      }
+      return timeline;
     })
   },
 }
