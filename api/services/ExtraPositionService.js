@@ -35,9 +35,6 @@ var self = module.exports = {
   findExtraPositionsForDeputy: function(deputyId) {
     return ExtraPosition.find()
     .where({ deputyId: deputyId })
-    .then(function(extraPositions) {
-      return extraPositions;
-    })
   },
 
   getSalaryForDeputy: function(deputyId) {

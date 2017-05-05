@@ -11,31 +11,23 @@ const BALLOT_TYPE_CENSURE = { "shortname" : "motion_of_censure", "name" : "motio
 const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
 
 var self = module.exports = {
-  getBallots: function(page) {
+  findBallots: function(page) {
     var offset = BALLOTS_PAGE_ITEMS_COUNT * page;
     return findBallotsWithOffset(offset);
   },
 
   getBallotWithId: function(id) {
-    return Ballot.findOne({ id: id})
-    .then(function(ballot){
-      var clearedBallot = removeUnwantedFields(ballot);
-      clearedBallot.date = DateHelper.formatDateForWS(ballot.date);
-      clearedBallot.type = getBallotTypeName(ballot.type)
-			return clearedBallot;
-    })
+    return Ballot.findOne({ id: id })
     .then(function(ballot) {
-      return VoteService.findVotesForBallot(ballot.id, "non-voting")
-      .then(function(nonVoting) {
-        ballot.totalVotes = parseInt(ballot.totalVotes);
-        ballot.yesVotes = parseInt(ballot.yesVotes);
-        ballot.noVotes = parseInt(ballot.noVotes);
-        ballot.nonVoting = nonVoting.length;
-        ballot.blankVotes = ballot.totalVotes - ballot.yesVotes - ballot.noVotes;
-        ballot.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes;
-        ballot.isAdopted = ballot.isAdopted ? true : false;
-        return ballot;
-      })
+      if (ballot) {
+        return VoteService.findVotesForBallot(ballot.id, "non-voting")
+        .then(function(nonVoting) {
+          ballot.nonVoting = nonVoting.length;
+          return prepareBallotResponse(ballot);
+        })
+      } else {
+        return;
+      }
     })
   },
 
@@ -63,13 +55,13 @@ var findBallotsWithOffset = function(offset) {
   .then(function(ballots) {
     var simplifiedBallots = [];
     for (i in ballots) {
-      simplifiedBallots.push(getSimplifiedBallot(ballots[i]))
+      simplifiedBallots.push(prepareSimplifiedBallotResponse(ballots[i]))
     }
     return simplifiedBallots;
   })
 }
 
-var getSimplifiedBallot = function(ballot) {
+var prepareSimplifiedBallotResponse = function(ballot) {
   return {
     id: ballot.id,
     date: DateHelper.formatDateForWS(ballot.date),
@@ -78,21 +70,6 @@ var getSimplifiedBallot = function(ballot) {
     type: getBallotTypeName(ballot.type),
     isAdopted: ballot.isAdopted ? true : false
   }
-}
-
-var findBallotsFromDate = function(searchedDate, solemnOnly) {
-  var options = solemnOnly ? { date: { '>': searchedDate }, type: BALLOT_TYPE_SOLEMN } : { date: { '>': searchedDate } };
-  return Ballot.find()
-  .where(options)
-}
-
-var removeUnwantedFields = function(ballot) {
-	delete ballot.createdAt;
-	delete ballot.updatedAt;
-  delete ballot.officialId;
-  delete ballot.dateDetailed;
-  delete ballot.analysisUrl;
-	return ballot;
 }
 
 var getBallotTypeName = function(ballotType) {
@@ -104,4 +81,29 @@ var getBallotTypeName = function(ballotType) {
     }
   }
   return ballotTypeName;
+}
+
+var findBallotsFromDate = function(searchedDate, solemnOnly) {
+  var options = solemnOnly
+    ? { date: { '>': searchedDate }, type: BALLOT_TYPE_SOLEMN }
+    : { date: { '>': searchedDate } };
+  return Ballot.find()
+  .where(options)
+}
+
+var prepareBallotResponse = function(ballot) {
+	delete ballot.createdAt;
+	delete ballot.updatedAt;
+  delete ballot.officialId;
+  delete ballot.dateDetailed;
+  delete ballot.analysisUrl;
+  ballot.date = DateHelper.formatDateForWS(ballot.date);
+  ballot.type = getBallotTypeName(ballot.type)
+  ballot.totalVotes = parseInt(ballot.totalVotes);
+  ballot.yesVotes = parseInt(ballot.yesVotes);
+  ballot.noVotes = parseInt(ballot.noVotes);
+  ballot.blankVotes = ballot.totalVotes - ballot.yesVotes - ballot.noVotes;
+  ballot.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes;
+  ballot.isAdopted = ballot.isAdopted ? true : false;
+	return ballot;
 }

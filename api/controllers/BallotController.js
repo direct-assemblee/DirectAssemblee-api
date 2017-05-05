@@ -2,22 +2,11 @@ const actionUtil = require('../../node_modules/sails/lib/hooks/blueprints/action
 
 var self = module.exports = {
 	getBallots: function(req, res) {
-		var offset = req.param('page');
-		if (!offset) {
-			offset = 0;
-		}
-
-		BallotService.getBallots(parseInt(offset))
+		var offset = req.param('page') ? parseInt(req.param('page')) : 0;
+		return BallotService.findBallots(offset)
 		.then(function(ballots) {
-			if (!ballots) {
-				return res.notFound('Could not find any ballots')
-			}
 			return res.json(ballots)
 		})
-		.catch(function(err) {
-			sails.log.error(err);
-			return res.negotiate(err);
-		});
 	},
 
 	getBallotDetails: function(req, res) {
@@ -25,32 +14,40 @@ var self = module.exports = {
 		var departmentId = req.param('departmentId');
 		var circonscription = req.param('circonscription');
 		if (id && departmentId && circonscription) {
-			BallotService.getBallotWithId(id, departmentId, circonscription)
+			return BallotService.getBallotWithId(id)
 			.then(function(ballot) {
-				if (!ballot) {
-					return res.notFound('Could not find ballot, sorry.');
+				if (ballot) {
+					return getBallotWithDeputyVote(ballot, departmentId, circonscription)
+					.then(function(ballotResponse) {
+						res.json(ballotResponse);
+					})
 				} else {
-		      DeputyService.findDeputyAtDateForCirconscription(departmentId, circonscription, ballot.date)
-		      .then(function(deputy) {
-		        return VoteService.findVoteValueForDeputyAndBallot(deputy.id, ballot.id, ballot.type)
-		        .then(function(voteValue) {
-		          ballot.userDeputyVote = {
-		            'voteValue': voteValue,
-		            'deputy': {
-		              'firstname': deputy.firstname,
-		              'lastname': deputy.lastname
-		            }
-		          }
-	          	return res.json(ballot);
-						})
-			    })
+					return res.json(404, 'Could not find ballot with id ' + id);
 				}
-			}).catch(function(err) {
-	      sails.log.error(err);
-				return res.negotiate(err);
-	    });
+			})
 		} else {
-			return res.badRequest('Must provide id, departmentId and circonscription as parameters.');
+			return res.json(400, 'Must provide id, departmentId and circonscription as parameters.');
 		}
 	}
 };
+
+var getBallotWithDeputyVote = function(ballot, departmentId, circonscription) {
+	return DeputyService.findDeputyAtDateForCirconscription(departmentId, circonscription, ballot.date)
+	.then(function(deputy) {
+		if (deputy) {
+			return VoteService.findVoteValueForDeputyAndBallot(deputy.id, ballot.id, ballot.type)
+			.then(function(voteValue) {
+				ballot.userDeputyVote = {
+					'voteValue': voteValue,
+					'deputy': {
+						'firstname': deputy.firstname,
+						'lastname': deputy.lastname
+					}
+				}
+				return ballot;
+			})
+		} else {
+			return ballot;
+		}
+	})
+}
