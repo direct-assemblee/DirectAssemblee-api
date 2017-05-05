@@ -5,7 +5,7 @@ const TIMELINE_MONTHS_INCREMENT_STEP = 4;
 
 module.exports = {
   getTimeline: function(deputy, offset) {
-    var mandateStartDate = DateHelper.formatDate(deputy.mandateStartDate)
+    var mandateStartDate = DateHelper.formatDate(deputy.currentMandateStartDate)
     var minDate = DateHelper.formattedNow();
     var maxDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
     var itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
@@ -79,7 +79,7 @@ var sortTimelineItems = function(items) {
 
 var createExtendedVoteForTimeline = function(ballot, voteValue) {
 	return {
-		type: "vote",
+		type: ballot.type,
 		date: DateHelper.formatDateForWS(ballot.date),
 		title: ballot.title,
 		description: ballot.theme,
