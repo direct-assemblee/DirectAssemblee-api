@@ -1,0 +1,8 @@
+apps:
+  - script : ./api/app.js
+    name   : 'directass_api'
+    instances : 0
+    exec_mode : 'cluster'
+    env :
+      PORT      : 1328
+      NODE_ENV  : 'development'
