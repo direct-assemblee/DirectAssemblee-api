@@ -4,5 +4,5 @@ apps:
     instances : 0
     exec_mode : 'cluster'
     env :
-      PORT      : 1328
+      PORT      : ${API_PORT}
       NODE_ENV  : 'development'
