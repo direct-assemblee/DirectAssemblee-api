@@ -32,10 +32,10 @@ var findCirconscriptions = function(addressComponents, latitude, longitude) {
   .then(function(targetCityAndCode) {
     var targetDepartment = parseInt(targetCityAndCode.postalCode / 1000);
     var extraCoords = [
-      [ latitude, longitude - (0.1 / 111.11 * Math.cos(latitude)) ],
-      [ latitude, parseFloat(longitude) + (0.1 / 111.11 * Math.cos(latitude)) ],
-      [ parseFloat(latitude) + 0.0009, longitude ],
-      [ latitude - 0.0009, longitude ]
+      [ latitude, longitude - (2 * (0.1 / 111.11 * Math.cos(latitude))) ],
+      [ latitude, parseFloat(longitude) + (2 * (0.1 / 111.11 * Math.cos(latitude))) ],
+      [ parseFloat(latitude) + (2 * 0.0009), longitude ],
+      [ latitude - (2 * 0.0009), longitude ]
     ];
 
     var promises = []
