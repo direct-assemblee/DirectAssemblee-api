@@ -65,7 +65,7 @@ var self = module.exports = {
 var formatDeputyResponse = function(deputy) {
 	if (deputy) {
 		deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
-		return MandateService.getPoliticalAgeOfDeputy(deputy.id)
+		return MandateService.getPoliticalAgeOfDeputy(deputy.id, deputy.currentMandateStartDate)
 		.then(function(parliamentAgeInYears) {
 			deputy.parliamentAgeInYears = parliamentAgeInYears;
 			return deputy;

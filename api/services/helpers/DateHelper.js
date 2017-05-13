@@ -19,6 +19,10 @@ var self = module.exports = {
     return moment(parsedDate).format(formatTemplate);
   },
 
+  getDaysFromNow: function(start) {
+    return self.getDurationInDays(start, moment());
+  },
+
   getDurationInDays: function(start, end) {
     return self.getDiff(end, start)
   },
