@@ -12,9 +12,9 @@ var self = module.exports = {
 
 	getDeputy: function(req, res) {
 		var departmentId = req.param('departmentId');
-		var circonscription = req.param('circonscription');
-		if (departmentId && circonscription) {
-			return DeputyService.findDeputiesForCirconscription(departmentId, circonscription, false)
+		var district = req.param('district');
+		if (departmentId && district) {
+			return DeputyService.findDeputiesFordistrict(departmentId, district, false)
 			.then(function(deputies) {
 				if (deputies && deputies.length > 0) {
 					deputies.sort(function(a, b) {
@@ -32,18 +32,18 @@ var self = module.exports = {
 				}
 			})
 		} else {
-			return res.json(400, 'Must provide departmentId and circonscription arguments')
+			return res.json(400, 'Must provide departmentId and district arguments')
 		}
 	}
 }
 
 var getDeputiesWithCoordinates = function(req, res) {
 	return GeolocService.getAddress(req.param('latitude'), req.param('longitude'))
-	.then(function(circonscriptions) {
-		if (circonscriptions && circonscriptions.length > 0) {
+	.then(function(districts) {
+		if (districts && districts.length > 0) {
 			var deputies = []
-			for (i in circonscriptions) {
-				deputies.push(DeputyService.getDeputyForGeoCirconscription(circonscriptions[i]));
+			for (i in districts) {
+				deputies.push(DeputyService.getDeputyForGeodistrict(districts[i]));
 			}
 			return Promise.all(deputies)
 			.then(function(deputies) {
@@ -56,7 +56,7 @@ var getDeputiesWithCoordinates = function(req, res) {
 				return res.json({ "deputies" : deputiesArray });
 			})
 		} else {
-			return res.json(404, "Sorry, no circonscription found")
+			return res.json(404, "Sorry, no district found")
 		}
 	})
 }

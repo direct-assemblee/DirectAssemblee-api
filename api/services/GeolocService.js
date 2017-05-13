@@ -13,21 +13,21 @@ var self = module.exports = {
     return new Promise(function(resolve, reject) {
       var url = GMAP_REVERSE_GEOCODING_URL.replace(PARAM_LATITUDE, latitude).replace(PARAM_LONGITUDE, longitude)
       request(url, function(error, response, body) {
-        var circonscriptions = {};
+        var districts = {};
         if (!error && response.statusCode == 200) {
           var json = JSON.parse(body);
           if (json.results && json.results.length > 0) {
             var addressComponents = json.results[0].address_components;
-            circonscriptions = findCirconscriptions(addressComponents, latitude, longitude);
+            districts = finddistricts(addressComponents, latitude, longitude);
           }
         }
-        resolve(circonscriptions);
+        resolve(districts);
       });
     })
   }
 }
 
-var findCirconscriptions = function(addressComponents, latitude, longitude) {
+var finddistricts = function(addressComponents, latitude, longitude) {
   return reverseGeocode(latitude, longitude)
   .then(function(targetCityAndCode) {
     var targetDepartment = parseInt(targetCityAndCode.postalCode / 1000);
@@ -86,35 +86,35 @@ var filterCirconscritptions = function(targetDepartment, citiesAndCodes, extraCo
     return cityAndCode && targetDepartment === parseInt(cityAndCode.postalCode / 1000)
   })
   .then(function(foundCitiesAndCodes) {
-    var circonscriptions = [];
+    var districts = [];
     for (i in foundCitiesAndCodes) {
-      var foundCirc = getCirconscriptionsForPoint(extraCoords[i][0], extraCoords[i][1]);
-      circonscriptions = addUniqueCirconscriptions(foundCirc, circonscriptions);
+      var foundCirc = getdistrictsForPoint(extraCoords[i][0], extraCoords[i][1]);
+      districts = addUniquedistricts(foundCirc, districts);
     }
-    return circonscriptions;
+    return districts;
   })
 }
 
 
-var getCirconscriptionsForPoint = function(latitude, longitude) {
+var getdistrictsForPoint = function(latitude, longitude) {
   var polygonsGeojson = fs.readFileSync('./assets/circonscriptions2010.geojson', "utf-8");
   var json = JSON.parse(polygonsGeojson);
   var point = [ parseFloat(longitude), parseFloat(latitude) ];
-  var circonscriptions = [];
+  var districts = [];
   for (i in json.features) {
     var circ = json.features[i];
     var coords = circ.geometry.coordinates;
     if (coords) {
       if (Turf.inside(Turf.point(point), Turf.polygon(coords))) {
         var code = circ.properties.name;
-        circonscriptions.push({ department: parseInt(code / 1000), circonscriptionNumber : parseInt(code % 1000) });
+        districts.push({ department: parseInt(code / 1000), districtNumber : parseInt(code % 1000) });
       }
     }
   }
-  return circonscriptions;
+  return districts;
 }
 
-var addUniqueCirconscriptions = function(newCirc, allCirc) {
+var addUniquedistricts = function(newCirc, allCirc) {
   for (j in newCirc) {
     if (allCirc.length === 0) {
       allCirc.push(newCirc[j]);
@@ -122,7 +122,7 @@ var addUniqueCirconscriptions = function(newCirc, allCirc) {
       var add = true;
       for (k in allCirc) {
         if (allCirc[k].department === newCirc[j].department
-            && allCirc[k].circonscriptionNumber === newCirc[j].circonscriptionNumber) {
+            && allCirc[k].districtNumber === newCirc[j].districtNumber) {
           add = false;
           break;
         }

@@ -12,12 +12,12 @@ var self = module.exports = {
 	getBallotDetails: function(req, res) {
 		var id = req.param('id');
 		var departmentId = req.param('departmentId');
-		var circonscription = req.param('circonscription');
-		if (id && departmentId && circonscription) {
+		var district = req.param('district');
+		if (id && departmentId && district) {
 			return BallotService.getBallotWithId(id)
 			.then(function(ballot) {
 				if (ballot) {
-					return getBallotWithDeputyVote(ballot, departmentId, circonscription)
+					return getBallotWithDeputyVote(ballot, departmentId, district)
 					.then(function(ballotResponse) {
 						res.json(ballotResponse);
 					})
@@ -26,13 +26,13 @@ var self = module.exports = {
 				}
 			})
 		} else {
-			return res.json(400, 'Must provide id, departmentId and circonscription as parameters.');
+			return res.json(400, 'Must provide id, departmentId and district as parameters.');
 		}
 	}
 };
 
-var getBallotWithDeputyVote = function(ballot, departmentId, circonscription) {
-	return DeputyService.findDeputyAtDateForCirconscription(departmentId, circonscription, ballot.date)
+var getBallotWithDeputyVote = function(ballot, departmentId, district) {
+	return DeputyService.findDeputyAtDateFordistrict(departmentId, district, ballot.date)
 	.then(function(deputy) {
 		if (deputy) {
 			return VoteService.findVoteValueForDeputyAndBallot(deputy.id, ballot.id, ballot.type)
