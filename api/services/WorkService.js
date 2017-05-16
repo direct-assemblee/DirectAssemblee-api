@@ -27,6 +27,7 @@ var createWorkForTimeline = function(work) {
     type: work.type,
 		date: DateHelper.formatDateForWS(work.date),
     title: work.title,
+    theme: work.theme,
     description: work.description
   }
 }

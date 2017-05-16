@@ -10,6 +10,10 @@ module.exports = {
     var maxDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
     var itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
     return getDeputyTimeline(deputy.id, mandateStartDate, minDate, maxDate, itemsOffset, []);
+  },
+
+  findLastItems:function(deputyId, maxDate) {
+    return findTimelineItems(deputyId, DateHelper.formattedNow(), maxDate);
   }
 }
 
@@ -82,7 +86,7 @@ var createExtendedVoteForTimeline = function(ballot, voteValue) {
 		type: ballot.type,
 		date: DateHelper.formatDateForWS(ballot.date),
 		title: ballot.title,
-		description: ballot.theme,
+		theme: ballot.theme,
 		voteExtraInfo: {
 			id: ballot.id,
 			voteValue: voteValue,
