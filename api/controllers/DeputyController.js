@@ -53,7 +53,7 @@ var getDeputiesWithCoordinates = function(req, res) {
 						deputiesArray.push(deputies[i][j]);
 					}
 				}
-				return res.json({ "deputies" : deputiesArray });
+				return res.json(deputiesArray);
 			})
 		} else {
 			return res.json(404, "Sorry, no district found")
