@@ -100,10 +100,10 @@ var findPostalCodeFromCountry = function(country) {
       return 98800;
     case "WF": // wallis et futuna
       return 98600;
-    case "BL": // saint barthelemy !! guadeloupe
-      return 97133;
-    case "MF": // saint martin !! guadeloupe
-      return 97150;
+    case "BL": // saint barthelemy - fake code (guadeloupe)
+      return 97700;
+    case "MF": // saint martin - fake code (guadeloupe)
+      return 97700;
     case "PM": // saint pierre et miquelon
       return 97500;
     case "YT": // mayotte (ok)
@@ -147,6 +147,9 @@ var getDistrictsForPoint = function(latitude, longitude) {
       if (Turf.inside(Turf.point(point), polygon)) {
         var area = circ.properties.REF.split('-')
         var code = area[0].startsWith('0') ? parseInt(area[0], 10) : area[0];
+        if (code == 978) {
+          code = 977; // make saint-martin be same as saint-barth
+        }
         var district = area[1].startsWith('0') ?  parseInt(area[1], 10) : area[1];
         districts.push({ department: code, district : district });
       }
