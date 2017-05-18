@@ -19,12 +19,12 @@ var self = module.exports = {
 		})
 	},
 
-	getDeputyForGeodistrict: function(district) {
+	getDeputyForGeoDistrict: function(district) {
 		var departmentCode = district.department;
-		var circNumber = district.districtNumber;
+		var circNumber = district.district;
 		return DepartmentService.findDepartmentIdWithCode(departmentCode)
 		.then(function(departmentId) {
-			return self.findDeputiesFordistrict(departmentId, circNumber, true);
+			return self.findDeputiesForDistrict(departmentId, circNumber, true);
 		})
 		.then(function(deputies) {
 			var deputiesInfos = [];
@@ -35,7 +35,7 @@ var self = module.exports = {
 		})
 	},
 
-	findDeputiesFordistrict: function(departmentId, district, onlyMandateInProgress) {
+	findDeputiesForDistrict: function(departmentId, district, onlyMandateInProgress) {
 		var options = { departmentId: departmentId, district: district };
 		if (onlyMandateInProgress) {
 			options.currentMandateStartDate = {'!': null};
@@ -45,7 +45,7 @@ var self = module.exports = {
 	},
 
 	findDeputyAtDateFordistrict: function(departmentId, district, date) {
-		return self.findDeputiesFordistrict(departmentId, district, false)
+		return self.findDeputiesForDistrict(departmentId, district, false)
 		.then(function(deputies) {
 			var smallestDiff;
 			var deputy;

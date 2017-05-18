@@ -43,7 +43,7 @@ var getDeputiesWithCoordinates = function(req, res) {
 		if (districts && districts.length > 0) {
 			var deputies = []
 			for (i in districts) {
-				deputies.push(DeputyService.getDeputyForGeodistrict(districts[i]));
+				deputies.push(DeputyService.getDeputyForGeoDistrict(districts[i]));
 			}
 			return Promise.all(deputies)
 			.then(function(deputies) {
