@@ -1,5 +1,4 @@
 var Promise = require("bluebird");
-var DateHelper = require('./helpers/DateHelper.js');
 var ResponseHelper = require('./helpers/ResponseHelper.js');
 
 var self = module.exports = {
@@ -37,11 +36,7 @@ var self = module.exports = {
 		return Vote.findOne()
 		.where({ ballotId: ballotId, deputyId: deputyId })
 		.then(function(vote) {
-			if (ballotType === "motion_of_censure") {
-				return vote && vote.value === "for" ? "signed" : "not_signed"
-			} else {
-				return vote ? vote.value : 'missing';
-			}
+			return ResponseHelper.createVoteValueForWS(ballotType, vote)
 		})
 	},
 
@@ -52,7 +47,7 @@ var self = module.exports = {
 			return Promise.map(lastBallots, function(ballot) {
 		    return self.findVotesForBallot(ballot)
 			})
-			.reduce(function(prev, cur){
+			.reduce(function(prev, cur) {
  				return prev.concat(cur);
 			})
 			.then(function(allVotes) {
@@ -81,13 +76,13 @@ var mapVotesByDeputy = function(allVotes) {
 	var votesByDeputy = [];
 	for (i in allVotes) {
 		var vote = allVotes[i];
-		var picked = votesByDeputy.find(o => o.deputy.id === vote.deputyId);
+		var picked = votesByDeputy.find(o => o.deputyId === vote.deputyId);
 		if (!picked) {
-			picked = { 'deputyId': vote.deputyId, 'votes': [] };
+			picked = { 'deputyId': vote.deputyId, 'activities': [] };
 			votesByDeputy.push(picked);
 		}
 		delete vote.deputyId;
-		picked['votes'].push(vote);
+		picked['activities'].push(vote);
 	}
 	return votesByDeputy;
 }

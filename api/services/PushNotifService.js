@@ -49,51 +49,28 @@ var self = module.exports = {
     })
   },
 
-  prepareMessage: function(token) {
-    var message = {
-      to: token, // required fill with device token or topics
-      collapse_key: COLLAPSE_KEY,
-      data: {
-          your_custom_data_key: 'your_custom_data_value'
-      },
-      notification: {
-          title: 'Title of your push notification',
-          body: 'Body of your push notification'
-      }
-    };
-  },
-
-  pushDeputyVotes: function(deputyVotes) {
+  pushDeputyActivities: function(deputyActivities) {
     var promises = [];
-    for (var i in deputyVotes.votes) {
-      promises.push(self.pushDeputyVote(deputyVotes.deputyId, deputyVotes.votes[i]));
+    for (var i in deputyActivities.activities) {
+      promises.push(pushDeputyActivity(deputyActivities.deputyId, deputyActivities.activities[i]));
     }
     return Promise.all(promises);
   },
+}
 
-  pushDeputyVote: function(deputyId, deputyVote) {
-    var payload = {
-      notification: {
-        title: ResponseHelper.createVoteSentenceForPush(deputyVote),
-        body: deputyVote.theme + " : " + deputyVote.title
-      },
-      data: {
-        deputyId:  "" + deputyId,
-        ballotId:  "" + deputyVote.ballotId
-      }
-    };
-    var options = {
-      collapseKey: COLLAPSE_KEY,
-    };
-    console.log(payload.notification.title)
-    console.log(payload.notification.body)
+var pushDeputyActivity = function(deputyId, deputyActivity) {
+  var payload = ResponseHelper.createPayloadForActivity(deputyId, deputyActivity)
+  // console.log(payload.notification.title)
+  // console.log(payload.notification.body)
+  var options = {
+    collapseKey: COLLAPSE_KEY,
+  };
 
-    return admin.messaging().sendToTopic(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload, options)
-    .then(function(response) {
-      console.log("Successfully sent message - received id: ", response.messageId);
-    })
-    .catch(function(error) {
-      console.log("Error sending message:", error);
-    });
-  }
+  return admin.messaging().sendToTopic(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload, options)
+  .then(function(response) {
+    // console.log("Successfully sent message - received id: ", response.messageId);
+  })
+  .catch(function(error) {
+    console.log("Error sending message:", error);
+  });
 }

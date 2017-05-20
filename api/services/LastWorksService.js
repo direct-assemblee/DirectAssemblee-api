@@ -22,7 +22,7 @@ var self = module.exports = {
   pushNewActivity: function() {
     initLastScanTime()
     .then(function(lastScanTime) {
-      console.log("lastScanTime : " + lastScanTime)
+      console.log("last scan time : " + lastScanTime)
       return pushNewVotes(lastScanTime)
       .then(function() {
         return pushNewWorks(lastScanTime)
@@ -53,17 +53,22 @@ var initLastScanTime = function() {
 var pushNewVotes = function(lastScanTime) {
   return VoteService.findLastVotesByDeputy(lastScanTime)
   .then(function(lastVotesByDeputy) {
-    console.log("found " + lastVotesByDeputy.length + " deputys who voted since " + lastScanTime)
-    for (i in lastVotesByDeputy) {
-      var deputyVotes = lastVotesByDeputy[i];
-      console.log("- deputy " + deputyVotes.deputyId + " voted for " + deputyVotes.votes.length + " ballots")
-      return PushNotifService.pushDeputyVotes(deputyVotes);
-    }
+    return Promise.map(lastVotesByDeputy, function(deputyVotes) {
+      console.log("- deputy " + deputyVotes.deputyId + " voted for " + deputyVotes.activities.length + " ballots to be pushed")
+      return PushNotifService.pushDeputyActivities(deputyVotes);
+    })
   })
 }
 
 var pushNewWorks = function(lastScanTime) {
-  
+  return WorkService.findLastWorksByDeputy(lastScanTime)
+  .then(function(lastWorksByDeputy) {
+    console.log("- lastWorksByDeputy " + lastWorksByDeputy.length)
+    return Promise.map(lastWorksByDeputy, function(deputyWorks) {
+      console.log("- deputy " + deputyWorks.deputyId + " has " + deputyWorks.activities.length + " new works to be pushed")
+      return PushNotifService.pushDeputyActivities(deputyWorks);
+    })
+  })
 }
 
 var updateLastScanTime = function() {
