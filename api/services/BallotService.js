@@ -45,6 +45,12 @@ var self = module.exports = {
   findBallotsBetweenDates: function(minDate, maxDate) {
     return Ballot.find()
     .where({ date: { '<=': minDate }, date: { '>': maxDate} })
+    .then(function(ballots) {
+      return Promise.map(ballots, function(ballot) {
+          ballot.type = getBallotTypeName(ballot.type)
+          return ballot
+      });
+    })
   }
 };
 
