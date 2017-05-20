@@ -1,9 +1,9 @@
 var admin = require("firebase-admin");
 var request = require('request-promise')
-var serviceAccount = require("./keys/firebase-service-account.json");
+var serviceAccount = require("../../assets/firebase_service_account.json");
 var ResponseHelper = require('./helpers/ResponseHelper.js');
 
-const serverKey = 'AAAAcG1FX-Q:APA91bGzbAdIxR7t9xcGSVliY2mK8iWPsPTR8vx16Du-kdMRiHw-7DOBvbg-Y0X2-W9BxCVcJAJd3rRPaV6Mr0LIb1SFKVcDhkGqSLVyVfd6N4DNcb_4VKG_9NzXnCr4VfSLBQaayRE3'
+const serverKey = 'AAAATv-4Kqk:APA91bGXc-kCx6EsfzWRqNDZ9OBzqHs30MzRv1QNz00FbtrufnAfjr3eZOKmaw0DVHKGITkbjAxypt9Q138LboGArpMFhsuzcR02U1m3R7eqHyT0pibcDi7cCul-WD5ITGx6cZrmheXt';
 
 const COLLAPSE_KEY = "NOTIF_VOTE";
 const FIREBASE_INSTANCE_ID_SERVICE_URL = "https://iid.googleapis.com/iid/";
@@ -14,7 +14,7 @@ const ADD_TO_TOPIC_URL = FIREBASE_INSTANCE_ID_SERVICE_URL + "v1/" + PARAM_IID_TO
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://directassemblee-77a91.firebaseio.com"
+  databaseURL: "https://directassemblee-d4b5a.firebaseio.com"
 });
 
 var self = module.exports = {
@@ -30,20 +30,13 @@ var self = module.exports = {
           'Authorization': 'key=' + serverKey
         }
       }
-
       request(options)
       .then(function (response) {
+        // console.log(response)
         resolve(response);
       })
       .catch(function (err) {
         console.log(err)
-        // Deal with the error
-        // var respErr = JSON.parse(err.error);
-        // console.log(respErr)
-        // var errorResult = {
-        //   origUrl: url,
-        //   error: respErr
-        // };
         reject(err);
       })
     })

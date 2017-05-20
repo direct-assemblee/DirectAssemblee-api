@@ -1,5 +1,6 @@
 var Promise = require("bluebird");
 var ResponseHelper = require('./helpers/ResponseHelper.js');
+var DateHelper = require('./helpers/DateHelper.js');
 
 module.exports = {
   findWorksForDeputyFromDate: function(deputyId, minDate, maxDate) {
@@ -14,9 +15,11 @@ module.exports = {
 
   findLastWorksByDeputy: function(lastScanTime) {
     return Work.find()
-    .where({ date: { '<': lastScanTime } })
+		.where({ date: { '>=': lastScanTime }})
 		.then(function(lastWorks) {
-      return mapWorksByDeputy(lastWorks);
+      if (lastWorks) {
+        return mapWorksByDeputy(lastWorks);
+      }
     })
   }
 }

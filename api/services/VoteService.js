@@ -1,5 +1,6 @@
 var Promise = require("bluebird");
 var ResponseHelper = require('./helpers/ResponseHelper.js');
+var DateHelper = require('./helpers/DateHelper.js');
 
 var self = module.exports = {
 	findAllVotes: function(deputyId) {
@@ -42,17 +43,19 @@ var self = module.exports = {
 
 	findLastVotesByDeputy: function(lastScanTime) {
 		return Ballot.find()
-		.where({ date: { '<': lastScanTime } })
+		.where({ date: { '>=': lastScanTime }})
 		.then(function(lastBallots) {
-			return Promise.map(lastBallots, function(ballot) {
-		    return self.findVotesForBallot(ballot)
-			})
-			.reduce(function(prev, cur) {
- 				return prev.concat(cur);
-			})
-			.then(function(allVotes) {
-				return mapVotesByDeputy(allVotes);
-			});
+			if (lastBallots.length < 0) {
+				return Promise.map(lastBallots, function(ballot) {
+			    return self.findVotesForBallot(ballot)
+				})
+				.reduce(function(prev, cur) {
+	 				return prev.concat(cur);
+				})
+				.then(function(allVotes) {
+					return mapVotesByDeputy(allVotes);
+				});
+			}
 		});
 	},
 

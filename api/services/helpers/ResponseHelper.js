@@ -96,7 +96,7 @@ self = module.exports = {
 
   createPayloadForActivity: function(deputyId, activity) {
     var payload;
-    if (activity.type.startsWith("vote_")) {
+    if (activity.ballotId) {
       payload = createPayloadForVote(deputyId, activity);
     } else {
       payload = createPayloadForWork(deputyId, activity);
@@ -111,7 +111,7 @@ var createPayloadForVote = function(deputyId, vote) {
   var payload = {
     notification: {
       title: createVoteTitleForPush(vote),
-      body: body.substring(0, 200)
+      body: body.substring(0, 197) + "..."
     },
     data: {
       deputyId:  "" + deputyId,
@@ -128,7 +128,7 @@ var createPayloadForWork = function(deputyId, work) {
   var payload = {
     notification: {
       title: title,
-      body: body.substring(0, 200)
+      body: body.substring(0, 197) + "..."
     },
     data: {
       deputyId:  "" + deputyId

@@ -47,16 +47,16 @@ module.exports.routes = {
   ***************************************************************************/
 
 'GET /api/deputies': 'DeputyController.getDeputies',  // optional ?latitude=XXX&longitude=YYY
-'GET /api/deputy': 'DeputyController.getDeputy',  // &departmentId=13&district=12
+'GET /api/deputy': 'DeputyController.getDeputy',  // ?departmentId=13&district=12
 'GET /api/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
 'GET /api/ballots': 'BallotController.getBallots', // ?offset=XXX
 'GET /api/ballotDetails': 'BallotController.getBallotDetails', // ?id=id&departmentId=13&district=12
+'POST /api/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
 // 'GET /api/deputies/department/:departmentCode': 'DeputyController.getDeputiesFromDepartmentCode',
 // 'GET /api/deputies/department/:departmentCode/:district': 'DeputyController.getDeputiesFromDepartmentCode',
 // 'GET /api/departments': 'DepartmentController.getDepartments',
 // 'GET /api/laws': 'LawController.getLaws',
 // 'GET /api/votes': 'VoteController.getVotes',
 // 'GET /api/votes/:deputeId': 'VoteController.getVotesForDeputeId',
-// 'POST /api/subscribe/:deputeId' : 'SubscriberController.addSubscriberToDepute'
 
 };
