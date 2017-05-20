@@ -1,5 +1,6 @@
 var Promise = require("bluebird");
 var DateHelper = require('./helpers/DateHelper.js');
+var ResponseHelper = require('./helpers/ResponseHelper.js');
 
 var self = module.exports = {
 	findAllVotes: function(deputyId) {
@@ -10,19 +11,19 @@ var self = module.exports = {
 
 	findVotes: function(deputyId, solemnOnly) {
 		return self.findAllVotes(deputyId)
-		.then(function (votesForDepute) {
+		.then(function (votesForDeputy) {
 			if (solemnOnly) {
 				var votesArray = [];
 				var vote;
-				for (i in votesForDepute) {
-					vote = votesForDepute[i];
+				for (i in votesForDeputy) {
+					vote = votesForDeputy[i];
 					if (vote.ballotId.type === 'SSO') {
 						votesArray.push(vote);
 					}
 				}
 				return votesArray;
 			} else {
-				return votesForDepute;
+				return votesForDeputy;
 			}
 		})
 	},
@@ -37,27 +38,27 @@ var self = module.exports = {
 		.where({ ballotId: ballotId, deputyId: deputyId })
 		.then(function(vote) {
 			if (ballotType === "motion_of_censure") {
-				return vote && vote.value === "for" ? "signed" : "not_signed" 
+				return vote && vote.value === "for" ? "signed" : "not_signed"
 			} else {
 				return vote ? vote.value : 'missing';
 			}
 		})
 	},
 
-	getVotesForDeputeId: function(deputeId, limit, skip) {
+	getVotesForDeputyId: function(deputyId, limit, skip) {
 		return Vote.find()
-		.where({ deputeId: deputeId })
+		.where({ deputyId: deputyId })
 		.limit(limit)
 		.skip(skip)
 		.populate('lawId')
-		.then(function (votesForDepute) {
-			votesForDepute.sort(function(a, b) {
-  			return new Date(a.lawId.date).getTime() - new Date(b.lawId.date).getTime()
+		.then(function (votesForDeputy) {
+			votesForDeputy.sort(function(a, b) {
+  			return new Date(a.ballotId.date).getTime() - new Date(b.ballotId.date).getTime()
 			});
 
 			var votesArray = [];
-			for (i in votesForDepute) {
-				var voteIter = votesForDepute[i];
+			for (i in votesForDeputy) {
+				var voteIter = votesForDeputy[i];
 				var vote = {
 					'lawTitle': voteIter['lawId'].title,
 					'lawId': voteIter['lawId'].id,
@@ -70,66 +71,49 @@ var self = module.exports = {
 		})
 	},
 
-	findLastVotesByDepute: function(lastScanTime) {
-		return Law.find()
-		.where({ date: { '>': lastScanTime } })
-		.then(function(lastLaws) {
-			var promises = [];
-			for (i in lastLaws) {
-				promises.push(self.findVotesForLaw(lastLaws[i]));
-			}
-			return Promise.all(promises)
-			.then(function(votes) {
-				var allVotes = [];
-				for (i in votes) {
-					allVotes = allVotes.concat(votes[i]);
-				}
-				return self.mapVotesByDepute(allVotes);
+	findLastVotesByDeputy: function(lastScanTime) {
+		return Ballot.find()
+		.where({ date: { '<': lastScanTime } })
+		.then(function(lastBallots) {
+			return Promise.map(lastBallots, function(ballot) {
+		    return self.findVotesForBallot(ballot)
+			})
+			.reduce(function(prev, cur){
+ 				return prev.concat(cur);
+			})
+			.then(function(allVotes) {
+				return self.mapVotesByDeputy(allVotes);
 			});
 		});
 	},
 
-	findVotesForLaw: function(law) {
+	findVotesForBallot: function(ballot) {
 		return Vote.find()
-		.where({ lawId: law.id })
-		.populate('deputeId')
+		.where({ ballotId: ballot.id })
+		.populate('deputyId')
 		.then(function(votes) {
-			var extendedVotes = [];
-			for (i in votes) {
-				var vote = votes[i];
-				extendedVotes.push({
-					'lawId' : law.id,
-					'lawTitle' : law.title,
-					'deputeId' : vote.deputeId.id,
-					'deputeName' : vote.deputeId.firstname + " " + vote.deputeId.lastname,
-					'value' : vote.value
-				});
-			}
-			return Promise.resolve(extendedVotes);
+			return Promise.map(votes, function(vote) {
+		    return ResponseHelper.createVoteForPush(ballot, vote);
+			})
 		})
 	},
 
-	mapVotesByDepute: function(allVotes) {
+	mapVotesByDeputy: function(allVotes) {
 		allVotes.sort(function(a, b) {
-			return a.deputeId - b.deputeId;
+			return a.deputyId - b.deputyId;
 		});
 
-		var votesByDepute = [];
+		var votesByDeputy = [];
 		for (i in allVotes) {
 			var vote = allVotes[i];
-			var picked = votesByDepute.find(o => o.depute.id === vote.deputeId);
+			var picked = votesByDeputy.find(o => o.deputy.id === vote.deputyId);
 			if (!picked) {
-				picked = { 'depute': { 'id': vote.deputeId, 'name': vote.deputeName }, 'votes': [] };
-				votesByDepute.push(picked);
+				picked = { 'deputyId': vote.deputyId, 'votes': [] };
+				votesByDeputy.push(picked);
 			}
-			// delete vote.deputeId;
-			picked['votes'].push({
-				'lawId' : vote.lawId,
-				'lawTitle' : vote.lawTitle,
-				'value' : vote.value
-			});
+			delete vote.deputyId;
+			picked['votes'].push(vote);
 		}
-		console.log(votesByDepute)
-		return votesByDepute;
+		return votesByDeputy;
 	}
 };

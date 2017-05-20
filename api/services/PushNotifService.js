@@ -1,6 +1,7 @@
 var admin = require("firebase-admin");
 var request = require('request-promise')
 var serviceAccount = require("./keys/firebase-service-account.json");
+var ResponseHelper = require('./helpers/ResponseHelper.js');
 
 const serverKey = 'AAAAcG1FX-Q:APA91bGzbAdIxR7t9xcGSVliY2mK8iWPsPTR8vx16Du-kdMRiHw-7DOBvbg-Y0X2-W9BxCVcJAJd3rRPaV6Mr0LIb1SFKVcDhkGqSLVyVfd6N4DNcb_4VKG_9NzXnCr4VfSLBQaayRE3'
 
@@ -8,7 +9,7 @@ const COLLAPSE_KEY = "NOTIF_VOTE";
 const FIREBASE_INSTANCE_ID_SERVICE_URL = "https://iid.googleapis.com/iid/";
 const PARAM_IID_TOKEN = "{IID_TOKEN}";
 const PARAM_TOPIC_NAME = "{TOPIC_NAME}";
-const PARAM_TOPIC_PREFIX_DEPUTE = "DEPUTE_";
+const PARAM_TOPIC_PREFIX_DEPUTY = "DEPUTY_";
 const ADD_TO_TOPIC_URL = FIREBASE_INSTANCE_ID_SERVICE_URL + "v1/" + PARAM_IID_TOKEN + "/rel/topics/" + PARAM_TOPIC_NAME;
 
 admin.initializeApp({
@@ -17,9 +18,9 @@ admin.initializeApp({
 });
 
 var self = module.exports = {
-  addSubscriberToDepute: function(token, deputeId) {
+  addSubscriberToDeputy: function(token, deputyId) {
     return new Promise(function (resolve, reject) {
-      var url = ADD_TO_TOPIC_URL.replace(PARAM_IID_TOKEN, token).replace(PARAM_TOPIC_NAME, PARAM_TOPIC_PREFIX_DEPUTE + deputeId)
+      var url = ADD_TO_TOPIC_URL.replace(PARAM_IID_TOKEN, token).replace(PARAM_TOPIC_NAME, PARAM_TOPIC_PREFIX_DEPUTY + deputyId)
       const options = {
         method: 'POST',
         uri: url,
@@ -62,31 +63,31 @@ var self = module.exports = {
     };
   },
 
-  pushDeputeVotes: function(deputeVotes) {
-    for (var i in deputeVotes.votes) {
-      self.pushDeputeVote(deputeVotes.depute, deputeVotes.votes[i]);
+  pushDeputyVotes: function(deputyVotes) {
+    for (var i in deputyVotes.votes) {
+      self.pushDeputyVote(deputyVotes.deputyId, deputyVotes.votes[i]);
     }
   },
 
-  pushDeputeVote: function(depute, deputeVote) {
-    console.log(deputeVote)
+  pushDeputyVote: function(deputyId, deputyVote) {
     var payload = {
       notification: {
-        title: depute.name + " a voté " + deputeVote.value,
-        body: "" + deputeVote.lawTitle
+        title: ResponseHelper.createVoteSentenceForPush(deputyVote),
+        body: deputyVote.theme + " : " + deputyVote.title
       },
       data: {
-        deputeId:  "" + depute.id,
-        lawId:  "" + deputeVote.lawId
+        deputyId:  "" + deputyId,
+        ballotId:  "" + deputyVote.ballotId
       }
     };
     var options = {
       collapseKey: COLLAPSE_KEY,
     };
-    admin.messaging().sendToTopic(PARAM_TOPIC_PREFIX_DEPUTE + depute.id, payload, options)
+    console.log(payload.notification.title)
+    console.log(payload.notification.body)
+
+    admin.messaging().sendToTopic(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload, options)
     .then(function(response) {
-      // See the MessagingTopicResponse reference documentation for the
-      // contents of response.
       console.log("Successfully sent message - received id: ", response.messageId);
     })
     .catch(function(error) {

@@ -38,14 +38,14 @@ var self = module.exports = {
   findNewVotes: function() {
     initLastScanTime()
     .then(function(lastScanTime) {
-      console.log(lastScanTime)
-      VoteService.findLastVotesByDepute(lastScanTime)
-      .then(function(lastVotesByDepute) {
-        console.log("found " + lastVotesByDepute.length + " deputes who voted since " + lastScanTime)
-        for (i in lastVotesByDepute) {
-          var deputeVotes = lastVotesByDepute[i];
-          console.log("- depute " + deputeVotes.depute.name + " voted for " + deputeVotes.votes.length + " laws")
-          return PushNotifService.pushDeputeVotes(deputeVotes);
+      console.log("lastScanTime : " + lastScanTime)
+      VoteService.findLastVotesByDeputy(lastScanTime)
+      .then(function(lastVotesByDeputy) {
+        console.log("found " + lastVotesByDeputy.length + " deputys who voted since " + lastScanTime)
+        for (i in lastVotesByDeputy) {
+          var deputyVotes = lastVotesByDeputy[i];
+          console.log("- deputy " + deputyVotes.deputyId + " voted for " + deputyVotes.votes.length + " ballots")
+          return PushNotifService.pushDeputyVotes(deputyVotes);
         }
       })
       .then(function() {

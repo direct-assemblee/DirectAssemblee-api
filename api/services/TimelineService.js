@@ -1,4 +1,5 @@
 var DateHelper = require('./helpers/DateHelper.js');
+var ResponseHelper = require('./helpers/ResponseHelper.js');
 
 const TIMELINE_PAGE_ITEMS_COUNT = 20;
 const TIMELINE_MONTHS_INCREMENT_STEP = 4;
@@ -55,7 +56,7 @@ var findTimelineItems = function(deputyId, minDate, maxDate) {
     .then(function(votesValues) {
       var extendedVotes = [];
       for (i in votesValues) {
-        extendedVotes.push(createExtendedVoteForTimeline(ballots[i], votesValues[i]))
+        extendedVotes.push(ResponseHelper.createExtendedVoteForTimeline(ballots[i], votesValues[i]))
       }
       return extendedVotes;
     })
@@ -79,18 +80,4 @@ var sortTimelineItems = function(items) {
 		return new Date(b.date).getTime() - new Date(a.date).getTime()
 	});
 	return items;
-}
-
-var createExtendedVoteForTimeline = function(ballot, voteValue) {
-	return {
-		type: ballot.type,
-		date: DateHelper.formatDateForWS(ballot.date),
-		title: ballot.title,
-		theme: ballot.theme,
-		voteExtraInfo: {
-			id: ballot.id,
-			voteValue: voteValue,
-      isAdopted: ballot.isAdopted ? true : false
-		}
-	}
 }
