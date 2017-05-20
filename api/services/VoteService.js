@@ -45,32 +45,6 @@ var self = module.exports = {
 		})
 	},
 
-	getVotesForDeputyId: function(deputyId, limit, skip) {
-		return Vote.find()
-		.where({ deputyId: deputyId })
-		.limit(limit)
-		.skip(skip)
-		.populate('lawId')
-		.then(function (votesForDeputy) {
-			votesForDeputy.sort(function(a, b) {
-  			return new Date(a.ballotId.date).getTime() - new Date(b.ballotId.date).getTime()
-			});
-
-			var votesArray = [];
-			for (i in votesForDeputy) {
-				var voteIter = votesForDeputy[i];
-				var vote = {
-					'lawTitle': voteIter['lawId'].title,
-					'lawId': voteIter['lawId'].id,
-					'date': voteIter['lawId'].date,
-					'value': voteIter['value']
-				}
-				votesArray.push(vote)
-			}
-			return Promise.resolve(votesArray);
-		})
-	},
-
 	findLastVotesByDeputy: function(lastScanTime) {
 		return Ballot.find()
 		.where({ date: { '<': lastScanTime } })
@@ -82,7 +56,7 @@ var self = module.exports = {
  				return prev.concat(cur);
 			})
 			.then(function(allVotes) {
-				return self.mapVotesByDeputy(allVotes);
+				return mapVotesByDeputy(allVotes);
 			});
 		});
 	},
@@ -96,24 +70,24 @@ var self = module.exports = {
 		    return ResponseHelper.createVoteForPush(ballot, vote);
 			})
 		})
-	},
-
-	mapVotesByDeputy: function(allVotes) {
-		allVotes.sort(function(a, b) {
-			return a.deputyId - b.deputyId;
-		});
-
-		var votesByDeputy = [];
-		for (i in allVotes) {
-			var vote = allVotes[i];
-			var picked = votesByDeputy.find(o => o.deputy.id === vote.deputyId);
-			if (!picked) {
-				picked = { 'deputyId': vote.deputyId, 'votes': [] };
-				votesByDeputy.push(picked);
-			}
-			delete vote.deputyId;
-			picked['votes'].push(vote);
-		}
-		return votesByDeputy;
 	}
 };
+
+var mapVotesByDeputy = function(allVotes) {
+	allVotes.sort(function(a, b) {
+		return a.deputyId - b.deputyId;
+	});
+
+	var votesByDeputy = [];
+	for (i in allVotes) {
+		var vote = allVotes[i];
+		var picked = votesByDeputy.find(o => o.deputy.id === vote.deputyId);
+		if (!picked) {
+			picked = { 'deputyId': vote.deputyId, 'votes': [] };
+			votesByDeputy.push(picked);
+		}
+		delete vote.deputyId;
+		picked['votes'].push(vote);
+	}
+	return votesByDeputy;
+}

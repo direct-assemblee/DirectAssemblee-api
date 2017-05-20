@@ -64,9 +64,11 @@ var self = module.exports = {
   },
 
   pushDeputyVotes: function(deputyVotes) {
+    var promises = [];
     for (var i in deputyVotes.votes) {
-      self.pushDeputyVote(deputyVotes.deputyId, deputyVotes.votes[i]);
+      promises.push(self.pushDeputyVote(deputyVotes.deputyId, deputyVotes.votes[i]));
     }
+    return Promise.all(promises);
   },
 
   pushDeputyVote: function(deputyId, deputyVote) {
@@ -86,7 +88,7 @@ var self = module.exports = {
     console.log(payload.notification.title)
     console.log(payload.notification.body)
 
-    admin.messaging().sendToTopic(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload, options)
+    return admin.messaging().sendToTopic(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload, options)
     .then(function(response) {
       console.log("Successfully sent message - received id: ", response.messageId);
     })
