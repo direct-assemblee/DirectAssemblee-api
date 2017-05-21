@@ -1,3 +1,4 @@
+var Promise = require("bluebird");
 var DateHelper = require('./helpers/DateHelper.js');
 var MathHelper = require('./helpers/MathHelper.js');
 
@@ -102,11 +103,21 @@ var formatDeputyResponse = function(deputy) {
 var findMissingRate = function(deputy, solemnBallotsOnly) {
 	return BallotService.findBallotsIdFromDate(deputy.currentMandateStartDate, solemnBallotsOnly)
 	.then(function(ballots) {
-		return VoteService.findVotes(deputy.id, solemnBallotsOnly)
-		.then(function(votes) {
-			var rate = 100 - (votes.length * 100 / ballots.length);
-			return MathHelper.roundToTwoDecimals(rate);
-		})
+		if (ballots && ballots.length > 0) {
+			return VoteService.findVotesDates(deputy.id, solemnBallotsOnly)
+			.then(function(votesDates) {
+				return WorkService.findWorksDatesForDeputyFromDate(deputy.id, deputy.currentMandateStartDate)
+				.then(function(worksDates) {
+					return Promise.filter(worksDates, function(workDate) {
+						return !votesDates.includes(workDate);
+					})
+					.then(function(filteredWorkDates) {
+						var rate = 100 - ((votesDates.length + filteredWorkDates.length) * 100 / ballots.length);
+						return MathHelper.roundToTwoDecimals(rate);
+					})
+				})
+			})
+		}
 	})
 }
 

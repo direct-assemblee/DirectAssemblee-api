@@ -61,6 +61,6 @@ var self = module.exports = {
   },
 
   formattedNow: function() {
-    return formatSimpleDate(moment());
+    return self.formatSimpleDate(moment());
   }
 }

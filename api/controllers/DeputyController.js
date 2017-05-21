@@ -14,7 +14,7 @@ var self = module.exports = {
 		var departmentId = req.param('departmentId');
 		var district = req.param('district');
 		if (departmentId && district) {
-			return DeputyService.findDeputiesFordistrict(departmentId, district, false)
+			return DeputyService.findDeputiesForDistrict(departmentId, district, false)
 			.then(function(deputies) {
 				if (deputies && deputies.length > 0) {
 					deputies.sort(function(a, b) {

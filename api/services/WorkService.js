@@ -3,6 +3,16 @@ var ResponseHelper = require('./helpers/ResponseHelper.js');
 var DateHelper = require('./helpers/DateHelper.js');
 
 module.exports = {
+  findWorksDatesForDeputyFromDate: function(deputyId, afterDate) {
+    return Work.find()
+    .where({ deputyId: deputyId, date: { '>': afterDate } })
+    .then(function(works) {
+      return Promise.map(works, function(work) {
+        return DateHelper.formatSimpleDate(work.date);
+      })
+    })
+  },
+
   findWorksForDeputyFromDate: function(deputyId, beforeDate, afterDate) {
     return Work.find()
     .where({ deputyId: deputyId, date: { '<=': beforeDate, '>': afterDate } })

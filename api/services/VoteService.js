@@ -9,6 +9,13 @@ var self = module.exports = {
 		.populate('ballotId');
 	},
 
+	findVotesDates: function(deputyId, solemnOnly) {
+		return self.findVotes(deputyId, solemnOnly)
+		.map(function(vote) {
+			return DateHelper.formatSimpleDate(vote.ballotId.date);
+		})
+	},
+
 	findVotes: function(deputyId, solemnOnly) {
 		return self.findAllVotes(deputyId)
 		.then(function (votesForDeputy) {
