@@ -41,13 +41,16 @@ var self = module.exports = {
 		})
 	},
 
-	findLastVotesByDeputy: function(lastScanTime) {
+	findLastVotesByDeputy: function(afterDate) {
 		return Ballot.find()
-		.where({ date: { '>=': lastScanTime }})
+		.where({ date: { '>=': afterDate }})
 		.then(function(lastBallots) {
-			if (lastBallots.length < 0) {
-				return Promise.map(lastBallots, function(ballot) {
-			    return self.findVotesForBallot(ballot)
+			if (lastBallots.length > 0) {
+				return Promise.filter(lastBallots, function(ballot) {
+					return DateHelper.isLaterSameDay(ballot.createdAt, ballot.date);
+				})
+				.map(function(ballot) {
+		    	return self.findVotesForBallot(ballot)
 				})
 				.reduce(function(prev, cur) {
 	 				return prev.concat(cur);

@@ -48,7 +48,19 @@ var self = module.exports = {
     return newDate.format("YYYY-MM-DD");
   },
 
+  isLaterSameDay: function(date1, date2) {
+    var result = false;
+    if (self.formatSimpleDate(date1) == self.formatSimpleDate(date2)) {
+      result = moment(date1) >= moment(date2);
+    }
+    return result
+  },
+
+  formatSimpleDate: function(date) {
+    return moment(date).format("YYYY-MM-DD");
+  },
+
   formattedNow: function() {
-    return moment().format("YYYY-MM-DD");
+    return formatSimpleDate(moment());
   }
 }
