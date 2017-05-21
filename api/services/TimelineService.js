@@ -62,9 +62,6 @@ var findTimelineItems = function(deputyId, minDate, maxDate) {
     })
     .then(function(extendedVotes) {
   		return WorkService.findWorksForDeputyFromDate(deputyId, minDate, maxDate)
-  		.then(function(works) {
-  			return works.concat(extendedVotes);
-  		})
   	})
   })
 }
