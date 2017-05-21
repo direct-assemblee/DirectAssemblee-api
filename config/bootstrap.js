@@ -9,12 +9,9 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.bootstrap.html
  */
 
-// var LastVotesService = require('./api/services/LastVotesService.js')
-
 module.exports.bootstrap = function(cb) {
   sails.on('lifted', function() {
-    // Start scanning for new votes service
-    // LastVotesService.findNewVotes();
+    LastWorksService.startService();
   });
 
   // It's very important to trigger this callback method when you are finished

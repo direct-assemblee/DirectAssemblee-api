@@ -4,8 +4,7 @@ var moment = require('moment');
 var storage = require('node-persist');
 var VoteService = require("./VoteService");
 
-const EVERY_MINUTE = '* * * * *';
-const EVERY_HOUR = '1 * * * *';
+const CRON_TIMES = '1 12,17,19,21 * * *';
 
 const LAST_SCAN_TIME_KEY = "LAST_SCAN_TIME_KEY";
 var YESTERDAY = moment().subtract(1, 'days').format("YYYY-MM-DD");
@@ -13,8 +12,8 @@ var YESTERDAY = moment().subtract(1, 'days').format("YYYY-MM-DD");
 var self = module.exports = {
   startService: function() {
     cron.schedule(EVERY_HOUR, function() {
-      console.log('start looking for new votes');
-      self.findNewVotes()
+      console.log('start looking for new activities');
+      self.pushNewActivity()
     });
   },
 
@@ -44,7 +43,6 @@ var initLastScanTime = function() {
     } else {
       lastScanTime = YESTERDAY;
     }
-    lastScanTime = YESTERDAY;
     return lastScanTime;
   });
 };
