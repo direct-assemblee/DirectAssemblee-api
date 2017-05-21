@@ -19,7 +19,7 @@ admin.initializeApp({
 
 var self = module.exports = {
   addSubscriberToDeputy: function(token, deputyId) {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
       var url = ADD_TO_TOPIC_URL.replace(PARAM_IID_TOKEN, token).replace(PARAM_TOPIC_NAME, PARAM_TOPIC_PREFIX_DEPUTY + deputyId)
       const options = {
         method: 'POST',
@@ -31,13 +31,13 @@ var self = module.exports = {
         }
       }
       request(options)
-      .then(function (response) {
-        // console.log(response)
+      .then(function(response) {
         resolve(response);
       })
-      .catch(function (err) {
-        console.log(err)
-        reject(err);
+      .catch(function(err) {
+        var error = "addSubscriberToDeputy : " + err.statusCode + " " + err.error;
+        sails.log.error(error);
+        reject(err.error);
       })
     })
   },

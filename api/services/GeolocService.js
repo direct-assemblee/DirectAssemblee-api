@@ -42,8 +42,6 @@ var findDistricts = function(geocodingUrl, latitude, longitude) {
       .then(function(citiesAndCodes) {
         return filterCirconscritptions(targetDepartment, citiesAndCodes, extraCoords);
       })
-    } else {
-      return;
     }
   })
 }
