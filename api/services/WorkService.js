@@ -15,10 +15,15 @@ module.exports = {
 
   findLastWorksByDeputy: function(afterDate) {
     return Work.find()
-		.where({ date: { '>=': lastScanTime }})
+		.where({ date: { '>=': afterDate }})
 		.then(function(lastWorks) {
       if (lastWorks) {
-        return mapWorksByDeputy(lastWorks);
+        return Promise.filter(lastWorks, function(work) {
+					return DateHelper.isLaterSameDay(work.createdAt, work.date);
+        })
+        .then(function(filteredWorks) {
+          return mapWorksByDeputy(filteredWorks);
+        })
       }
     })
   }

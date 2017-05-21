@@ -1,6 +1,7 @@
 var Promise = require("bluebird");
 var ResponseHelper = require('./helpers/ResponseHelper.js');
 var DateHelper = require('./helpers/DateHelper.js');
+var moment = require('moment');
 
 var self = module.exports = {
 	findAllVotes: function(deputyId) {
@@ -41,13 +42,18 @@ var self = module.exports = {
 		})
 	},
 
-	findLastVotesByDeputy: function(lastScanTime) {
+	findLastVotesByDeputy: function(afterDate) {
 		return Ballot.find()
-		.where({ date: { '>=': lastScanTime }})
+		.where({ date: { '>=': afterDate }})
 		.then(function(lastBallots) {
-			if (lastBallots.length < 0) {
-				return Promise.map(lastBallots, function(ballot) {
-			    return self.findVotesForBallot(ballot)
+			if (lastBallots.length > 0) {
+				return Promise.filter(lastBallots, function(ballot) {
+					// TODO remove
+					ballot.createdAt = moment(ballot.date).add(5, "hours")
+					return DateHelper.isLaterSameDay(ballot.createdAt, ballot.date);
+				})
+				.map(function(ballot) {
+		    	return self.findVotesForBallot(ballot)
 				})
 				.reduce(function(prev, cur) {
 	 				return prev.concat(cur);
