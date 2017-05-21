@@ -3,9 +3,9 @@ var ResponseHelper = require('./helpers/ResponseHelper.js');
 var DateHelper = require('./helpers/DateHelper.js');
 
 module.exports = {
-  findWorksForDeputyFromDate: function(deputyId, minDate, maxDate) {
+  findWorksForDeputyFromDate: function(deputyId, beforeDate, afterDate) {
     return Work.find()
-    .where({ deputyId: deputyId, date: { '<=': minDate, '>': maxDate } })
+    .where({ deputyId: deputyId, date: { '<=': beforeDate, '>': afterDate } })
     .then(function(works) {
       return Promise.map(works, function(work) {
         return ResponseHelper.createWorkForTimeline(work)
@@ -13,7 +13,7 @@ module.exports = {
     })
   },
 
-  findLastWorksByDeputy: function(lastScanTime) {
+  findLastWorksByDeputy: function(afterDate) {
     return Work.find()
 		.where({ date: { '>=': lastScanTime }})
 		.then(function(lastWorks) {

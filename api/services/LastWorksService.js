@@ -11,7 +11,7 @@ var YESTERDAY = moment().subtract(1, 'days').format("YYYY-MM-DD");
 
 var self = module.exports = {
   startService: function() {
-    cron.schedule(EVERY_HOUR, function() {
+    cron.schedule(CRON_TIMES, function() {
       console.log('start looking for new activities');
       self.pushNewActivity()
     });

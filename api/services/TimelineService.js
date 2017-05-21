@@ -7,26 +7,22 @@ const TIMELINE_MONTHS_INCREMENT_STEP = 4;
 module.exports = {
   getTimeline: function(deputy, offset) {
     var mandateStartDate = DateHelper.formatDate(deputy.currentMandateStartDate)
-    var minDate = DateHelper.formattedNow();
-    var maxDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
+    var beforeDate = DateHelper.formattedNow();
+    var afterDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
     var itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
-    return getDeputyTimeline(deputy.id, mandateStartDate, minDate, maxDate, itemsOffset, []);
-  },
-
-  findLastItems:function(deputyId, maxDate) {
-    return findTimelineItems(deputyId, DateHelper.formattedNow(), maxDate);
+    return getDeputyTimeline(deputy.id, mandateStartDate, beforeDate, afterDate, itemsOffset, []);
   }
 }
 
-var getDeputyTimeline = function(deputyId, mandateStartDate, minDate, maxDate, itemsOffset, timelineItems) {
-	return findTimelineItems(deputyId, minDate, maxDate)
+var getDeputyTimeline = function(deputyId, mandateStartDate, beforeDate, afterDate, itemsOffset, timelineItems) {
+	return findTimelineItems(deputyId, beforeDate, afterDate)
 	.then(function(foundItems) {
-		if (foundItems.length == 0 && maxDate < mandateStartDate) {
+		if (foundItems.length == 0 && afterDate < mandateStartDate) {
 			return timelineItems;
 		}
 		var offset = itemsOffset - foundItems.length;
 		if (offset > 0) {
-			return nextDeputyTimeline(deputyId, mandateStartDate, minDate, maxDate, offset, timelineItems);
+			return nextDeputyTimeline(deputyId, mandateStartDate, beforeDate, afterDate, offset, timelineItems);
 		}
 
 		var sortedItems = sortTimelineItems(foundItems);
@@ -40,13 +36,13 @@ var getDeputyTimeline = function(deputyId, mandateStartDate, minDate, maxDate, i
 		 if (timelineItems.length == TIMELINE_PAGE_ITEMS_COUNT) {
 			return timelineItems;
 		} else {
-			return nextDeputyTimeline(deputyId, mandateStartDate, minDate, maxDate, itemsOffset - count, timelineItems);
+			return nextDeputyTimeline(deputyId, mandateStartDate, beforeDate, afterDate, itemsOffset - count, timelineItems);
 		}
   })
 }
 
-var findTimelineItems = function(deputyId, minDate, maxDate) {
-  return BallotService.findBallotsBetweenDates(minDate, maxDate)
+var findTimelineItems = function(deputyId, beforeDate, afterDate) {
+  return BallotService.findBallotsBetweenDates(beforeDate, afterDate)
   .then(function(ballots) {
     var promises = [];
     for (i in ballots) {
@@ -61,15 +57,15 @@ var findTimelineItems = function(deputyId, minDate, maxDate) {
       return extendedVotes;
     })
     .then(function(extendedVotes) {
-  		return WorkService.findWorksForDeputyFromDate(deputyId, minDate, maxDate)
+  		return WorkService.findWorksForDeputyFromDate(deputyId, beforeDate, afterDate)
   	})
   })
 }
 
-var nextDeputyTimeline = function(deputyId, mandateStartDate, minDate, maxDate, itemsOffset, timelineItems) {
-	var newMinDate = DateHelper.substractMonthsAndFormat(minDate, TIMELINE_MONTHS_INCREMENT_STEP);
-	var newMaxDate = DateHelper.substractMonthsAndFormat(maxDate, TIMELINE_MONTHS_INCREMENT_STEP);
-	return getDeputyTimeline(deputyId, mandateStartDate, newMinDate, newMaxDate, itemsOffset, timelineItems);
+var nextDeputyTimeline = function(deputyId, mandateStartDate, beforeDate, afterDate, itemsOffset, timelineItems) {
+	var newBeforeDate = DateHelper.substractMonthsAndFormat(beforeDate, TIMELINE_MONTHS_INCREMENT_STEP);
+	var newAfterDate = DateHelper.substractMonthsAndFormat(afterDate, TIMELINE_MONTHS_INCREMENT_STEP);
+	return getDeputyTimeline(deputyId, mandateStartDate, newBeforeDate, newAfterDate, itemsOffset, timelineItems);
 }
 
 var sortTimelineItems = function(items) {

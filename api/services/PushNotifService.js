@@ -53,8 +53,10 @@ var self = module.exports = {
 
 var pushDeputyActivity = function(deputyId, deputyActivity) {
   var payload = ResponseHelper.createPayloadForActivity(deputyId, deputyActivity)
-  // console.log(payload.notification.title)
-  // console.log(payload.notification.body)
+  // console.log("title : " + payload.notification.title)
+  // console.log("body : " + payload.notification.body)
+  // console.log("deputyId : " + payload.data.deputyId)
+  // console.log("ballotId : " + payload.data.ballotId)
   var options = {
     collapseKey: COLLAPSE_KEY,
   };
