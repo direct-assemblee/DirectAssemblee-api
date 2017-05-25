@@ -1,6 +1,7 @@
 var Promise = require("bluebird");
 var ResponseHelper = require('./helpers/ResponseHelper.js');
 var DateHelper = require('./helpers/DateHelper.js');
+var moment = require('moment');
 
 var self = module.exports = {
 	findAllVotes: function(deputyId) {
