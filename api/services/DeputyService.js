@@ -101,19 +101,24 @@ var formatDeputyResponse = function(deputy) {
 }
 
 var findMissingRate = function(deputy, solemnBallotsOnly) {
-	return BallotService.findBallotsIdFromDate(deputy.currentMandateStartDate, solemnBallotsOnly)
-	.then(function(ballots) {
-		if (ballots && ballots.length > 0) {
-			return VoteService.findVotesDates(deputy.id, solemnBallotsOnly)
-			.then(function(votesDates) {
+	return BallotService.findBallotsFromDate(deputy.currentMandateStartDate, solemnBallotsOnly)
+	.then(function(allBallots) {
+		if (allBallots && allBallots.length > 0) {
+			return VoteService.findVotesBallotIds(deputy.id)
+			.then(function(votesBallotsIds) {
+				return Promise.filter(allBallots, function(ballot) {
+					return !votesBallotsIds.includes(ballot.id);
+				})
+			})
+			.then(function(missingBallots) {
 				return WorkService.findWorksDatesForDeputyFromDate(deputy.id, deputy.currentMandateStartDate)
 				.then(function(worksDates) {
-					return Promise.filter(worksDates, function(workDate) {
-						return !votesDates.includes(workDate);
+					return Promise.filter(missingBallots, function(missingBallot) {
+						return !worksDates.includes(DateHelper.formatSimpleDate(missingBallot.date));
 					})
-					.then(function(filteredWorkDates) {
-						var rate = 100 - ((votesDates.length + filteredWorkDates.length) * 100 / ballots.length);
-						return MathHelper.roundToTwoDecimals(rate);
+					.then(function(definitelyMissing) {
+						var rate = definitelyMissing.length * 100 / allBallots.length;
+						return Math.round(rate);
 					})
 				})
 			})

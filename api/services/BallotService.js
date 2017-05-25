@@ -27,15 +27,12 @@ var self = module.exports = {
     })
   },
 
-  findBallotsIdFromDate: function(searchedDate, solemnOnly) {
-    return findBallotsFromDate(searchedDate, solemnOnly)
-    .then(function(ballots) {
-      var ballotsIds = [];
-      for (i in ballots) {
-        ballotsIds.push(ballots[i].id)
-      }
-      return ballotsIds;
-    })
+  findBallotsFromDate: function(searchedDate, solemnOnly) {
+    var options = solemnOnly
+      ? { date: { '>': searchedDate }, type: BALLOT_TYPE_SOLEMN }
+      : { date: { '>': searchedDate } };
+    return Ballot.find()
+    .where(options)
   },
 
   findBallotsBetweenDates: function(beforeDate, afterDate) {
@@ -61,12 +58,4 @@ var findBallotsWithOffset = function(offset) {
     }
     return simplifiedBallots;
   })
-}
-
-var findBallotsFromDate = function(searchedDate, solemnOnly) {
-  var options = solemnOnly
-    ? { date: { '>': searchedDate }, type: BALLOT_TYPE_SOLEMN }
-    : { date: { '>': searchedDate } };
-  return Ballot.find()
-  .where(options)
 }

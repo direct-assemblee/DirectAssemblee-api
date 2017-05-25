@@ -9,6 +9,16 @@ var self = module.exports = {
 		.populate('ballotId');
 	},
 
+	findVotesBallotIds: function(deputyId) {
+		return Vote.find()
+		.where({ deputyId: deputyId })
+		.then(function(votes) {
+			return Promise.map(votes, function(vote) {
+				return vote.ballotId;
+			})
+		})
+	},
+
 	findVotesDates: function(deputyId, solemnOnly) {
 		return self.findVotes(deputyId, solemnOnly)
 		.map(function(vote) {
