@@ -44,6 +44,9 @@ module.exports = {
     currentMandateStartDate: {
       type: 'date'
     },
+    seatNumber: {
+      type: 'int'
+    },
     mandateEndDate: {
       type: 'date'
     },
