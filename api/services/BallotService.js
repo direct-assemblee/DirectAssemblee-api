@@ -37,7 +37,7 @@ var self = module.exports = {
 
   findBallotsBetweenDates: function(beforeDate, afterDate) {
     return Ballot.find()
-    .where({ date: { '<=': beforeDate , '>': afterDate} })
+    .where({ date: { '<=': beforeDate , '>': afterDate } })
     .then(function(ballots) {
       return Promise.map(ballots, function(ballot) {
           ballot.type = ResponseHelper.getBallotTypeName(ballot.type)

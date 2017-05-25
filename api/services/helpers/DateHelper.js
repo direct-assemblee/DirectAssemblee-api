@@ -27,6 +27,15 @@ var self = module.exports = {
     return self.getDiff(end, start)
   },
 
+  sortItemsWithDate: function(items) {
+  	items.sort(function(a, b) {
+      var diff = self.getDiff(b.date, a.date);
+      var result = diff == 0 ? 0 : diff > 0 ? 1 : -1;
+  		return result
+  	});
+    return items;
+  },
+
   getDiff: function(date1, date2) {
     var diff = 0;
     if (date1 && date2) {
@@ -40,11 +49,11 @@ var self = module.exports = {
   },
 
   getDateForMonthsBack: function(numberOfMonths) {
-    return self.substractMonthsAndFormat(moment(), numberOfMonths);
+    return self.substractAndFormat(moment(), numberOfMonths, "months");
   },
 
-  substractMonthsAndFormat: function(date, numberOfMonths) {
-    var newDate = moment(date).subtract(numberOfMonths, "months");
+  substractAndFormat: function(date, numberOfMonths, unit) {
+    var newDate = moment(date).subtract(numberOfMonths, unit);
     return newDate.format("YYYY-MM-DD");
   },
 
