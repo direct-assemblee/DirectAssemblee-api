@@ -91,9 +91,9 @@ var formatDeputyResponse = function(deputy, department) {
 			})
 		})
 		.then(function(deputy) {
-			return findMissingRate(deputy, false)
-			.then(function(missingRate) {
-				deputy.missingRate = missingRate;
+			return findActivityRate(deputy, false)
+			.then(function(activityRate) {
+				deputy.activityRate = activityRate;
 				return deputy;
 			})
 		})
@@ -112,7 +112,7 @@ var formatDeputyResponse = function(deputy, department) {
 	}
 }
 
-var findMissingRate = function(deputy, solemnBallotsOnly) {
+var findActivityRate = function(deputy, solemnBallotsOnly) {
 	return BallotService.findBallotsFromDate(deputy.currentMandateStartDate, solemnBallotsOnly)
 	.then(function(allBallots) {
 		if (allBallots && allBallots.length > 0) {
@@ -130,7 +130,7 @@ var findMissingRate = function(deputy, solemnBallotsOnly) {
 					})
 					.then(function(definitelyMissing) {
 						var rate = definitelyMissing.length * 100 / allBallots.length;
-						return Math.round(rate);
+						return 100 - Math.round(rate);
 					})
 				})
 			})
