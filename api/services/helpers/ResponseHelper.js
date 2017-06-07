@@ -1,9 +1,9 @@
 var DateHelper = require('./DateHelper.js');
 
-const BALLOT_TYPE_ORDINARY = { "dbname" : "SOR", "name" : "vote_ordinary" };
-const BALLOT_TYPE_SOLEMN = { "dbname" : "SSO", "name" : "vote_solemn" };
-const BALLOT_TYPE_OTHER = { "dbname" : "AUT", "name" : "vote_others" };
-const BALLOT_TYPE_CENSURE = { "dbname" : "motion_of_censure", "name" : "vote_motion_of_censure" };
+const BALLOT_TYPE_ORDINARY = { "dbname" : "SOR", "name" : "vote_ordinary", "displayname": "Scrutin ordinaire" };
+const BALLOT_TYPE_SOLEMN = { "dbname" : "SSO", "name" : "vote_solemn", "displayname": "Scrutin solennel" };
+const BALLOT_TYPE_OTHER = { "dbname" : "AUT", "name" : "vote_others", "displayname": "Autre scrutin" };
+const BALLOT_TYPE_CENSURE = { "dbname" : "motion_of_censure", "name" : "vote_motion_of_censure", "displayname": "Motion de censure" };
 const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
 
 const WORK_TYPE_QUESTIONS = "question";
@@ -25,10 +25,11 @@ self = module.exports = {
 
   createExtendedVoteForTimeline: function(ballot, voteValue) {
   	return {
-      type: ballot.type,
-      title: ballot.title,
-  		theme: ballot.theme,
+      type: self.getBallotTypeName(ballot.type),
   		date: DateHelper.formatDateForWS(ballot.date),
+      title: self.getBallotTypeDisplayName(ballot.type),
+  		theme: ballot.theme,
+      description: ballot.title,
   		voteExtraInfo: {
   			id: ballot.id,
   			voteValue: voteValue,
@@ -41,8 +42,9 @@ self = module.exports = {
     return {
       id: ballot.id,
       date: DateHelper.formatDateForWS(ballot.date),
-      title: ballot.title,
+      title: self.getBallotTypeDisplayName(ballot.type),
       theme: ballot.theme,
+      description: ballot.title,
       type: self.getBallotTypeName(ballot.type),
       isAdopted: ballot.isAdopted ? true : false
     }
@@ -66,14 +68,11 @@ self = module.exports = {
   },
 
   getBallotTypeName: function(ballotType) {
-    var ballotTypeName;
-    for (i in BALLOT_TYPES) {
-      if (BALLOT_TYPES[i].shortname === ballotType) {
-        ballotTypeName = BALLOT_TYPES[i].name;
-        break;
-      }
-    }
-    return ballotTypeName;
+    return getBallotType(ballotType).name;
+  },
+
+  getBallotTypeDisplayName: function(ballotType) {
+    return getBallotType(ballotType).displayname;
   },
 
   createVoteValueForWS: function(ballotType, vote) {
@@ -113,6 +112,17 @@ self = module.exports = {
     }
     return payload;
   }
+}
+
+var getBallotType = function(ballotType) {
+  var ballotType;
+  for (i in BALLOT_TYPES) {
+    if (BALLOT_TYPES[i].shortname === ballotType) {
+      ballotType = BALLOT_TYPES[i];
+      break;
+    }
+  }
+  return ballotType;
 }
 
 var createPayloadForVote = function(deputyId, vote) {
