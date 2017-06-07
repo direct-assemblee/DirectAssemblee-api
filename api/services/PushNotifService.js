@@ -11,6 +11,7 @@ const PARAM_IID_TOKEN = "{IID_TOKEN}";
 const PARAM_TOPIC_NAME = "{TOPIC_NAME}";
 const PARAM_TOPIC_PREFIX_DEPUTY = "DEPUTY_";
 const ADD_TO_TOPIC_URL = FIREBASE_INSTANCE_ID_SERVICE_URL + "v1/" + PARAM_IID_TOKEN + "/rel/topics/" + PARAM_TOPIC_NAME;
+const RANGE_STEP = 20;
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -43,12 +44,33 @@ var self = module.exports = {
   },
 
   pushDeputyActivities: function(deputyActivities) {
-    var promises = [];
-    for (var i in deputyActivities.activities) {
-      promises.push(pushDeputyActivity(deputyActivities.deputyId, deputyActivities.activities[i]));
+    return pushDeputyActivitiesByRange(deputyActivities.deputyId, deputyActivities.activities, 0)
+  }
+}
+
+var pushDeputyActivitiesByRange = function(deputyId, activities, start) {
+  var end = start + RANGE_STEP;
+  if (end > activities.length) {
+    end = activities.length;
+  }
+  var activitiesRange = activities.slice(start, end);
+  return pushDeputyActivities(deputyId, activitiesRange)
+  .then(function() {
+    var newStart = start + RANGE_STEP
+    if (newStart < activities.length) {
+      return pushDeputyActivitiesByRange(deputyId, activities, newStart)
+    } else {
+      return;
     }
-    return Promise.all(promises);
-  },
+  })
+}
+
+var pushDeputyActivities = function(deputyId, activities) {
+  var promises = [];
+  for (var i in activities) {
+    promises.push(pushDeputyActivity(deputyId, activities[i]));
+  }
+  return Promise.all(promises);
 }
 
 var pushDeputyActivity = function(deputyId, deputyActivity) {
@@ -64,8 +86,10 @@ var pushDeputyActivity = function(deputyId, deputyActivity) {
   return admin.messaging().sendToTopic(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload, options)
   .then(function(response) {
     // console.log("Successfully sent message - received id: ", response.messageId);
+    return;
   })
   .catch(function(error) {
     console.log("Error sending message:", error);
+    return;
   });
 }

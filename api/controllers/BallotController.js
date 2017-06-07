@@ -32,7 +32,7 @@ var self = module.exports = {
 };
 
 var getBallotWithDeputyVote = function(ballot, departmentId, district) {
-	return DeputyService.findDeputyAtDateFordistrict(departmentId, district, ballot.date)
+	return DeputyService.findDeputyAtDateForDistrict(departmentId, district, ballot.date)
 	.then(function(deputy) {
 		if (deputy) {
 			return VoteService.findVoteValueForDeputyAndBallot(deputy.id, ballot.id, ballot.type)

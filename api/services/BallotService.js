@@ -16,7 +16,7 @@ var self = module.exports = {
     return Ballot.findOne({ id: id })
     .then(function(ballot) {
       if (ballot) {
-        return VoteService.findVotesForBallot(ballot.id, "non-voting")
+        return VoteService.findVotesWithValueForBallot(ballot.id, "non-voting")
         .then(function(nonVoting) {
           ballot.nonVoting = nonVoting.length;
           return prepareBallotResponse(ballot);

@@ -46,7 +46,7 @@ var self = module.exports = {
 		})
 	},
 
-	findVotesForBallot: function(ballotId, value) {
+	findVotesWithValueForBallot: function(ballotId, value) {
 		return Vote.find()
 		.where({ ballotId: ballotId , value: value })
 	},
@@ -59,16 +59,16 @@ var self = module.exports = {
 		})
 	},
 
-	findLastVotesByDeputy: function(afterDate) {
+	findLastVotesByDeputy: function(afterDate, currentDeputies) {
 		return Ballot.find()
 		.where({ date: { '>=': afterDate }})
 		.then(function(lastBallots) {
 			if (lastBallots.length > 0) {
 				return Promise.filter(lastBallots, function(ballot) {
-					return DateHelper.isLaterSameDay(ballot.createdAt, ballot.date);
+					return DateHelper.isLater(ballot.createdAt, ballot.date);
 				})
 				.map(function(ballot) {
-		    	return self.findVotesForBallot(ballot)
+					return findVotesForBallot(ballot, currentDeputies)
 				})
 				.reduce(function(prev, cur) {
 	 				return prev.concat(cur);
@@ -78,19 +78,41 @@ var self = module.exports = {
 				});
 			}
 		});
-	},
-
-	findVotesForBallot: function(ballot) {
-		return Vote.find()
-		.where({ ballotId: ballot.id })
-		.populate('deputyId')
-		.then(function(votes) {
-			return Promise.map(votes, function(vote) {
-		    return ResponseHelper.createVoteForPush(ballot, vote);
-			})
-		})
 	}
 };
+
+var findVotesForBallot = function(ballot, currentDeputies) {
+	return Vote.find()
+	.where({ ballotId: ballot.id })
+	.populate('deputyId')
+	.then(function(votes) {
+		var votesIncludingMissing = [];
+		var formattedVote;
+		var currentDeputyId;
+		for (i in currentDeputies) {
+			currentDeputy = currentDeputies[i];
+			var vote = getVoteForDeputy(currentDeputy.id, votes)
+			if (vote) {
+				formattedVote = ResponseHelper.createVoteForPush(ballot, vote)
+			} else {
+				formattedVote = ResponseHelper.createMissingVoteForPush(ballot, currentDeputy)
+			}
+			votesIncludingMissing.push(formattedVote);
+		}
+		return votesIncludingMissing;
+	})
+}
+
+var getVoteForDeputy = function(deputyId, votes) {
+	var vote;
+	for (i in votes) {
+		if (votes[i].deputyId.id === deputyId) {
+			vote = votes[i];
+			break;
+		}
+	}
+	return vote;
+}
 
 var mapVotesByDeputy = function(allVotes) {
 	allVotes.sort(function(a, b) {

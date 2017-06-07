@@ -90,7 +90,17 @@ self = module.exports = {
       theme: ballot.theme,
       ballotId : ballot.id,
       deputyId : vote.deputyId.id,
-      value : vote.value
+      value : self.createVoteValueForWS(ballot.type, vote)
+    }
+  },
+
+  createMissingVoteForPush: function(ballot, deputy) {
+    return {
+      title: ballot.title,
+      theme: ballot.theme,
+      ballotId : ballot.id,
+      deputyId : deputy.id,
+      value : 'missing'
     }
   },
 

@@ -57,11 +57,11 @@ var self = module.exports = {
     return newDate.format("YYYY-MM-DD");
   },
 
-  isLaterSameDay: function(date1, date2) {
+  isLater: function(date1, date2) {
     var result = false;
-    if (self.formatSimpleDate(date1) == self.formatSimpleDate(date2)) {
+    if (self.formatSimpleDate(date1) >= self.formatSimpleDate(date2)) {
       result = moment(date1) >= moment(date2);
-    }
+    } 
     return result
   },
 

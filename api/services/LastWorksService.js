@@ -48,14 +48,17 @@ var initLastScanTime = function() {
 };
 
 var pushNewVotes = function(lastScanTime) {
-  return VoteService.findLastVotesByDeputy(lastScanTime)
-  .then(function(lastVotesByDeputy) {
-    if (lastVotesByDeputy) {
-      return Promise.map(lastVotesByDeputy, function(deputyVotes) {
-        console.log("- deputy " + deputyVotes.deputyId + " voted for " + deputyVotes.activities.length + " ballots to be pushed")
-        return PushNotifService.pushDeputyActivities(deputyVotes);
-      })
-    }
+  return DeputyService.findDeputiesAtDate(lastScanTime)
+  .then(function(deputies) {
+    return VoteService.findLastVotesByDeputy(lastScanTime, deputies)
+    .then(function(lastVotesByDeputy) {
+      if (lastVotesByDeputy) {
+        return Promise.map(lastVotesByDeputy, function(deputyVotes) {
+          console.log("- deputy " + deputyVotes.deputyId + " voted for " + deputyVotes.activities.length + " ballots to be pushed")
+          return PushNotifService.pushDeputyActivities(deputyVotes);
+        }, {concurrency: 10})
+      }
+    })
   })
 }
 
@@ -66,7 +69,7 @@ var pushNewWorks = function(lastScanTime) {
       return Promise.map(lastWorksByDeputy, function(deputyWorks) {
         console.log("- deputy " + deputyWorks.deputyId + " has " + deputyWorks.activities.length + " new works to be pushed")
         return PushNotifService.pushDeputyActivities(deputyWorks);
-      })
+      }, {concurrency: 10})
     }
   })
 }

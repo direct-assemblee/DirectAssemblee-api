@@ -45,7 +45,7 @@ var self = module.exports = {
 		.where(options)
 	},
 
-	findDeputyAtDateFordistrict: function(departmentId, district, date) {
+	findDeputyAtDateForDistrict: function(departmentId, district, date) {
 		return self.findDeputiesForDistrict(departmentId, district, false)
 		.then(function(deputies) {
 			var smallestDiff;
@@ -59,6 +59,15 @@ var self = module.exports = {
 				}
 			}
 			return deputy;
+		})
+	},
+
+	findDeputiesAtDate: function(date) {
+		var options = { currentMandateStartDate:  {'!': null}, mandateEndDate: null };
+		return Deputy.find()
+		.where(options)
+		.then(function(deputies) {
+			return deputies;
 		})
 	}
 };
