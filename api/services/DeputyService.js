@@ -16,23 +16,26 @@ var self = module.exports = {
 			id: deputyId
 		})
 		.then(function(deputy) {
-			return formatDeputyResponse(deputy);
+			return DepartmentService.findDepartmentWithId(deputy.departmentId)
+			.then(function(department) {
+				return formatDeputyResponse(deputy, department);
+			})
 		})
 	},
 
 	getDeputyForGeoDistrict: function(district) {
 		var departmentCode = district.department;
 		var circNumber = district.district;
-		return DepartmentService.findDepartmentIdWithCode(departmentCode)
-		.then(function(departmentId) {
-			return self.findDeputiesForDistrict(departmentId, circNumber, true);
-		})
-		.then(function(deputies) {
-			var deputiesInfos = [];
-			for (i in deputies) {
-				deputiesInfos.push(prepareSimpleDeputyResponse(deputies[i]));
-			}
-			return deputiesInfos;
+		return DepartmentService.findDepartmentWithCode(departmentCode)
+		.then(function(department) {
+			return self.findDeputiesForDistrict(department.id, circNumber, true)
+			.then(function(deputies) {
+				var deputiesInfos = [];
+				for (i in deputies) {
+					deputiesInfos.push(prepareSimpleDeputyResponse(deputies[i], department));
+				}
+				return deputiesInfos;
+			})
 		})
 	},
 
@@ -72,7 +75,7 @@ var self = module.exports = {
 	}
 };
 
-var formatDeputyResponse = function(deputy) {
+var formatDeputyResponse = function(deputy, department) {
 	if (deputy) {
 		deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
 		return MandateService.getPoliticalAgeOfDeputy(deputy.id, deputy.currentMandateStartDate)
@@ -101,7 +104,7 @@ var formatDeputyResponse = function(deputy) {
 				if (deputy.currentMandateStartDate) {
 					deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
 				}
-				return prepareDeputyResponse(deputy);
+				return prepareDeputyResponse(deputy, department);
 			})
 		})
 	} else {
@@ -135,9 +138,9 @@ var findMissingRate = function(deputy, solemnBallotsOnly) {
 	})
 }
 
-var prepareSimpleDeputyResponse = function(deputy) {
+var prepareSimpleDeputyResponse = function(deputy, department) {
 	deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
-	deputy = prepareDeputyResponse(deputy);
+	deputy = prepareDeputyResponse(deputy, department);
 	delete deputy.commission;
 	delete deputy.phone;
 	delete deputy.email;
@@ -146,7 +149,7 @@ var prepareSimpleDeputyResponse = function(deputy) {
 	return deputy;
 }
 
-var prepareDeputyResponse = function(deputy) {
+var prepareDeputyResponse = function(deputy, department) {
 	delete deputy.officialId;
 	delete deputy.gender;
 	delete deputy.createdAt;
@@ -154,7 +157,10 @@ var prepareDeputyResponse = function(deputy) {
 	delete deputy.mandateEndDate;
 	delete deputy.mandateEndReason;
 	deputy.seatNumber = parseInt(deputy.seatNumber)
-	deputy.departmentId = parseInt(deputy.departmentId)
+	deputy.department = {}
+	deputy.department.id = parseInt(department.id)
+	deputy.department.code = department.code
+	deputy.department.name = department.name
 	deputy.district = parseInt(deputy.district)
 	return deputy;
 }
