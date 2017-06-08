@@ -10,7 +10,9 @@ const WORK_TYPE_QUESTIONS = "question";
 const WORK_TYPE_REPORTS = "report";
 const WORK_TYPE_PROPOSITIONS = "law_proposal";
 const WORK_TYPE_COSIGNED_PROPOSITIONS = "cosigned_law_proposal";
-const WORK_TYPES = [ WORK_TYPE_QUESTIONS, WORK_TYPE_REPORTS, WORK_TYPE_PROPOSITIONS, WORK_TYPE_COSIGNED_PROPOSITIONS ];
+const WORK_TYPE_COMMISSIONS = "commission";
+const WORK_TYPE_PUBLIC_SESSIONS = "public_session";
+const WORK_TYPES = [ WORK_TYPE_QUESTIONS, WORK_TYPE_REPORTS, WORK_TYPE_PROPOSITIONS, WORK_TYPE_COSIGNED_PROPOSITIONS, WORK_TYPE_COMMISSIONS, WORK_TYPE_PUBLIC_SESSIONS ];
 
 self = module.exports = {
   createWorkForTimeline: function(work) {
@@ -198,6 +200,12 @@ var createWorkTitleForPush = function(work) {
       break;
     case WORK_TYPE_COSIGNED_PROPOSITIONS:
       title += "a co-signé une proposition de loi";
+      break;
+    case WORK_TYPE_COMMISSIONS:
+      title += "a participé à une commission";
+      break;
+    case WORK_TYPE_PUBLIC_SESSIONS:
+      title += "a participé à une séance publique";
       break;
   }
   return title;
