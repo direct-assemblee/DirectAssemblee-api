@@ -3,7 +3,7 @@ var DateHelper = require('./helpers/DateHelper.js');
 var MathHelper = require('./helpers/MathHelper.js');
 
 const PARAM_DEPUTY_ID = "{deputy_id}";
-const PARAM_MANDATE_NUMBER = "14";
+const PARAM_MANDATE_NUMBER = "15";
 const PARAM_LATITUDE = "{latitude}"
 const PARAM_LONGITUDE = "{longitude}"
 const BASE_URL = "http://www2.assemblee-nationale.fr/";
