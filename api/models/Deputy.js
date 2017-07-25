@@ -20,7 +20,7 @@ module.exports = {
     lastname: {
       type: 'string'
     },
-    party: {
+    parliamentGroup: {
       type: 'string'
     },
     departmentId: {
@@ -44,14 +44,14 @@ module.exports = {
     currentMandateStartDate: {
       type: 'date'
     },
-    seatNumber: {
-      type: 'int'
-    },
     mandateEndDate: {
       type: 'date'
     },
     mandateEndReason: {
       type: 'string'
+    },
+    seatNumber: {
+      type: 'int'
     },
     subscribers: {
       collection: 'subscriber',
