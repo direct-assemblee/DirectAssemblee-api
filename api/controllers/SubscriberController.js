@@ -1,9 +1,9 @@
 /**
- * SubscriberController
- *
- * @description :: Server-side logic for managing subscribers
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
- */
+* SubscriberController
+*
+* @description :: Server-side logic for managing subscribers
+* @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+*/
 
 var self = module.exports = {
 	subscribeToDeputy: function(req, res) {
@@ -19,24 +19,24 @@ var self = module.exports = {
 					.where({ token: token })
 					.then(function(subscriber) {
 						if (subscriber) {
-	            console.log("existing subscriber in db")
+							console.log("existing subscriber in db")
 							deputy.subscribers.add(subscriber.id)
 						} else {
-	            console.log("adding new subscriber to db")
+							console.log("adding new subscriber to db")
 							deputy.subscribers.add({ token : token })
 						}
 						deputy.save()
 					})
-	        .then(function() {
-	          return PushNotifService.addSubscriberToDeputy(token, deputyId)
-	          .then(function(result) {
-	            console.log("added subscription to firebase")
+					.then(function() {
+						return PushNotifService.addSubscriberToDeputy(token, deputyId)
+						.then(function(result) {
+							console.log("added subscription to firebase")
 							return res.json(200);
-	          })
-	          .catch(function(err) {
-				      return res.json(400, err);
-	          });
-	        })
+						})
+						.catch(function(err) {
+							return res.json(400, err);
+						});
+					})
 				}
 			})
 		} else {

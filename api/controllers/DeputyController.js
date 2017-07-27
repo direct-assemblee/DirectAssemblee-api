@@ -4,7 +4,7 @@ var DateHelper = require('../services/helpers/DateHelper.js');
 var self = module.exports = {
 	getDeputies: function(req, res) {
 		if (req.param('latitude') || req.param('longitude')) {
-		 	return getDeputiesWithCoordinates(req, res);
+			return getDeputiesWithCoordinates(req, res);
 		} else {
 			return res.json(400, 'Must provide latitude and longitude arguments')
 		}

@@ -9,7 +9,7 @@ var self = module.exports = {
 			var offset = req.param('page') ? req.param('page') : 0;
 			return DeputyService.findDeputyWithId(deputyId)
 			.then(function(deputy) {
-		    if (!deputy) {
+				if (!deputy) {
 					return res.json(404, 'No deputy found with id : ' + deputyId);
 				} else if (!deputy.currentMandateStartDate) {
 					return res.json(404, 'Mandate has ended for deputy with id : ' + deputyId);

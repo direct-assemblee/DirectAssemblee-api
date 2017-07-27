@@ -71,7 +71,7 @@ var self = module.exports = {
 					return findVotesForBallot(ballot, currentDeputies)
 				})
 				.reduce(function(prev, cur) {
-	 				return prev.concat(cur);
+					return prev.concat(cur);
 				})
 				.then(function(allVotes) {
 					return mapVotesByDeputy(allVotes);
