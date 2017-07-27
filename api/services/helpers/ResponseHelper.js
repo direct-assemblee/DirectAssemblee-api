@@ -167,7 +167,7 @@ var createPayloadForWork = function(deputyId, work) {
 
 var createVoteTitleForPush = function(vote) {
     var title = "Votre député ";
-    if (vote === "vote_motion_of_censure") {
+    if (vote.type === "vote_motion_of_censure") {
         title += vote.value === "for" ? "a" : "n\'a pas";
         title += " signé la motion de censure";
     } else {
