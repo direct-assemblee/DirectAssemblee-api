@@ -9,7 +9,6 @@ var self = module.exports = {
 };
 
 var mockActivityOfType = function(type) {
-	console.log("type "  + type)
 	var activity = {};
 	activity.type = type;
 	activity.date = "2017-08-31";
@@ -44,8 +43,7 @@ var mockActivityOfType = function(type) {
 		activity.title = "MOCK - Compte rendu intégral";
 		activity.description = "1. Renforcement du dialogue social - 2. Ordre du jour de la prochaine séance";
         break;
-		case Constants.WORK_TYPE_PUBLIC_SESSIONS:
-		console.log("default")
+		default:
 		activity.ballotId = 1222;
 		activity.theme = "MOCK - Travail";
 		activity.title = "Scrutin public sur l'amendement n° 330 de M. Dharréville après l'article 3 du projet de loi d'habilitation à prendre par ordonnances les mesures pour le renforcement du dialogue social (première lecture).";
