@@ -75,17 +75,17 @@ var pushDeputyActivities = function(deputyId, activities) {
 
 var pushDeputyActivity = function(deputyId, deputyActivity) {
     var payload = ResponseHelper.createPayloadForActivity(deputyId, deputyActivity)
-    // console.log("title : " + payload.notification.title)
-    // console.log("body : " + payload.notification.body)
-    // console.log("deputyId : " + payload.data.deputyId)
-    // console.log("ballotId : " + payload.data.ballotId)
+    console.log("title : " + payload.notification.title)
+    console.log("body : " + payload.notification.body)
+    console.log("deputyId : " + payload.data.deputyId)
+    console.log("ballotId : " + payload.data.ballotId)
     var options = {
         collapseKey: COLLAPSE_KEY,
     };
 
     return admin.messaging().sendToTopic(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload, options)
     .then(function(response) {
-        // console.log("Successfully sent message - received id: ", response.messageId);
+        console.log("Successfully sent message - received id: ", response);
         return;
     })
     .catch(function(error) {

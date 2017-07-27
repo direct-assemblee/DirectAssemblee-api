@@ -1,18 +1,24 @@
 var DateHelper = require('./DateHelper.js');
 
-const BALLOT_TYPE_ORDINARY = { "dbname" : "SOR", "name" : "vote_ordinary", "displayname": "Scrutin ordinaire" };
-const BALLOT_TYPE_SOLEMN = { "dbname" : "SSO", "name" : "vote_solemn", "displayname": "Scrutin solennel" };
-const BALLOT_TYPE_OTHER = { "dbname" : "AUT", "name" : "vote_others", "displayname": "Autre scrutin" };
-const BALLOT_TYPE_CENSURE = { "dbname" : "motion_of_censure", "name" : "vote_motion_of_censure", "displayname": "Motion de censure" };
-const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
-
+const WORK_TYPE_VOTE_SOLEMN = "vote_solemn";
+const WORK_TYPE_VOTE_ORDINARY = "vote_ordinary";
+const WORK_TYPE_VOTE_CENSURE = "vote_motion_of_censure";
+const WORK_TYPE_VOTE_OTHER = "vote_others";
 const WORK_TYPE_QUESTIONS = "question";
 const WORK_TYPE_REPORTS = "report";
 const WORK_TYPE_PROPOSITIONS = "law_proposal";
 const WORK_TYPE_COSIGNED_PROPOSITIONS = "cosigned_law_proposal";
 const WORK_TYPE_COMMISSIONS = "commission";
 const WORK_TYPE_PUBLIC_SESSIONS = "public_session";
+
 const WORK_TYPES = [ WORK_TYPE_QUESTIONS, WORK_TYPE_REPORTS, WORK_TYPE_PROPOSITIONS, WORK_TYPE_COSIGNED_PROPOSITIONS, WORK_TYPE_COMMISSIONS, WORK_TYPE_PUBLIC_SESSIONS ];
+
+const BALLOT_TYPE_ORDINARY = { "dbname" : "SOR", "name" : WORK_TYPE_VOTE_ORDINARY, "displayname": "Scrutin ordinaire" };
+const BALLOT_TYPE_SOLEMN = { "dbname" : "SSO", "name" : WORK_TYPE_VOTE_SOLEMN, "displayname": "Scrutin solennel" };
+const BALLOT_TYPE_OTHER = { "dbname" : "AUT", "name" : WORK_TYPE_VOTE_OTHER, "displayname": "Autre scrutin" };
+const BALLOT_TYPE_CENSURE = { "dbname" : "motion_of_censure", "name" : WORK_TYPE_VOTE_CENSURE, "displayname": "Motion de censure" };
+const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
+
 
 self = module.exports = {
     createWorkForTimeline: function(work) {
