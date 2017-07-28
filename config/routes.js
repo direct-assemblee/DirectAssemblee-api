@@ -52,6 +52,7 @@ module.exports.routes = {
 'GET /api/ballots': 'BallotController.getBallots', // ?offset=XXX
 'GET /api/ballotDetails': 'BallotController.getBallotDetails', // ?id=id&departmentId=13&district=12
 'POST /api/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
+// TODO disable for PROD
 'GET /api/testPushNotif' : 'TestController.sendPushNotif', // ?deputyId=13&type={question/ballot/...}
 // 'GET /api/deputies/department/:departmentCode': 'DeputyController.getDeputiesFromDepartmentCode',
 // 'GET /api/deputies/department/:departmentCode/:district': 'DeputyController.getDeputiesFromDepartmentCode',

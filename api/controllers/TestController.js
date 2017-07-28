@@ -1,7 +1,3 @@
-// vote_solemn, vote_ordinary, vote_other, vote_motion_of_censure
-//  / question / report / law_proposal / cosigned_law_proposal
-// / commission / public_session
-
 var self = module.exports = {
 	sendPushNotif: function(req, res) {
 		var deputyId = req.param('deputyId');

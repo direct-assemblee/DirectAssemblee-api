@@ -4,7 +4,7 @@ var moment = require('moment');
 var storage = require('node-persist');
 var VoteService = require("./VoteService");
 
-const CRON_TIMES = '1 12,17,19,21 * * *';
+const CRON_TIMES = '0 11,16,19 * * *';
 
 const LAST_SCAN_TIME_KEY = "LAST_SCAN_TIME_KEY";
 var YESTERDAY = moment().subtract(1, 'days').format("YYYY-MM-DD");
