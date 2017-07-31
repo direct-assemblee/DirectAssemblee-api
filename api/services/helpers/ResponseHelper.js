@@ -96,7 +96,7 @@ self = module.exports = {
             title: ballot.title,
             theme: ballot.theme,
             ballotId : ballot.id,
-            deputyId : vote.deputyId.id,
+            deputyId : vote.deputyId.officialId,
             value : self.createVoteValueForWS(ballot.type, vote)
         }
     },
@@ -106,7 +106,7 @@ self = module.exports = {
             title: ballot.title,
             theme: ballot.theme,
             ballotId : ballot.id,
-            deputyId : deputy.id,
+            deputyId : deputy.officialId,
             value : 'missing'
         }
     },

@@ -23,7 +23,7 @@ var self = module.exports = {
 					});
 					var mostRecentDeputy = deputies[0];
 					if (mostRecentDeputy.currentMandateStartDate) {
-						return getDeputyWithId(deputies[0].id, res);
+						return getDeputyWithId(deputies[0].officialId, res);
 					} else {
 						return res.json(404, 'Found deputy, but mandate has ended.');
 					}

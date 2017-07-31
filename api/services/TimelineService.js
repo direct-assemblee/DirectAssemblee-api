@@ -10,7 +10,7 @@ module.exports = {
         var beforeDate = DateHelper.formattedNow();
         var afterDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
         var itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
-        return getDeputyTimeline(deputy.id, mandateStartDate, beforeDate, afterDate, itemsOffset, []);
+        return getDeputyTimeline(deputy.officialId, mandateStartDate, beforeDate, afterDate, itemsOffset, []);
     }
 }
 

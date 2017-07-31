@@ -35,7 +35,7 @@ var getBallotWithDeputyVote = function(ballot, departmentId, district) {
 	return DeputyService.findDeputyAtDateForDistrict(departmentId, district, ballot.date)
 	.then(function(deputy) {
 		if (deputy) {
-			return VoteService.findVoteValueForDeputyAndBallot(deputy.id, ballot.id, ballot.type)
+			return VoteService.findVoteValueForDeputyAndBallot(deputy.officialId, ballot.id, ballot.type)
 			.then(function(voteValue) {
 				ballot.userDeputyVote = {
 					'voteValue': voteValue,

@@ -13,7 +13,7 @@ const GEOLOC_URL = "http://localhost:1339/address/" + PARAM_LATITUDE + "/" + PAR
 var self = module.exports = {
 	findDeputyWithId: function(deputyId) {
 		return Deputy.findOne().where({
-			id: deputyId
+			officialId: deputyId
 		})
 		.then(function(deputy) {
 			return DepartmentService.findDepartmentWithId(deputy.departmentId)
@@ -78,13 +78,13 @@ var self = module.exports = {
 var formatDeputyResponse = function(deputy, department) {
 	if (deputy) {
 		deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
-		return MandateService.getPoliticalAgeOfDeputy(deputy.id, deputy.currentMandateStartDate)
+		return MandateService.getPoliticalAgeOfDeputy(deputy.officialId, deputy.currentMandateStartDate)
 		.then(function(parliamentAgeInYears) {
 			deputy.parliamentAgeInYears = parliamentAgeInYears;
 			return deputy;
 		})
 		.then(function(deputy) {
-			return DeclarationService.getDeclarationsForDeputy(deputy.id)
+			return DeclarationService.getDeclarationsForDeputy(deputy.officialId)
 			.then(function(declarations) {
 				deputy.declarations = declarations;
 				return deputy;
@@ -98,7 +98,7 @@ var formatDeputyResponse = function(deputy, department) {
 			})
 		})
 		.then(function(deputy) {
-			return ExtraPositionService.getSalaryForDeputy(deputy.id)
+			return ExtraPositionService.getSalaryForDeputy(deputy.officialId)
 			.then(function(salary) {
 				deputy.salary = salary;
 				if (deputy.currentMandateStartDate) {
@@ -116,14 +116,14 @@ var findActivityRate = function(deputy, solemnBallotsOnly) {
 	return BallotService.findBallotsFromDate(deputy.currentMandateStartDate, solemnBallotsOnly)
 	.then(function(allBallots) {
 		if (allBallots && allBallots.length > 0) {
-			return VoteService.findVotesBallotIds(deputy.id)
+			return VoteService.findVotesBallotIds(deputy.officialId)
 			.then(function(votesBallotsIds) {
 				return Promise.filter(allBallots, function(ballot) {
 					return !votesBallotsIds.includes(ballot.id);
 				})
 			})
 			.then(function(missingBallots) {
-				return WorkService.findWorksDatesForDeputyFromDate(deputy.id, deputy.currentMandateStartDate)
+				return WorkService.findWorksDatesForDeputyFromDate(deputy.officialId, deputy.currentMandateStartDate)
 				.then(function(worksDates) {
 					return Promise.filter(missingBallots, function(missingBallot) {
 						return !worksDates.includes(DateHelper.formatSimpleDate(missingBallot.date));
@@ -150,7 +150,6 @@ var prepareSimpleDeputyResponse = function(deputy, department) {
 }
 
 var prepareDeputyResponse = function(deputy, department) {
-	delete deputy.officialId;
 	delete deputy.gender;
 	delete deputy.createdAt;
 	delete deputy.updatedAt;

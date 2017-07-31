@@ -91,7 +91,7 @@ var findVotesForBallot = function(ballot, currentDeputies) {
 		var currentDeputyId;
 		for (i in currentDeputies) {
 			currentDeputy = currentDeputies[i];
-			var vote = getVoteForDeputy(currentDeputy.id, votes)
+			var vote = getVoteForDeputy(currentDeputy.officialId, votes)
 			if (vote) {
 				formattedVote = ResponseHelper.createVoteForPush(ballot, vote)
 			} else {
@@ -106,7 +106,7 @@ var findVotesForBallot = function(ballot, currentDeputies) {
 var getVoteForDeputy = function(deputyId, votes) {
 	var vote;
 	for (i in votes) {
-		if (votes[i].deputyId.id === deputyId) {
+		if (votes[i].deputyId.officialId === deputyId) {
 			vote = votes[i];
 			break;
 		}
