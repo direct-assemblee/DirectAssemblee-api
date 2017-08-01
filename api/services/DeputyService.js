@@ -155,6 +155,8 @@ var prepareDeputyResponse = function(deputy, department) {
 	delete deputy.updatedAt;
 	delete deputy.mandateEndDate;
 	delete deputy.mandateEndReason;
+	deputy.id = deputy.officialId;
+	delete deputy.officialId;
 	deputy.seatNumber = parseInt(deputy.seatNumber)
 	deputy.department = {}
 	deputy.department.id = parseInt(department.id)
