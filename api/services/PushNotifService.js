@@ -11,6 +11,7 @@ const PARAM_IID_TOKEN = "{IID_TOKEN}";
 const PARAM_TOPIC_NAME = "{TOPIC_NAME}";
 const PARAM_TOPIC_PREFIX_DEPUTY = "DEPUTY_";
 const ADD_TO_TOPIC_URL = FIREBASE_INSTANCE_ID_SERVICE_URL + "v1/" + PARAM_IID_TOKEN + "/rel/topics/" + PARAM_TOPIC_NAME;
+const REMOVE_FROM_TOPIC_URL = FIREBASE_INSTANCE_ID_SERVICE_URL + "v1:batchRemove";
 const RANGE_STEP = 20;
 
 admin.initializeApp({
@@ -38,6 +39,33 @@ var self = module.exports = {
             .catch(function(err) {
                 var error = "addSubscriberToDeputy : " + err.statusCode + " " + err.error;
                 sails.log.error(error);
+                reject(err.error);
+            })
+        })
+    },
+
+    removeSubscriberFromDeputy: function(token, deputyId) {
+        return new Promise(function(resolve, reject) {
+            var url = REMOVE_FROM_TOPIC_URL;
+            var bodyContent = {
+                'to' : '/topics/' + PARAM_TOPIC_PREFIX_DEPUTY + deputyId,
+                'registration_tokens': [ token ]
+            }
+            const options = {
+                method: 'POST',
+                uri: url,
+                headers: {
+                    'Authorization': 'key=' + serverKey
+                },
+                body: bodyContent,
+                json: true
+            }
+            request(options)
+            .then(function(response) {
+                resolve(response);
+            })
+            .catch(function(err) {
+                var error = "removeSubscriberFromDeputy : " + err.toString();
                 reject(err.error);
             })
         })
