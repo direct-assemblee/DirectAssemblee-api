@@ -16,10 +16,12 @@ var self = module.exports = {
 			officialId: deputyId
 		})
 		.then(function(deputy) {
-			return DepartmentService.findDepartmentWithId(deputy.departmentId)
-			.then(function(department) {
-				return formatDeputyResponse(deputy, department);
-			})
+			if (deputy) {
+				return DepartmentService.findDepartmentWithId(deputy.departmentId)
+				.then(function(department) {
+					return formatDeputyResponse(deputy, department);
+				})
+			}
 		})
 	},
 
