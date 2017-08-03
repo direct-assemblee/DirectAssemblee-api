@@ -19,7 +19,7 @@ var self = module.exports = {
                 return VoteService.findVotesWithValueForBallot(ballot.id, "non-voting")
                 .then(function(nonVoting) {
                     ballot.nonVoting = nonVoting.length;
-                    return prepareBallotResponse(ballot);
+                    return ResponseHelper.prepareBallotResponse(ballot);
                 })
             } else {
                 return;

@@ -19,6 +19,7 @@ const BALLOT_TYPE_OTHER = { "dbname" : "AUT", "name" : WORK_TYPE_VOTE_OTHER, "di
 const BALLOT_TYPE_CENSURE = { "dbname" : "motion_of_censure", "name" : WORK_TYPE_VOTE_CENSURE, "displayname": "Motion de censure" };
 const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
 
+const NUMBER_OF_DEPUTIES = 577;
 
 self = module.exports = {
     createWorkForTimeline: function(work) {
