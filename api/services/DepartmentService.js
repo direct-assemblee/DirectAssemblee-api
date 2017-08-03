@@ -1,13 +1,13 @@
-var Promise = require("bluebird");
+var Promise = require('bluebird')
 
 module.exports = {
     findDepartmentWithCode: function(code) {
         return Department.findOne()
-        .where({ code : code })
+            .where({ code : code })
     },
 
     findDepartmentWithId: function(id) {
         return Department.findOne()
-        .where({ id : id })
+            .where({ id : id })
     }
 }
