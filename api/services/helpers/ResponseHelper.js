@@ -126,7 +126,7 @@ self = module.exports = {
 var getBallotType = function(ballotType) {
     var ballotType;
     for (i in BALLOT_TYPES) {
-        if (BALLOT_TYPES[i].shortname === ballotType) {
+        if (BALLOT_TYPES[i].dbname === ballotType) {
             ballotType = BALLOT_TYPES[i];
             break;
         }

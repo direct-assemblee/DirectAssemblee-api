@@ -1,7 +1,6 @@
 var Promise = require("bluebird");
 var ResponseHelper = require('./helpers/ResponseHelper.js');
 
-const NUMBER_OF_DEPUTIES = 577;
 const BALLOTS_PAGE_ITEMS_COUNT = 30;
 
 const BALLOT_TYPE_SOLEMN = "SSO";
@@ -40,7 +39,6 @@ var self = module.exports = {
         .where({ date: { '<=': beforeDate , '>': afterDate } })
         .then(function(ballots) {
             return Promise.map(ballots, function(ballot) {
-                ballot.type = ResponseHelper.getBallotTypeName(ballot.type)
                 return ballot
             });
         })
