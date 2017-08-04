@@ -62,7 +62,7 @@ var getDeputiesWithCoordinates = function(req, res) {
 }
 
 var getDeputyWithId = function(id, res) {
-    return DeputyService.findDeputyWithId(id)
+    return DeputyService.findDeputyWithIdAndFormat(id)
         .then(function(deputy) {
             if (!deputy) {
                 return res.json(404, 'Could not find deputy, sorry.')
