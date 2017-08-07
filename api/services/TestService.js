@@ -14,13 +14,11 @@ var mockActivityOfType = function(type) {
 	activity.date = "2017-08-31";
 	switch(type) {
         case Constants.WORK_TYPE_QUESTIONS:
-		console.log("WORK_TYPE_QUESTIONS")
 		activity.title = "MOCK - Question écrite";
 		activity.description = "M. Charles de La Verpillière appelle l'attention de Mme la ministre des affaires sociales et de la santé sur une maladie rare dénommée « délétion 10Q26 ». Les principaux symptômes de cette ...";
 		activity.theme = "Transports";
         break;
         case Constants.WORK_TYPE_REPORTS:
-		console.log("WORK_TYPE_REPORTS")
 		activity.title = "MOCK - Rapport";
 		activity.description = "Mesures pour le renforcement du dialogue social";
 		activity.theme = "Pouvoirs publics";

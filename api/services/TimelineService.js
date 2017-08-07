@@ -26,10 +26,8 @@ var getDeputyTimeline = function(deputyId, mandateStartDate, beforeDate, afterDa
         }
 
         var sortedItems = DateHelper.sortItemsWithDate(foundItems);
-        var count = 0;
         var newOffset = itemsOffset;
         for (var i = itemsOffset ; i < sortedItems.length && timelineItems && timelineItems.length < TIMELINE_PAGE_ITEMS_COUNT ; i++) {
-            count++;
             if (sortedItems[i]) {
                 timelineItems.push(sortedItems[i]);
             }
