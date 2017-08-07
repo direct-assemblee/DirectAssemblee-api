@@ -21,7 +21,19 @@ const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTH
 
 const NUMBER_OF_DEPUTIES = 577;
 
-self = module.exports = {
+var self = module.exports = {
+    createBallotDetailsResponse: function(ballot, deputy, voteValue) {
+        var ballotResponse = self.createBallotResponse(ballot, true);
+        ballotResponse.userDeputyVote = {
+            'voteValue': voteValue,
+            'deputy': {
+                'firstname': deputy.firstname,
+                'lastname': deputy.lastname
+            }
+        }
+        return ballotResponse;
+    },
+
     createWorkForTimeline: function(work) {
         return {
             type: work.type,
@@ -33,18 +45,23 @@ self = module.exports = {
     },
 
     createExtendedVoteForTimeline: function(ballot, voteValue) {
-        return {
-            type: self.getBallotTypeName(ballot.type),
-            date: DateHelper.formatDateForWS(ballot.date),
-            title: self.getBallotTypeDisplayName(ballot.type),
-            theme: ballot.theme,
-            description: ballot.title,
-            voteExtraInfo: {
-                id: ballot.id,
-                voteValue: voteValue,
-                isAdopted: ballot.isAdopted ? true : false
-            }
+        var ballotResponse = self.createBallotResponse(ballot, false);
+        ballot.voteExtraInfo =  {
+            id: ballot.id,
+            voteValue: voteValue,
+            isAdopted: ballot.isAdopted ? true : false
         }
+        return ballotResponse;
+    },
+
+    createBallotResponse: function(ballot, addToCurrentBallot) {
+        var response = addToCurrentBallot ? ballot : {};
+        response.type = self.getBallotTypeName(ballot.type);
+        response.date = DateHelper.formatDateForWS(ballot.date);
+        response.description = ballot.title;
+        response.title = self.getBallotTypeDisplayName(ballot.type);
+        response.theme = ballot.theme;
+        return response;
     },
 
     prepareSimplifiedBallotResponse: function(ballot) {
@@ -124,14 +141,14 @@ self = module.exports = {
 }
 
 var getBallotType = function(ballotType) {
-    var ballotType;
-    for (i in BALLOT_TYPES) {
-        if (BALLOT_TYPES[i].dbname === ballotType) {
-            ballotType = BALLOT_TYPES[i];
+    var type;
+    for (var i in BALLOT_TYPES) {
+        if (BALLOT_TYPES[i].dbname === ballotType || BALLOT_TYPES[i].name === ballotType) {
+            type = BALLOT_TYPES[i];
             break;
         }
     }
-    return ballotType;
+    return type;
 }
 
 var createPayloadForVote = function(deputyId, vote) {

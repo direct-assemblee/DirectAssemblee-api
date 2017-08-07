@@ -14,13 +14,10 @@ var self = module.exports = {
 		var departmentId = req.param('departmentId');
 		var district = req.param('district');
 		if (id && departmentId && district) {
-			return BallotService.getBallotWithId(id)
+			return BallotService.getBallotWithIdAndDeputyVote(id, departmentId, district)
 			.then(function(ballot) {
 				if (ballot) {
-					return getBallotWithDeputyVote(ballot, departmentId, district)
-					.then(function(ballotResponse) {
-						res.json(ballotResponse);
-					})
+					res.json(ballot);
 				} else {
 					return res.json(404, 'Could not find ballot with id ' + id);
 				}
@@ -30,24 +27,3 @@ var self = module.exports = {
 		}
 	}
 };
-
-var getBallotWithDeputyVote = function(ballot, departmentId, district) {
-	return DeputyService.findDeputyAtDateForDistrict(departmentId, district, ballot.date)
-	.then(function(deputy) {
-		if (deputy) {
-			return VoteService.findVoteValueForDeputyAndBallot(deputy.officialId, ballot.id, ballot.type)
-			.then(function(voteValue) {
-				ballot.userDeputyVote = {
-					'voteValue': voteValue,
-					'deputy': {
-						'firstname': deputy.firstname,
-						'lastname': deputy.lastname
-					}
-				}
-				return ballot;
-			})
-		} else {
-			return ballot;
-		}
-	})
-}

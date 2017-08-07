@@ -26,6 +26,17 @@ var self = module.exports = {
         })
     },
 
+    getBallotWithIdAndDeputyVote: function(id, departmentId, district) {
+        return self.getBallotWithId(id)
+        .then(function(ballot) {
+            if (ballot) {
+                return getBallotWithDeputyVote(ballot, departmentId, district)
+            } else {
+                return;
+            }
+        })
+    },
+
     findBallotsFromDate: function(searchedDate, solemnOnly) {
         var options = solemnOnly
         ? { date: { '>': searchedDate }, type: BALLOT_TYPE_SOLEMN }
@@ -37,11 +48,6 @@ var self = module.exports = {
     findBallotsBetweenDates: function(beforeDate, afterDate) {
         return Ballot.find()
         .where({ date: { '<=': beforeDate , '>': afterDate } })
-        .then(function(ballots) {
-            return Promise.map(ballots, function(ballot) {
-                return ballot
-            });
-        })
     }
 };
 
@@ -56,4 +62,19 @@ var findBallotsWithOffset = function(offset) {
         }
         return simplifiedBallots;
     })
+}
+
+
+var getBallotWithDeputyVote = function(ballot, departmentId, district) {
+	return DeputyService.findDeputyAtDateForDistrict(departmentId, district, ballot.date)
+	.then(function(deputy) {
+		if (deputy) {
+			return VoteService.findVoteValueForDeputyAndBallot(deputy.officialId, ballot.id, ballot.type)
+			.then(function(voteValue) {
+				return ResponseHelper.createBallotDetailsResponse(ballot, deputy, voteValue);;
+			})
+		} else {
+			return ballot;
+		}
+	})
 }
