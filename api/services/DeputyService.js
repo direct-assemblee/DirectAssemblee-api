@@ -15,6 +15,10 @@ var self = module.exports = {
 		return Deputy.findOne().where({
 			officialId: deputyId
 		})
+	},
+
+	findDeputyWithIdAndFormat: function(deputyId) {
+		return self.findDeputyWithId(deputyId)
 		.then(function(deputy) {
 			if (deputy) {
 				return DepartmentService.findDepartmentWithId(deputy.departmentId)
