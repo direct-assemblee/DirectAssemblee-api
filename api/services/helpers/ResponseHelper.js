@@ -88,7 +88,7 @@ var self = module.exports = {
         ballot.yesVotes = parseInt(ballot.yesVotes);
         ballot.noVotes = parseInt(ballot.noVotes);
         ballot.blankVotes = ballot.totalVotes - ballot.yesVotes - ballot.noVotes;
-        ballot.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes;
+        ballot.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes - ballot.nonVoting;
         ballot.isAdopted = ballot.isAdopted ? true : false;
         return ballot;
     },
