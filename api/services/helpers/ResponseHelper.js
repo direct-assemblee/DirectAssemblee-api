@@ -46,7 +46,7 @@ var self = module.exports = {
 
     createExtendedVoteForTimeline: function(ballot, voteValue) {
         var ballotResponse = self.createBallotResponse(ballot, false);
-        ballot.voteExtraInfo =  {
+        ballotResponse.voteExtraInfo =  {
             id: ballot.id,
             voteValue: voteValue,
             isAdopted: ballot.isAdopted ? true : false
