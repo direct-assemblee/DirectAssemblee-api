@@ -11,6 +11,7 @@ var self = module.exports = {
 		var deputyId = req.param('deputyId');
 		if (token && deputyId) {
 			return Deputy.findOne({ officialId: deputyId })
+			.populate('subscribers')
 			.then(function(deputy) {
 				if (!deputy) {
 					return res.json(404, 'could not find deputy, sorry.');
@@ -19,16 +20,24 @@ var self = module.exports = {
 					.where({ token: token })
 					.then(function(subscriber) {
 						if (subscriber) {
-							console.log("existing subscriber in db")
-							deputy.subscribers.add(subscriber.id)
+							console.log("existing subscriber in db");
+							if (deputyHasSubcriber(deputy, subscriber)) {
+								console.log("already included in deputy subscribers");
+							} else {
+								console.log("added to deputy subscribers");
+								deputy.subscribers.add(subscriber.id);
+							}
 						} else {
-							console.log("adding new subscriber to db")
-							deputy.subscribers.add({ token : token })
+							console.log("adding new subscriber to db");
+							deputy.subscribers.add({ token : token });
 						}
 						deputy.save()
 						return addSubscriptionToFirebase(token, deputyId)
 						.then(function(err) {
 							if (err) {
+								console.log("error on Firebase subcription : removing subscriber from deputy");
+								deputy.subscribers.remove(subscriber.id)
+								deputy.save();
 								return res.json(400, err);
 							} else {
 								return res.json(200);
@@ -100,4 +109,15 @@ var removeSubscriptionFromFirebase = function(token, deputyId) {
 		sails.log.error(err);
 		return err;
 	});
+}
+
+var deputyHasSubcriber = function(deputy, subscriber) {
+	let result = false;
+	for (let i in deputy.subscribers) {
+		if (deputy.subscribers[i].id === subscriber.id) {
+			result = true;
+			break;
+		}
+	}
+	return result;
 }
