@@ -14,9 +14,9 @@ var mockActivityOfType = function(type) {
 	activity.date = "2017-08-31";
 	switch(type) {
         case Constants.WORK_TYPE_QUESTIONS:
-		activity.title = "MOCK - Question écrite";
+		activity.title = "Question écrite";
 		activity.description = "M. Charles de La Verpillière appelle l'attention de Mme la ministre des affaires sociales et de la santé sur une maladie rare dénommée « délétion 10Q26 ». Les principaux symptômes de cette ...";
-		activity.theme = "Transports";
+		activity.theme = "MOCK - Transports";
         break;
         case Constants.WORK_TYPE_REPORTS:
 		activity.title = "MOCK - Rapport";
