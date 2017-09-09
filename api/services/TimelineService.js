@@ -46,7 +46,7 @@ let findTimelineItems = function(deputyId, beforeDate, afterDate) {
     .then(function(ballots) {
         let promises = [];
         for (let i in ballots) {
-            promises.push(VoteService.findVoteValueForDeputyAndBallot(deputyId, ballots[i].id))
+            promises.push(VoteService.findVoteValueForDeputyAndBallot(deputyId, ballots[i].id, ballots[i].type))
         }
         return Promise.all(promises)
         .then(function(votesValues) {

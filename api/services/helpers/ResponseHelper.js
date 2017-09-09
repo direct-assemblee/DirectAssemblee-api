@@ -42,11 +42,11 @@ let self = module.exports = {
         }
     },
 
-    createExtendedVoteForTimeline: function(ballot, voteValue) {
+    createExtendedVoteForTimeline: function(ballot, vote) {
         let ballotResponse = self.createBallotResponse(ballot, false);
         ballotResponse.voteExtraInfo =  {
             id: ballot.id,
-            voteValue: voteValue,
+            voteValue: self.createVoteValueForWS(ballot.type, vote.value),
             isAdopted: ballot.isAdopted ? true : false
         }
         return ballotResponse;
@@ -99,11 +99,11 @@ let self = module.exports = {
         return getBallotType(ballotType).displayname;
     },
 
-    createVoteValueForWS: function(ballotType, vote) {
-        if (ballotType === 'motion_of_censure') {
-            return vote && vote.value === 'for' ? 'signed' : 'not_signed'
+    createVoteValueForWS: function(ballotType, voteValue) {
+        if (ballotType.includes('motion_of_censure')) {
+            return voteValue === 'for' ? 'signed' : 'not_signed'
         } else {
-            return vote ? vote.value : 'missing';
+            return voteValue ? voteValue : 'missing';
         }
     },
 
@@ -113,7 +113,7 @@ let self = module.exports = {
             theme: ballot.theme,
             ballotId : ballot.id,
             deputyId : vote.deputyId.officialId,
-            value : self.createVoteValueForWS(ballot.type, vote)
+            value : self.createVoteValueForWS(ballot.type, vote.value)
         }
     },
 
