@@ -1,5 +1,4 @@
-var Promise = require("bluebird");
-var DateHelper = require('./helpers/DateHelper.js');
+let DateHelper = require('./helpers/DateHelper.js');
 
 module.exports = {
     getPoliticalAgeOfDeputy: function(deputyId, currentMandateStartDate) {
@@ -10,15 +9,15 @@ module.exports = {
     }
 }
 
-var findMandatesForDeputy = function(deputyId) {
+let findMandatesForDeputy = function(deputyId) {
     return Mandate.find()
     .where({ deputyId: deputyId });
 }
 
-var getAllMandatesDuration = function(mandates, currentMandateStartDate) {
-    var days = DateHelper.getDaysFromNow(currentMandateStartDate);
-    for (i in mandates) {
-        var mandate = mandates[i];
+let getAllMandatesDuration = function(mandates, currentMandateStartDate) {
+    let days = DateHelper.getDaysFromNow(currentMandateStartDate);
+    for (let i in mandates) {
+        let mandate = mandates[i];
         days = days + DateHelper.getDurationInDays(mandate.startingDate, mandate.endingDate);
     }
     return DateHelper.convertDaysToYears(days);

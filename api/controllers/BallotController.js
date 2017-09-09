@@ -1,8 +1,6 @@
-const actionUtil = require('../../node_modules/sails/lib/hooks/blueprints/actionUtil')
-
-var self = module.exports = {
+module.exports = {
 	getBallots: function(req, res) {
-		var offset = req.param('page') ? parseInt(req.param('page')) : 0;
+		let offset = req.param('page') ? parseInt(req.param('page')) : 0;
 		return BallotService.findBallots(offset)
 		.then(function(ballots) {
 			return res.json(ballots)
@@ -10,9 +8,9 @@ var self = module.exports = {
 	},
 
 	getBallotDetails: function(req, res) {
-		var id = req.param('id');
-		var departmentId = req.param('departmentId');
-		var district = req.param('district');
+		let id = req.param('id');
+		let departmentId = req.param('departmentId');
+		let district = req.param('district');
 		if (id && departmentId && district) {
 			return BallotService.getBallotWithIdAndDeputyVote(id, departmentId, district)
 			.then(function(ballot) {

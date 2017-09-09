@@ -1,16 +1,16 @@
-var moment = require('moment');
+let moment = require('moment');
 
-var self = module.exports = {
+let self = module.exports = {
     formatDate: function(dateString) {
-        return self.formatDateWithTemplate(dateString, "DD/MM/YYYY", "YYYY-MM-DD");
+        return self.formatDateWithTemplate(dateString, 'DD/MM/YYYY', 'YYYY-MM-DD');
     },
 
     formatDateForWS: function(dateString) {
-        return self.formatDateWithTemplate(dateString, "DD/MM/YYYY", "DD/MM/YYYY");
+        return self.formatDateWithTemplate(dateString, 'DD/MM/YYYY', 'DD/MM/YYYY');
     },
 
     formatWrittenDate: function(dateString) {
-        return self.formatDateWithTemplate(dateString, "DD MMMM YYYY", "YYYY-MM-DD");
+        return self.formatDateWithTemplate(dateString, 'DD MMMM YYYY', 'YYYY-MM-DD');
     },
 
     formatDateWithTemplate: function(dateString, parseTemplate, formatTemplate) {
@@ -39,7 +39,7 @@ var self = module.exports = {
     getDiff: function(date1, date2) {
         var diff = 0;
         if (date1 && date2) {
-            diff = moment(date1, "DD/MM/YYYY").diff(moment(date2, "DD/MM/YYYY"), 'days');
+            diff = moment(date1, 'DD/MM/YYYY').diff(moment(date2, 'DD/MM/YYYY'), 'days');
         }
         return diff;
     },
@@ -49,12 +49,12 @@ var self = module.exports = {
     },
 
     getDateForMonthsBack: function(numberOfMonths) {
-        return self.substractAndFormat(moment(), numberOfMonths, "months");
+        return self.substractAndFormat(moment(), numberOfMonths, 'months');
     },
 
     substractAndFormat: function(date, numberOfMonths, unit) {
         var newDate = moment(date).subtract(numberOfMonths, unit);
-        return newDate.format("YYYY-MM-DD");
+        return newDate.format('YYYY-MM-DD');
     },
 
     isLater: function(date1, date2) {
@@ -66,7 +66,7 @@ var self = module.exports = {
     },
 
     formatSimpleDate: function(date) {
-        return moment(date).format("YYYY-MM-DD");
+        return moment(date).format('YYYY-MM-DD');
     },
 
     formattedNow: function() {

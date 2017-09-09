@@ -1,29 +1,27 @@
-var DateHelper = require('./DateHelper.js');
+let DateHelper = require('./DateHelper.js');
 
-const WORK_TYPE_VOTE_SOLEMN = "vote_solemn";
-const WORK_TYPE_VOTE_ORDINARY = "vote_ordinary";
-const WORK_TYPE_VOTE_CENSURE = "vote_motion_of_censure";
-const WORK_TYPE_VOTE_OTHER = "vote_others";
-const WORK_TYPE_QUESTIONS = "question";
-const WORK_TYPE_REPORTS = "report";
-const WORK_TYPE_PROPOSITIONS = "law_proposal";
-const WORK_TYPE_COSIGNED_PROPOSITIONS = "cosigned_law_proposal";
-const WORK_TYPE_COMMISSIONS = "commission";
-const WORK_TYPE_PUBLIC_SESSIONS = "public_session";
+const WORK_TYPE_VOTE_SOLEMN = 'vote_solemn';
+const WORK_TYPE_VOTE_ORDINARY = 'vote_ordinary';
+const WORK_TYPE_VOTE_CENSURE = 'vote_motion_of_censure';
+const WORK_TYPE_VOTE_OTHER = 'vote_others';
+const WORK_TYPE_QUESTIONS = 'question';
+const WORK_TYPE_REPORTS = 'report';
+const WORK_TYPE_PROPOSITIONS = 'law_proposal';
+const WORK_TYPE_COSIGNED_PROPOSITIONS = 'cosigned_law_proposal';
+const WORK_TYPE_COMMISSIONS = 'commission';
+const WORK_TYPE_PUBLIC_SESSIONS = 'public_session';
 
-const WORK_TYPES = [ WORK_TYPE_QUESTIONS, WORK_TYPE_REPORTS, WORK_TYPE_PROPOSITIONS, WORK_TYPE_COSIGNED_PROPOSITIONS, WORK_TYPE_COMMISSIONS, WORK_TYPE_PUBLIC_SESSIONS ];
-
-const BALLOT_TYPE_ORDINARY = { "dbname" : "SOR", "name" : WORK_TYPE_VOTE_ORDINARY, "displayname": "Scrutin ordinaire" };
-const BALLOT_TYPE_SOLEMN = { "dbname" : "SSO", "name" : WORK_TYPE_VOTE_SOLEMN, "displayname": "Scrutin solennel" };
-const BALLOT_TYPE_OTHER = { "dbname" : "AUT", "name" : WORK_TYPE_VOTE_OTHER, "displayname": "Autre scrutin" };
-const BALLOT_TYPE_CENSURE = { "dbname" : "motion_of_censure", "name" : WORK_TYPE_VOTE_CENSURE, "displayname": "Motion de censure" };
+const BALLOT_TYPE_ORDINARY = { 'dbname' : 'SOR', 'name' : WORK_TYPE_VOTE_ORDINARY, 'displayname': 'Scrutin ordinaire' };
+const BALLOT_TYPE_SOLEMN = { 'dbname' : 'SSO', 'name' : WORK_TYPE_VOTE_SOLEMN, 'displayname': 'Scrutin solennel' };
+const BALLOT_TYPE_OTHER = { 'dbname' : 'AUT', 'name' : WORK_TYPE_VOTE_OTHER, 'displayname': 'Autre scrutin' };
+const BALLOT_TYPE_CENSURE = { 'dbname' : 'motion_of_censure', 'name' : WORK_TYPE_VOTE_CENSURE, 'displayname': 'Motion de censure' };
 const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
 
 const NUMBER_OF_DEPUTIES = 577;
 
-var self = module.exports = {
+let self = module.exports = {
     createBallotDetailsResponse: function(ballot, deputy, voteValue) {
-        var ballotResponse = self.createBallotResponse(ballot, true);
+        let ballotResponse = self.createBallotResponse(ballot, true);
         ballotResponse.userDeputyVote = {
             'voteValue': voteValue,
             'deputy': {
@@ -45,7 +43,7 @@ var self = module.exports = {
     },
 
     createExtendedVoteForTimeline: function(ballot, voteValue) {
-        var ballotResponse = self.createBallotResponse(ballot, false);
+        let ballotResponse = self.createBallotResponse(ballot, false);
         ballotResponse.voteExtraInfo =  {
             id: ballot.id,
             voteValue: voteValue,
@@ -55,7 +53,7 @@ var self = module.exports = {
     },
 
     createBallotResponse: function(ballot, addToCurrentBallot) {
-        var response = addToCurrentBallot ? ballot : {};
+        let response = addToCurrentBallot ? ballot : {};
         response.type = self.getBallotTypeName(ballot.type);
         response.date = DateHelper.formatDateForWS(ballot.date);
         response.description = ballot.title;
@@ -102,8 +100,8 @@ var self = module.exports = {
     },
 
     createVoteValueForWS: function(ballotType, vote) {
-        if (ballotType === "motion_of_censure") {
-            return vote && vote.value === "for" ? "signed" : "not_signed"
+        if (ballotType === 'motion_of_censure') {
+            return vote && vote.value === 'for' ? 'signed' : 'not_signed'
         } else {
             return vote ? vote.value : 'missing';
         }
@@ -140,9 +138,9 @@ var self = module.exports = {
     }
 }
 
-var getBallotType = function(ballotType) {
+let getBallotType = function(ballotType) {
     var type;
-    for (var i in BALLOT_TYPES) {
+    for (let i in BALLOT_TYPES) {
         if (BALLOT_TYPES[i].dbname === ballotType || BALLOT_TYPES[i].name === ballotType) {
             type = BALLOT_TYPES[i];
             break;
@@ -151,85 +149,85 @@ var getBallotType = function(ballotType) {
     return type;
 }
 
-var createPayloadForVote = function(deputyId, vote) {
-    var body = vote.theme ? vote.theme + " : " : "";
+let createPayloadForVote = function(deputyId, vote) {
+    let body = vote.theme ? vote.theme + ' : ' : '';
     body += vote.title;
-    var payload = {
+    let payload = {
         notification: {
             title: createVoteTitleForPush(vote),
-            body: body.substring(0, 197) + "..."
+            body: body.substring(0, 197) + '...'
         },
         data: {
-            deputyId:  "" + deputyId,
-            ballotId:  "" + vote.ballotId
+            deputyId:  '' + deputyId,
+            ballotId:  '' + vote.ballotId
         }
     }
     return payload;
 }
 
-var createPayloadForWork = function(deputyId, work) {
-    var title = createWorkTitleForPush(work)
-    var body = work.theme ? work.theme + " : " : "";
+let createPayloadForWork = function(deputyId, work) {
+    let title = createWorkTitleForPush(work)
+    let body = work.theme ? work.theme + ' : ' : '';
     body += work.description;
-    var payload = {
+    let payload = {
         notification: {
             title: title,
-            body: body.substring(0, 197) + "..."
+            body: body.substring(0, 197) + '...'
         },
         data: {
-            deputyId:  "" + deputyId
+            deputyId:  '' + deputyId
         }
     }
     return payload;
 }
 
-var createVoteTitleForPush = function(vote) {
-    var title = "Votre député ";
-    if (vote.type === "vote_motion_of_censure") {
-        title += vote.value === "for" ? "a" : "n\'a pas";
-        title += " signé la motion de censure";
+let createVoteTitleForPush = function(vote) {
+    let title = 'Votre député ';
+    if (vote.type === 'vote_motion_of_censure') {
+        title += vote.value === 'for' ? 'a' : 'n\'a pas';
+        title += ' signé la motion de censure';
     } else {
         switch (vote.value) {
-            case "for":
-            title += "a voté POUR";
+            case 'for':
+            title += 'a voté POUR';
             break;
-            case "against":
-            title += "a voté CONTRE";
+            case 'against':
+            title += 'a voté CONTRE';
             break;
-            case "blank":
-            title += "a voté BLANC";
+            case 'blank':
+            title += 'a voté BLANC';
             break;
-            case "missing":
-            title += "était ABSENT au vote";
+            case 'missing':
+            title += 'était ABSENT au vote';
             break;
-            case "non-voting":
-            title += "était NON-VOTANT";
+            case 'non-voting':
+            title += 'était NON-VOTANT';
             break;
         }
     }
     return title;
 }
 
-var createWorkTitleForPush = function(work) {
-    var title = "Votre député ";
+let createWorkTitleForPush = function(work) {
+    let title = 'Votre député ';
     switch(work.type) {
         case WORK_TYPE_QUESTIONS:
-        title += "a posé une question";
+        title += 'a posé une question';
         break;
         case WORK_TYPE_REPORTS:
-        title += "a rédigé un rapport";
+        title += 'a rédigé un rapport';
         break;
         case WORK_TYPE_PROPOSITIONS:
-        title += "a proposé une loi";
+        title += 'a proposé une loi';
         break;
         case WORK_TYPE_COSIGNED_PROPOSITIONS:
-        title += "a co-signé une proposition de loi";
+        title += 'a co-signé une proposition de loi';
         break;
         case WORK_TYPE_COMMISSIONS:
-        title += "a participé à une commission";
+        title += 'a participé à une commission';
         break;
         case WORK_TYPE_PUBLIC_SESSIONS:
-        title += "a participé à une séance publique";
+        title += 'a participé à une séance publique';
         break;
     }
     return title;

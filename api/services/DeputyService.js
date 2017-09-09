@@ -1,16 +1,12 @@
-var Promise = require("bluebird");
-var DateHelper = require('./helpers/DateHelper.js');
-var MathHelper = require('./helpers/MathHelper.js');
+let Promise = require('bluebird');
+let DateHelper = require('./helpers/DateHelper.js');
 
-const PARAM_DEPUTY_ID = "{deputy_id}";
-const PARAM_MANDATE_NUMBER = "15";
-const PARAM_LATITUDE = "{latitude}"
-const PARAM_LONGITUDE = "{longitude}"
-const BASE_URL = "http://www2.assemblee-nationale.fr/";
-const DEPUTY_PHOTO_URL = BASE_URL + "static/tribun/" + PARAM_MANDATE_NUMBER + "/photos/" + PARAM_DEPUTY_ID + ".jpg"
-const GEOLOC_URL = "http://localhost:1339/address/" + PARAM_LATITUDE + "/" + PARAM_LONGITUDE;
+const PARAM_DEPUTY_ID = '{deputy_id}';
+const PARAM_MANDATE_NUMBER = '15';
+const BASE_URL = 'http://www2.assemblee-nationale.fr/';
+const DEPUTY_PHOTO_URL = BASE_URL + 'static/tribun/' + PARAM_MANDATE_NUMBER + '/photos/' + PARAM_DEPUTY_ID + '.jpg'
 
-var self = module.exports = {
+let self = module.exports = {
 	findDeputyWithId: function(deputyId) {
 		return Deputy.findOne().where({
 			officialId: deputyId
@@ -30,14 +26,14 @@ var self = module.exports = {
 	},
 
 	getDeputyForGeoDistrict: function(district) {
-		var departmentCode = district.department;
-		var circNumber = district.district;
+		let departmentCode = district.department;
+		let circNumber = district.district;
 		return DepartmentService.findDepartmentWithCode(departmentCode)
 		.then(function(department) {
 			return self.findDeputiesForDistrict(department.id, circNumber, true)
 			.then(function(deputies) {
-				var deputiesInfos = [];
-				for (i in deputies) {
+				let deputiesInfos = [];
+				for (let i in deputies) {
 					deputiesInfos.push(prepareSimpleDeputyResponse(deputies[i], department));
 				}
 				return deputiesInfos;
@@ -46,7 +42,7 @@ var self = module.exports = {
 	},
 
 	findDeputiesForDistrict: function(departmentId, district, onlyMandateInProgress) {
-		var options = { departmentId: departmentId, district: district };
+		let options = { departmentId: departmentId, district: district };
 		if (onlyMandateInProgress) {
 			options.currentMandateStartDate = {'!': null};
 		}
@@ -57,11 +53,11 @@ var self = module.exports = {
 	findDeputyAtDateForDistrict: function(departmentId, district, date) {
 		return self.findDeputiesForDistrict(departmentId, district, false)
 		.then(function(deputies) {
-			var smallestDiff;
-			var deputy;
-			for (i in deputies) {
-				var deputyDate = DateHelper.formatDateForWS( deputies[i].currentMandateStartDate)
-				var diff = DateHelper.getDiff(date, deputyDate);
+			let smallestDiff;
+			let deputy;
+			for (let i in deputies) {
+				let deputyDate = DateHelper.formatDateForWS( deputies[i].currentMandateStartDate)
+				let diff = DateHelper.getDiff(date, deputyDate);
 				if (diff > 0 && (diff < smallestDiff || !smallestDiff)) {
 					smallestDiff = diff;
 					deputy = deputies[i];
@@ -81,7 +77,7 @@ var self = module.exports = {
 	}
 };
 
-var formatDeputyResponse = function(deputy, department) {
+let formatDeputyResponse = function(deputy, department) {
 	if (deputy) {
 		deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
 		return MandateService.getPoliticalAgeOfDeputy(deputy.officialId, deputy.currentMandateStartDate)
@@ -118,7 +114,7 @@ var formatDeputyResponse = function(deputy, department) {
 	}
 }
 
-var findActivityRate = function(deputy, solemnBallotsOnly) {
+let findActivityRate = function(deputy, solemnBallotsOnly) {
 	return BallotService.findBallotsFromDate(deputy.currentMandateStartDate, solemnBallotsOnly)
 	.then(function(allBallots) {
 		if (allBallots && allBallots.length > 0) {
@@ -144,7 +140,7 @@ var findActivityRate = function(deputy, solemnBallotsOnly) {
 	})
 }
 
-var prepareSimpleDeputyResponse = function(deputy, department) {
+let prepareSimpleDeputyResponse = function(deputy, department) {
 	deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
 	deputy = prepareDeputyResponse(deputy, department);
 	delete deputy.commission;
@@ -155,7 +151,7 @@ var prepareSimpleDeputyResponse = function(deputy, department) {
 	return deputy;
 }
 
-var prepareDeputyResponse = function(deputy, department) {
+let prepareDeputyResponse = function(deputy, department) {
 	delete deputy.gender;
 	delete deputy.createdAt;
 	delete deputy.updatedAt;

@@ -1,13 +1,6 @@
-/**
-* VoteController
-*
-* @description :: Server-side logic for managing votes
-* @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
-*/
-
 const actionUtil = require('../../node_modules/sails/lib/hooks/blueprints/actionUtil')
 
-var self = module.exports = {
+module.exports = {
 	getVotes: function(req, res) {
 		Vote.find()
 		.limit(actionUtil.parseLimit(req))

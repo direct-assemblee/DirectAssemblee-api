@@ -1,5 +1,3 @@
-var Promise = require("bluebird");
-
 module.exports = {
     findDepartmentWithCode: function(code) {
         return Department.findOne()

@@ -1,5 +1,3 @@
-var Promise = require("bluebird");
-
 const SALARY_BASE = 7210;
 const SALARY_PRESIDENT = 7267;
 const SALARY_QUESTERS = 5004;
@@ -22,16 +20,16 @@ const SECRETARY_REGEX = /Secrétaire.$/;
 const SALARY_SCIENTIFIC_CHOICE_REGEX = /Office\sparlementaire\sd.évaluation\sdes\schoix\sscientifiques\set\stechnologiques/;
 
 const EXTRA_POSITIONS = [
-    { "position": VICE_PRESIDENT_REGEX, "office": PARLIAMENT_OFFICE_REGEX, "salary": SALARY_VICE_PRESIDENT },
-    { "position": PRESIDENT_REGEX, "office": PARLIAMENT_OFFICE_REGEX, "salary": SALARY_PRESIDENT },
-    { "position": PRESIDENT_REGEX, "office": COMMISSION_REGEX, "salary": SALARY_COMMISSION_PRESIDENT },
-    { "position": QUESTERS_REGEX, "office": PARLIAMENT_OFFICE_REGEX, "salary": SALARY_QUESTERS },
-    { "position": GENERAL_REPORTER_REGEX, "office": FINANCIAL_COMMISSION_REGEX, "salary": SALARY_GENERAL_REPORTER },
-    { "position": SECRETARY_REGEX, "office": PARLIAMENT_OFFICE_REGEX, "salary": SALARY_SECRETARY },
-    { "position": PRESIDENT_REGEX, "office": SALARY_SCIENTIFIC_CHOICE_REGEX, "salary": SALARY_SCIENTIFIC_CHOICE_PRESIDENT },
+    { 'position': VICE_PRESIDENT_REGEX, 'office': PARLIAMENT_OFFICE_REGEX, 'salary': SALARY_VICE_PRESIDENT },
+    { 'position': PRESIDENT_REGEX, 'office': PARLIAMENT_OFFICE_REGEX, 'salary': SALARY_PRESIDENT },
+    { 'position': PRESIDENT_REGEX, 'office': COMMISSION_REGEX, 'salary': SALARY_COMMISSION_PRESIDENT },
+    { 'position': QUESTERS_REGEX, 'office': PARLIAMENT_OFFICE_REGEX, 'salary': SALARY_QUESTERS },
+    { 'position': GENERAL_REPORTER_REGEX, 'office': FINANCIAL_COMMISSION_REGEX, 'salary': SALARY_GENERAL_REPORTER },
+    { 'position': SECRETARY_REGEX, 'office': PARLIAMENT_OFFICE_REGEX, 'salary': SALARY_SECRETARY },
+    { 'position': PRESIDENT_REGEX, 'office': SALARY_SCIENTIFIC_CHOICE_REGEX, 'salary': SALARY_SCIENTIFIC_CHOICE_PRESIDENT },
 ]
 
-var self = module.exports = {
+let self = module.exports = {
     findExtraPositionsForDeputy: function(deputyId) {
         return ExtraPosition.find()
         .where({ deputyId: deputyId })
@@ -40,9 +38,9 @@ var self = module.exports = {
     getSalaryForDeputy: function(deputyId) {
         return self.findExtraPositionsForDeputy(deputyId)
         .then(function(extraPositions) {
-            var salary = SALARY_BASE;
+            let salary = SALARY_BASE;
             if (extraPositions) {
-                for (i in extraPositions) {
+                for (let i in extraPositions) {
                     salary += matchPosition(extraPositions[i]);
                 }
             }
@@ -51,9 +49,9 @@ var self = module.exports = {
     }
 }
 
-var matchPosition = function(deputyPosition) {
+let matchPosition = function(deputyPosition) {
     var salary = 0;
-    for (j in EXTRA_POSITIONS) {
+    for (let j in EXTRA_POSITIONS) {
         if (deputyPosition.position.match(EXTRA_POSITIONS[j].position) && deputyPosition.office.match(EXTRA_POSITIONS[j].office)) {
             salary = EXTRA_POSITIONS[j].salary;
             break;

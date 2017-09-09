@@ -1,13 +1,11 @@
-var Promise = require("bluebird");
-var ResponseHelper = require('./helpers/ResponseHelper.js');
+let ResponseHelper = require('./helpers/ResponseHelper.js');
 
 const BALLOTS_PAGE_ITEMS_COUNT = 30;
+const BALLOT_TYPE_SOLEMN = 'SSO';
 
-const BALLOT_TYPE_SOLEMN = "SSO";
-
-var self = module.exports = {
+let self = module.exports = {
     findBallots: function(page) {
-        var offset = BALLOTS_PAGE_ITEMS_COUNT * page;
+        let offset = BALLOTS_PAGE_ITEMS_COUNT * page;
         return findBallotsWithOffset(offset);
     },
 
@@ -15,7 +13,8 @@ var self = module.exports = {
         return Ballot.findOne({ id: id })
         .then(function(ballot) {
             if (ballot) {
-                return VoteService.findVotesWithValueForBallot(ballot.id, "non-voting")
+                ballot.type = 'motion_of_censure';
+                return VoteService.findVotesWithValueForBallot(ballot.id, 'non-voting')
                 .then(function(nonVoting) {
                     ballot.nonVoting = nonVoting.length;
                     return ResponseHelper.prepareBallotResponse(ballot);
@@ -38,7 +37,7 @@ var self = module.exports = {
     },
 
     findBallotsFromDate: function(searchedDate, solemnOnly) {
-        var options = solemnOnly
+        let options = solemnOnly
         ? { date: { '>': searchedDate }, type: BALLOT_TYPE_SOLEMN }
         : { date: { '>': searchedDate } };
         return Ballot.find()
@@ -51,13 +50,13 @@ var self = module.exports = {
     }
 };
 
-var findBallotsWithOffset = function(offset) {
+let findBallotsWithOffset = function(offset) {
     return Ballot.find()
     .limit(BALLOTS_PAGE_ITEMS_COUNT)
     .skip(offset)
     .then(function(ballots) {
-        var simplifiedBallots = [];
-        for (i in ballots) {
+        let simplifiedBallots = [];
+        for (let i in ballots) {
             simplifiedBallots.push(ResponseHelper.prepareSimplifiedBallotResponse(ballots[i]))
         }
         return simplifiedBallots;
@@ -65,13 +64,13 @@ var findBallotsWithOffset = function(offset) {
 }
 
 
-var getBallotWithDeputyVote = function(ballot, departmentId, district) {
+let getBallotWithDeputyVote = function(ballot, departmentId, district) {
 	return DeputyService.findDeputyAtDateForDistrict(departmentId, district, ballot.date)
 	.then(function(deputy) {
 		if (deputy) {
 			return VoteService.findVoteValueForDeputyAndBallot(deputy.officialId, ballot.id, ballot.type)
 			.then(function(voteValue) {
-				return ResponseHelper.createBallotDetailsResponse(ballot, deputy, voteValue);;
+				return ResponseHelper.createBallotDetailsResponse(ballot, deputy, voteValue);
 			})
 		} else {
 			return ballot;

@@ -1,9 +1,8 @@
-var Promise = require("bluebird");
-var ResponseHelper = require('./helpers/ResponseHelper.js');
-var DateHelper = require('./helpers/DateHelper.js');
-var moment = require('moment');
+let Promise = require('bluebird');
+let ResponseHelper = require('./helpers/ResponseHelper.js');
+let DateHelper = require('./helpers/DateHelper.js');
 
-var self = module.exports = {
+let self = module.exports = {
 	findAllVotes: function(deputyId) {
 		return Vote.find()
 		.where({ deputyId: deputyId })
@@ -31,9 +30,9 @@ var self = module.exports = {
 		return self.findAllVotes(deputyId)
 		.then(function (votesForDeputy) {
 			if (solemnOnly) {
-				var votesArray = [];
-				var vote;
-				for (i in votesForDeputy) {
+				let votesArray = [];
+				let vote;
+				for (let i in votesForDeputy) {
 					vote = votesForDeputy[i];
 					if (vote.ballotId.type === 'SSO') {
 						votesArray.push(vote);
@@ -81,17 +80,16 @@ var self = module.exports = {
 	}
 };
 
-var findVotesForBallot = function(ballot, currentDeputies) {
+let findVotesForBallot = function(ballot, currentDeputies) {
 	return Vote.find()
 	.where({ ballotId: ballot.id })
 	.populate('deputyId')
 	.then(function(votes) {
-		var votesIncludingMissing = [];
-		var formattedVote;
-		var currentDeputyId;
-		for (i in currentDeputies) {
-			currentDeputy = currentDeputies[i];
-			var vote = getVoteForDeputy(currentDeputy.officialId, votes)
+		let votesIncludingMissing = [];
+		let formattedVote;
+		for (let i in currentDeputies) {
+			let currentDeputy = currentDeputies[i];
+			let vote = getVoteForDeputy(currentDeputy.officialId, votes)
 			if (vote) {
 				formattedVote = ResponseHelper.createVoteForPush(ballot, vote)
 			} else {
@@ -103,9 +101,9 @@ var findVotesForBallot = function(ballot, currentDeputies) {
 	})
 }
 
-var getVoteForDeputy = function(deputyId, votes) {
-	var vote;
-	for (i in votes) {
+let getVoteForDeputy = function(deputyId, votes) {
+	let vote;
+	for (let i in votes) {
 		if (votes[i].deputyId.officialId === deputyId) {
 			vote = votes[i];
 			break;
@@ -114,15 +112,15 @@ var getVoteForDeputy = function(deputyId, votes) {
 	return vote;
 }
 
-var mapVotesByDeputy = function(allVotes) {
+let mapVotesByDeputy = function(allVotes) {
 	allVotes.sort(function(a, b) {
 		return a.deputyId - b.deputyId;
 	});
 
-	var votesByDeputy = [];
-	for (i in allVotes) {
-		var vote = allVotes[i];
-		var picked = votesByDeputy.find(o => o.deputyId === vote.deputyId);
+	let votesByDeputy = [];
+	for (let i in allVotes) {
+		let vote = allVotes[i];
+		let picked = votesByDeputy.find(o => o.deputyId === vote.deputyId);
 		if (!picked) {
 			picked = { 'deputyId': vote.deputyId, 'activities': [] };
 			votesByDeputy.push(picked);

@@ -1,12 +1,10 @@
-const actionUtil = require('../../node_modules/sails/lib/hooks/blueprints/actionUtil')
-
-var self = module.exports = {
+module.exports = {
 	getTimeline: function(req, res) {
-		var deputyId = req.param('deputyId');
+		let deputyId = req.param('deputyId');
 		if (!deputyId) {
 			return res.json(400, 'Must provide deputyId as a parameter.');
 		} else {
-			var offset = req.param('page') ? req.param('page') : 0;
+			let offset = req.param('page') ? req.param('page') : 0;
 			return DeputyService.findDeputyWithId(deputyId)
 			.then(function(deputy) {
 				if (!deputy) {

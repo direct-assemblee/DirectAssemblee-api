@@ -1,15 +1,15 @@
-var Promise = require("bluebird");
-var request = require('request');
-var fs = require('fs');
-var Turf = require('@turf/turf');
+let Promise = require('bluebird');
+let request = require('request');
+let fs = require('fs');
+let Turf = require('@turf/turf');
 
-const PARAM_LATITUDE = "{latitude}"
-const PARAM_LONGITUDE = "{longitude}"
-const GMAP_API_KEY = "AIzaSyAvsIi1QfYiWr1HPR1vZ-AeZBbcffl5y2s"
-const REVERSE_GEOCODING_URL = "http://api-adresse.data.gouv.fr/reverse/?lon=" + PARAM_LONGITUDE + "&lat=" + PARAM_LATITUDE
-const GMAP_REVERSE_GEOCODING_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + PARAM_LATITUDE + "," + PARAM_LONGITUDE + "&key=" + GMAP_API_KEY
+const PARAM_LATITUDE = '{latitude}'
+const PARAM_LONGITUDE = '{longitude}'
+const GMAP_API_KEY = 'AIzaSyCwHl1AXUzENiz_VsABqZ8QIAHO5C-K8Js'
+const REVERSE_GEOCODING_URL = 'http://api-adresse.data.gouv.fr/reverse/?lon=' + PARAM_LONGITUDE + '&lat=' + PARAM_LATITUDE
+const GMAP_REVERSE_GEOCODING_URL = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + PARAM_LATITUDE + ',' + PARAM_LONGITUDE + '&key=' + GMAP_API_KEY
 
-var self = module.exports = {
+module.exports = {
     getAddress: function(latitude, longitude) {
         return findDistricts(REVERSE_GEOCODING_URL, parseFloat(latitude), parseFloat(longitude))
         .then(function(districts) {
@@ -21,21 +21,21 @@ var self = module.exports = {
     }
 }
 
-var findDistricts = function(geocodingUrl, latitude, longitude) {
+let findDistricts = function(geocodingUrl, latitude, longitude) {
     return reverseGeocode(geocodingUrl, latitude, longitude)
     .then(function(targetCityAndCode) {
         if (targetCityAndCode) {
-            var targetDepartment = parseInt(targetCityAndCode.postalCode / 100);
-            var multiple = 1;
-            var extraCoords = [
+            let targetDepartment = parseInt(targetCityAndCode.postalCode / 100);
+            let multiple = 1;
+            let extraCoords = [
                 [ latitude, longitude - (multiple * (0.1 / 111.11 * Math.cos(latitude))) ], // 100m est
                 [ latitude, longitude + (multiple * (0.1 / 111.11 * Math.cos(latitude))) ], // 100m ouest
                 [ latitude + (multiple * 0.0009), longitude ], // 100m nord
                 [ latitude - (multiple * 0.0009), longitude ]  // 100m sud
             ];
 
-            var promises = []
-            for (i in extraCoords) {
+            let promises = []
+            for (let i in extraCoords) {
                 promises.push(reverseGeocode(geocodingUrl, extraCoords[i][0], extraCoords[i][1]))
             }
             return Promise.all(promises)
@@ -46,20 +46,20 @@ var findDistricts = function(geocodingUrl, latitude, longitude) {
     })
 }
 
-var reverseGeocode = function(geocodingUrl, latitude, longitude) {
+let reverseGeocode = function(geocodingUrl, latitude, longitude) {
     return new Promise(function(resolve, reject) {
-        var url = geocodingUrl.replace(PARAM_LATITUDE, latitude).replace(PARAM_LONGITUDE, longitude)
+        let url = geocodingUrl.replace(PARAM_LATITUDE, latitude).replace(PARAM_LONGITUDE, longitude)
         request(url, function(error, response, body) {
-            var cityAndCode;
+            let cityAndCode;
             if (!error && response.statusCode == 200) {
-                var json = JSON.parse(body);
+                let json = JSON.parse(body);
                 if (json.features) {
                     if (json.features.length > 0) {
-                        var properties = json.features[0].properties
+                        let properties = json.features[0].properties
                         cityAndCode = findCityAndCode(properties);
                     }
                 } else if (json.results && json.results.length > 0) {
-                    var addressComponents = json.results[0].address_components;
+                    let addressComponents = json.results[0].address_components;
                     cityAndCode = findCityAndCode(addressComponents);
                 }
             }
@@ -68,20 +68,20 @@ var reverseGeocode = function(geocodingUrl, latitude, longitude) {
     })
 }
 
-var findCityAndCode = function(addressComponents) {
-    var result = {};
+let findCityAndCode = function(addressComponents) {
+    let result = {};
     if (addressComponents.postcode) {
         result.locality = addressComponents.city;
         result.postalCode = addressComponents.postcode;
     } else {
-        for (i in addressComponents) {
-            var types = addressComponents[i].types;
-            for (j in types) {
-                if (types[j] === "locality") {
+        for (let i in addressComponents) {
+            let types = addressComponents[i].types;
+            for (let j in types) {
+                if (types[j] === 'locality') {
                     result.locality = addressComponents[i].long_name;
-                } else if (types[j] === "postal_code") {
+                } else if (types[j] === 'postal_code') {
                     result.postalCode = addressComponents[i].long_name;
-                } else if (types[j] === "country") {
+                } else if (types[j] === 'country') {
                     result.postalCode = findPostalCodeFromCountry(addressComponents[i].short_name);
                 }
             }
@@ -90,65 +90,65 @@ var findCityAndCode = function(addressComponents) {
     return result;
 }
 
-var findPostalCodeFromCountry = function(country) {
+let findPostalCodeFromCountry = function(country) {
     switch(country) {
-        case "PF": // polynesie francaise
+        case 'PF': // polynesie francaise
         return 98700;
-        case "NC": // nouvelle caledonie
+        case 'NC': // nouvelle caledonie
         return 98800;
-        case "WF": // wallis et futuna
+        case 'WF': // wallis et futuna
         return 98600;
-        case "BL": // saint barthelemy - fake code (guadeloupe)
+        case 'BL': // saint barthelemy - fake code (guadeloupe)
         return 97700;
-        case "MF": // saint martin - fake code (guadeloupe)
+        case 'MF': // saint martin - fake code (guadeloupe)
         return 97700;
-        case "PM": // saint pierre et miquelon
+        case 'PM': // saint pierre et miquelon
         return 97500;
-        case "YT": // mayotte (ok)
+        case 'YT': // mayotte (ok)
         return 97600;
-        case "GP": // guadeloupe (ok)
+        case 'GP': // guadeloupe (ok)
         return 97100;
-        case "RE": // réunion (mi-ok)
+        case 'RE': // réunion (mi-ok)
         return 97400;
-        case "GF": // guyane
+        case 'GF': // guyane
         return 97300;
-        case "MQ": // martinique (mi-ok)
+        case 'MQ': // martinique (mi-ok)
         return 97200;
     }
 }
 
-var filterCirconscritptions = function(targetDepartment, citiesAndCodes, extraCoords) {
+let filterCirconscritptions = function(targetDepartment, citiesAndCodes, extraCoords) {
     return Promise.filter(citiesAndCodes, function(cityAndCode) {
         return cityAndCode && targetDepartment === parseInt(cityAndCode.postalCode / 100)
     })
     .then(function(foundCitiesAndCodes) {
-        var districts = [];
-        for (i in foundCitiesAndCodes) {
-            var foundCirc = getDistrictsForPoint(extraCoords[i][0], extraCoords[i][1]);
+        let districts = [];
+        for (let i in foundCitiesAndCodes) {
+            let foundCirc = getDistrictsForPoint(extraCoords[i][0], extraCoords[i][1]);
             districts = addUniqueDistricts(foundCirc, districts);
         }
         return districts;
     })
 }
 
-var getDistrictsForPoint = function(latitude, longitude) {
-    var polygonsGeojson = fs.readFileSync('./assets/simplified_circonscriptions.json', "utf-8");
-    var json = JSON.parse(polygonsGeojson);
-    var point = [ parseFloat(longitude), parseFloat(latitude) ];
-    var districts = [];
-    for (i in json.features) {
-        var circ = json.features[i];
-        var type = circ.geometry.type;
-        var coords = circ.geometry.coordinates;
+let getDistrictsForPoint = function(latitude, longitude) {
+    let polygonsGeojson = fs.readFileSync('./assets/simplified_circonscriptions.json', 'utf-8');
+    let json = JSON.parse(polygonsGeojson);
+    let point = [ parseFloat(longitude), parseFloat(latitude) ];
+    let districts = [];
+    for (let i in json.features) {
+        let circ = json.features[i];
+        let type = circ.geometry.type;
+        let coords = circ.geometry.coordinates;
         if (coords) {
-            var polygon = type === "Polygon" ? Turf.polygon(coords) : Turf.multiPolygon(coords);
+            let polygon = type === 'Polygon' ? Turf.polygon(coords) : Turf.multiPolygon(coords);
             if (Turf.inside(Turf.point(point), polygon)) {
-                var area = circ.properties.REF.split('-')
-                var code = area[0].startsWith('0') ? parseInt(area[0], 10) : area[0];
+                let area = circ.properties.REF.split('-')
+                let code = area[0].startsWith('0') ? parseInt(area[0], 10) : area[0];
                 if (code == 978) {
                     code = 977; // make saint-martin be same as saint-barth
                 }
-                var district = area[1].startsWith('0') ?  parseInt(area[1], 10) : area[1];
+                let district = area[1].startsWith('0') ?  parseInt(area[1], 10) : area[1];
                 districts.push({ department: code, district : district });
             }
         }
@@ -156,23 +156,23 @@ var getDistrictsForPoint = function(latitude, longitude) {
     return districts;
 }
 
-var addUniqueDistricts = function(newCirc, allCirc) {
-    for (j in newCirc) {
+let addUniqueDistricts = function(newCirc, allCirc) {
+    for (let j in newCirc) {
         if (allCirc.length === 0) {
             allCirc.push(newCirc[j]);
         } else {
-            var add = true;
-            for (k in allCirc) {
+            let add = true;
+            for (let k in allCirc) {
                 if (allCirc[k].department === newCirc[j].department
                     && allCirc[k].district === newCirc[j].district) {
                         add = false;
                         break;
-                    }
-                }
-                if (add) {
-                    allCirc.push(newCirc[j]);
                 }
             }
+            if (add) {
+                allCirc.push(newCirc[j]);
+            }
         }
-        return allCirc;
     }
+    return allCirc;
+}

@@ -1,7 +1,7 @@
-var self = module.exports = {
+module.exports = {
 	sendPushNotif: function(req, res) {
-		var deputyId = req.param('deputyId');
-		var type = req.param('type');
+		let deputyId = req.param('deputyId');
+		let type = req.param('type');
 		if (deputyId && Constants.WORK_TYPES.includes(type)) {
 			TestService.sendPush(deputyId, type);
 			return res.json(200);
