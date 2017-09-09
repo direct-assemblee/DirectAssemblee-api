@@ -49,7 +49,7 @@ let initLastScanTime = function() {
 };
 
 let pushNewVotes = function(lastScanTime) {
-    return DeputyService.findDeputiesAtDate(lastScanTime)
+    return DeputyService.findCurrentDeputies()
     .then(function(deputies) {
         return VoteService.findLastVotesByDeputy(lastScanTime, deputies)
         .then(function(lastVotesByDeputy) {

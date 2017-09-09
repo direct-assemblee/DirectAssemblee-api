@@ -67,13 +67,10 @@ let self = module.exports = {
 		})
 	},
 
-	findDeputiesAtDate: function(date) {
+	findCurrentDeputies: function() {
 		var options = { currentMandateStartDate:  {'!': null}, mandateEndDate: null };
 		return Deputy.find()
-		.where(options)
-		.then(function(deputies) {
-			return deputies;
-		})
+		.where(options);
 	}
 };
 
