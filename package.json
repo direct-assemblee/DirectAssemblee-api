@@ -34,7 +34,8 @@
   },
   "scripts": {
     "debug": "node debug app.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "mocha test"
   },
   "main": "app.js",
   "repository": {
@@ -42,5 +43,11 @@
     "url": "git://github.com/mplat/mondepute.git"
   },
   "author": "Morgane Plat",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.5.1",
+    "supertest": "^3.0.0"
+  }
 }
