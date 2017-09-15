@@ -58,7 +58,7 @@ let self = module.exports = {
         response.date = DateHelper.formatDateForWS(ballot.date);
         response.description = ballot.title;
         response.title = self.getBallotTypeDisplayName(ballot.type);
-        response.theme = ballot.theme;
+        response.theme = createBallotThemeResponse(ballot.ballotThemeId);
         return response;
     },
 
@@ -67,7 +67,7 @@ let self = module.exports = {
             id: ballot.id,
             date: DateHelper.formatDateForWS(ballot.date),
             title: self.getBallotTypeDisplayName(ballot.type),
-            theme: ballot.theme,
+            theme: createBallotThemeResponse(ballot.ballotThemeId),
             description: ballot.title,
             type: self.getBallotTypeName(ballot.type),
             isAdopted: ballot.isAdopted ? true : false
@@ -110,7 +110,7 @@ let self = module.exports = {
     createVoteForPush: function(ballot, vote) {
         return {
             title: ballot.title,
-            theme: ballot.theme,
+            theme: ballot.ballotThemeId.name,
             ballotId : ballot.id,
             deputyId : vote.deputyId.officialId,
             value : self.createVoteValueForWS(ballot.type, vote.value)
@@ -120,7 +120,7 @@ let self = module.exports = {
     createMissingVoteForPush: function(ballot, deputy) {
         return {
             title: ballot.title,
-            theme: ballot.theme,
+            theme: ballot.ballotThemeId.name,
             ballotId : ballot.id,
             deputyId : deputy.officialId,
             value : 'missing'
@@ -231,4 +231,9 @@ let createWorkTitleForPush = function(work) {
         break;
     }
     return title;
+}
+
+let createBallotThemeResponse = function(ballotTheme) {
+    delete ballotTheme.typeName;
+    return ballotTheme;
 }

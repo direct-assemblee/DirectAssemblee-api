@@ -15,6 +15,7 @@ module.exports = {
 
        'Constants': true,
        'Ballot': true,
+       'BallotTheme': true,
        'Declaration': true,
        'Department': true,
        'Deputy': true,

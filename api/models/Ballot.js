@@ -14,8 +14,9 @@ module.exports = {
         title: {
             type: 'text'
         },
-        theme: {
-            type: 'string'
+        ballotThemeId: {
+            type: 'int',
+            model: 'BallotTheme'
         },
         date: {
             type: 'date'
@@ -36,7 +37,7 @@ module.exports = {
             type: 'int'
         },
         isAdopted: {
-            type: 'bool'
+            type: 'boolean'
         },
         analysisUrl: {
             type: 'string'

@@ -11,6 +11,7 @@ let self = module.exports = {
 
     getBallotWithId: function(id) {
         return Ballot.findOne({ id: id })
+        .populate('ballotThemeId')
         .then(function(ballot) {
             if (ballot) {
                 ballot.type = 'motion_of_censure';
@@ -42,16 +43,22 @@ let self = module.exports = {
         : { date: { '>': searchedDate } };
         return Ballot.find()
         .where(options)
+        .populate('ballotThemeId')
     },
 
     findBallotsBetweenDates: function(beforeDate, afterDate) {
         return Ballot.find()
         .where({ date: { '<=': beforeDate , '>': afterDate } })
+        .populate('ballotThemeId')
+        .then(function(ballots) {
+            return ballots;
+        });
     }
 };
 
 let findBallotsWithOffset = function(offset) {
     return Ballot.find()
+    .populate('ballotThemeId')
     .limit(BALLOTS_PAGE_ITEMS_COUNT)
     .skip(offset)
     .then(function(ballots) {
