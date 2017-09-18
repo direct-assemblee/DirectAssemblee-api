@@ -69,7 +69,7 @@ let self = module.exports = {
         return moment(date).format('YYYY-MM-DD');
     },
 
-    formattedNow: function() {
+    getFormattedNow: function() {
         return self.formatSimpleDate(moment());
     }
 }

@@ -21,8 +21,8 @@ const NUMBER_OF_DEPUTIES = 577;
 
 let self = module.exports = {
     createBallotDetailsResponse: function(ballot, deputy, voteValue) {
-        let ballotResponse = self.createBallotResponse(ballot, true);
-        ballotResponse.userDeputyVote = {
+        let ballotResponse = self.prepareBallotResponse(ballot);
+        ballotResponse.deputyVote = {
             'voteValue': voteValue,
             'deputy': {
                 'firstname': deputy.firstname,
@@ -40,16 +40,6 @@ let self = module.exports = {
             theme: work.theme,
             description: work.description
         }
-    },
-
-    createExtendedVoteForTimeline: function(ballot, vote) {
-        let ballotResponse = self.createBallotResponse(ballot, false);
-        ballotResponse.voteExtraInfo =  {
-            id: ballot.id,
-            voteValue: self.createVoteValueForWS(ballot.type, vote.value),
-            isAdopted: ballot.isAdopted ? true : false
-        }
-        return ballotResponse;
     },
 
     createBallotResponse: function(ballot, addToCurrentBallot) {
@@ -75,12 +65,9 @@ let self = module.exports = {
     },
 
     prepareBallotResponse: function(ballot) {
-        delete ballot.createdAt;
-        delete ballot.updatedAt;
-        delete ballot.officialId;
-        delete ballot.dateDetailed;
-        delete ballot.analysisUrl;
         ballot.date = DateHelper.formatDateForWS(ballot.date);
+        ballot.description = ballot.title;
+        ballot.title = self.getBallotTypeDisplayName(ballot.type);
         ballot.type = self.getBallotTypeName(ballot.type)
         ballot.totalVotes = parseInt(ballot.totalVotes);
         ballot.yesVotes = parseInt(ballot.yesVotes);
@@ -88,6 +75,14 @@ let self = module.exports = {
         ballot.blankVotes = ballot.totalVotes - ballot.yesVotes - ballot.noVotes;
         ballot.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes - ballot.nonVoting;
         ballot.isAdopted = ballot.isAdopted ? true : false;
+        ballot.theme =
+        createBallotThemeResponse(ballot.ballotThemeId);
+        delete ballot.createdAt;
+        delete ballot.updatedAt;
+        delete ballot.officialId;
+        delete ballot.dateDetailed;
+        delete ballot.analysisUrl;
+        delete ballot.ballotThemeId;
         return ballot;
     },
 
@@ -234,6 +229,8 @@ let createWorkTitleForPush = function(work) {
 }
 
 let createBallotThemeResponse = function(ballotTheme) {
-    delete ballotTheme.typeName;
+    if (ballotTheme) {
+        delete ballotTheme.typeName;
+    }
     return ballotTheme;
 }

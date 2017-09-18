@@ -1,4 +1,5 @@
 let ResponseHelper = require('./helpers/ResponseHelper.js');
+let Promise = require('bluebird');
 
 const BALLOTS_PAGE_ITEMS_COUNT = 30;
 const BALLOT_TYPE_SOLEMN = 'SSO';
@@ -7,34 +8,6 @@ let self = module.exports = {
     findBallots: function(page) {
         let offset = BALLOTS_PAGE_ITEMS_COUNT * page;
         return findBallotsWithOffset(offset);
-    },
-
-    getBallotWithId: function(id) {
-        return Ballot.findOne({ id: id })
-        .populate('ballotThemeId')
-        .then(function(ballot) {
-            if (ballot) {
-                ballot.type = 'motion_of_censure';
-                return VoteService.findVotesWithValueForBallot(ballot.id, 'non-voting')
-                .then(function(nonVoting) {
-                    ballot.nonVoting = nonVoting.length;
-                    return ResponseHelper.prepareBallotResponse(ballot);
-                })
-            } else {
-                return;
-            }
-        })
-    },
-
-    getBallotWithIdAndDeputyVote: function(id, departmentId, district) {
-        return self.getBallotWithId(id)
-        .then(function(ballot) {
-            if (ballot) {
-                return getBallotWithDeputyVote(ballot, departmentId, district)
-            } else {
-                return;
-            }
-        })
     },
 
     findBallotsFromDate: function(searchedDate, solemnOnly) {
@@ -46,15 +19,58 @@ let self = module.exports = {
         .populate('ballotThemeId')
     },
 
-    findBallotsBetweenDates: function(beforeDate, afterDate) {
-        return Ballot.find()
-        .where({ date: { '<=': beforeDate , '>': afterDate } })
+    getBallotWithId: function(id) {
+        return Ballot.findOne({ id: id })
         .populate('ballotThemeId')
+    },
+
+    getBallotWithIdAndDeputyVote: function(id, departmentId, district) {
+        return self.getBallotWithId(id)
+        .then(function(ballot) {
+            if (ballot) {
+                return addBallotVoteForDistrict(ballot, departmentId, district);
+            } else {
+                return ;
+            }
+        })
+    },
+
+    getDetailedBallotsBetweenDates: function(deputy, beforeDate, afterDate) {
+        return findBallotsBetweenDates(beforeDate, afterDate)
         .then(function(ballots) {
-            return ballots;
-        });
+            if (ballots) {
+                return Promise.map(ballots, function(ballot) {
+                    return addBallotVoteForDeputy(ballot, deputy);
+                }, {concurrency: 10})
+            }
+        })
     }
 };
+
+let addBallotVoteForDistrict = function(ballot, departmentId, district) {
+    return DeputyService.findMostRecentDeputyAtDate(departmentId, district, ballot.date)
+    .then(function(deputy) {
+        return addBallotVoteForDeputy(ballot, deputy);
+    })
+}
+
+let addBallotVoteForDeputy = function(ballot, deputy) {
+    if (deputy) {
+        return VoteService.findVotesWithValueForBallot(ballot.id, 'non-voting')
+        .then(function(nonVoting) {
+            ballot.nonVoting = nonVoting.length;
+            return getBallotWithDeputyVote(ballot, deputy);
+        })
+    } else {
+        return ballot;
+    }
+}
+
+let findBallotsBetweenDates = function(beforeDate, afterDate) {
+    return Ballot.find()
+    .where({ date: { '<=': beforeDate , '>': afterDate } })
+    .populate('ballotThemeId');
+}
 
 let findBallotsWithOffset = function(offset) {
     return Ballot.find()
@@ -70,17 +86,13 @@ let findBallotsWithOffset = function(offset) {
     })
 }
 
-
-let getBallotWithDeputyVote = function(ballot, departmentId, district) {
-	return DeputyService.findDeputyAtDateForDistrict(departmentId, district, ballot.date)
-	.then(function(deputy) {
-		if (deputy) {
-			return VoteService.findVoteValueForDeputyAndBallot(deputy.officialId, ballot.id, ballot.type)
-			.then(function(voteValue) {
-				return ResponseHelper.createBallotDetailsResponse(ballot, deputy, voteValue);
-			})
-		} else {
-			return ballot;
-		}
-	})
+let getBallotWithDeputyVote = function(ballot, deputy) {
+    if (deputy) {
+        return VoteService.findVoteValueForDeputyAndBallot(deputy.officialId, ballot.id, ballot.type)
+        .then(function(voteValue) {
+            return ResponseHelper.createBallotDetailsResponse(ballot, deputy, voteValue);
+        })
+    } else {
+        return ballot;
+    }
 }

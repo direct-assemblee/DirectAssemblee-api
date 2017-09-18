@@ -13,18 +13,14 @@ module.exports = {
 		let departmentId = req.param('departmentId');
 		let district = req.param('district');
 		if (departmentId && district) {
-			return DeputyService.findDeputiesForDistrict(departmentId, district, false)
-			.then(function(deputies) {
-				if (deputies && deputies.length > 0) {
-					deputies.sort(function(a, b) {
-						let diff = DateHelper.getDiff(b.currentMandateStartDate, a.currentMandateStartDate);
-						return diff < 0 ? -1 : 1;
-					});
-					let mostRecentDeputy = deputies[0];
-					if (mostRecentDeputy.currentMandateStartDate) {
-						return getDeputyWithId(deputies[0].officialId, res);
-					} else {
+			let fomattedNow = DateHelper.getFormattedNow();
+			return DeputyService.returnMostRecentDeputyAtDate(departmentId, district, fomattedNow)
+			.then(function(deputy) {
+				if (deputy) {
+					if (deputy.mandateEndDate) {
 						return res.json(404, 'Found deputy, but mandate has ended.');
+					} else {
+						return res.json(deputy);
 					}
 				} else {
 					return res.json(404, 'Could not find deputy, sorry.');
@@ -57,15 +53,5 @@ let getDeputiesWithCoordinates = function(req, res) {
 		} else {
 			return res.json(404, 'Sorry, no district found');
 		}
-	})
-}
-
-let getDeputyWithId = function(id, res) {
-	return DeputyService.findDeputyWithIdAndFormat(id)
-	.then(function(deputy) {
-		if (!deputy) {
-			return res.json(404, 'Could not find deputy, sorry.');
-		}
-		return res.json(deputy);
 	})
 }

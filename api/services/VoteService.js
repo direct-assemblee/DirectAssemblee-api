@@ -54,7 +54,9 @@ let self = module.exports = {
 		return Vote.findOne()
 		.where({ ballotId: ballotId, deputyId: deputyId })
 		.then(function(vote) {
-			return ResponseHelper.createVoteValueForWS(ballotType, vote)
+			if (vote) {
+				return ResponseHelper.createVoteValueForWS(ballotType, vote.value)
+			}
 		})
 	},
 

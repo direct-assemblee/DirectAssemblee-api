@@ -13,14 +13,11 @@ let self = module.exports = {
 		})
 	},
 
-	findDeputyWithIdAndFormat: function(deputyId) {
+	returnDeputyWithId: function(deputyId) {
 		return self.findDeputyWithId(deputyId)
 		.then(function(deputy) {
 			if (deputy) {
-				return DepartmentService.findDepartmentWithId(deputy.departmentId)
-				.then(function(department) {
-					return formatDeputyResponse(deputy, department);
-				})
+				return formatDeputyResponse(deputy);
 			}
 		})
 	},
@@ -41,6 +38,41 @@ let self = module.exports = {
 		})
 	},
 
+	returnMostRecentDeputyAtDate: function(departmentId, district, date) {
+		return self.findMostRecentDeputyAtDate(departmentId, district, date)
+		.then(function(deputy) {
+			if (deputy) {
+				return formatDeputyResponse(deputy);
+			}
+		})
+	},
+
+	findMostRecentDeputyAtDate: function(departmentId, district, date) {
+		return self.findDeputiesForDistrictAtDate(departmentId, district, date)
+		.then(function(deputies) {
+			if (deputies && deputies.length > 0) {
+				return deputies[0];
+			} else {
+				return;
+			}
+		})
+	},
+
+	findDeputiesForDistrictAtDate: function(departmentId, district, date) {
+		let options = { departmentId: departmentId, district: district, currentMandateStartDate: { '<=': date } };
+		return Deputy.find()
+		.where(options)
+		.then(function(deputies) {
+			if (deputies && deputies.length > 0) {
+				deputies.sort(function(a, b) {
+					let diff = DateHelper.getDiff(b.currentMandateStartDate, a.currentMandateStartDate);
+					return diff < 0 ? -1 : 1;
+				});
+			}
+			return deputies;
+		})
+	},
+
 	findDeputiesForDistrict: function(departmentId, district, onlyMandateInProgress) {
 		let options = { departmentId: departmentId, district: district };
 		if (onlyMandateInProgress) {
@@ -50,23 +82,6 @@ let self = module.exports = {
 		.where(options)
 	},
 
-	findDeputyAtDateForDistrict: function(departmentId, district, date) {
-		return self.findDeputiesForDistrict(departmentId, district, false)
-		.then(function(deputies) {
-			let smallestDiff;
-			let deputy;
-			for (let i in deputies) {
-				let deputyDate = DateHelper.formatDateForWS( deputies[i].currentMandateStartDate)
-				let diff = DateHelper.getDiff(date, deputyDate);
-				if (diff > 0 && (diff < smallestDiff || !smallestDiff)) {
-					smallestDiff = diff;
-					deputy = deputies[i];
-				}
-			}
-			return deputy;
-		})
-	},
-
 	findCurrentDeputies: function() {
 		var options = { currentMandateStartDate:  {'!': null}, mandateEndDate: null };
 		return Deputy.find()
@@ -74,36 +89,39 @@ let self = module.exports = {
 	}
 };
 
-let formatDeputyResponse = function(deputy, department) {
+let formatDeputyResponse = function(deputy) {
 	if (deputy) {
-		deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
-		return MandateService.getPoliticalAgeOfDeputy(deputy.officialId, deputy.currentMandateStartDate)
-		.then(function(parliamentAgeInYears) {
-			deputy.parliamentAgeInYears = parliamentAgeInYears;
-			return deputy;
-		})
-		.then(function(deputy) {
-			return DeclarationService.getDeclarationsForDeputy(deputy.officialId)
-			.then(function(declarations) {
-				deputy.declarations = declarations;
+		return DepartmentService.findDepartmentWithId(deputy.departmentId)
+		.then(function(department) {
+			deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
+			return MandateService.getPoliticalAgeOfDeputy(deputy.officialId, deputy.currentMandateStartDate)
+			.then(function(parliamentAgeInYears) {
+				deputy.parliamentAgeInYears = parliamentAgeInYears;
 				return deputy;
 			})
-		})
-		.then(function(deputy) {
-			return findActivityRate(deputy, false)
-			.then(function(activityRate) {
-				deputy.activityRate = activityRate;
-				return deputy;
+			.then(function(deputy) {
+				return DeclarationService.getDeclarationsForDeputy(deputy.officialId)
+				.then(function(declarations) {
+					deputy.declarations = declarations;
+					return deputy;
+				})
 			})
-		})
-		.then(function(deputy) {
-			return ExtraPositionService.getSalaryForDeputy(deputy.officialId)
-			.then(function(salary) {
-				deputy.salary = salary;
-				if (deputy.currentMandateStartDate) {
-					deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
-				}
-				return prepareDeputyResponse(deputy, department);
+			.then(function(deputy) {
+				return findActivityRate(deputy, false)
+				.then(function(activityRate) {
+					deputy.activityRate = activityRate;
+					return deputy;
+				})
+			})
+			.then(function(deputy) {
+				return ExtraPositionService.getSalaryForDeputy(deputy.officialId)
+				.then(function(salary) {
+					deputy.salary = salary;
+					if (deputy.currentMandateStartDate) {
+						deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
+					}
+					return prepareDeputyResponse(deputy, department);
+				})
 			})
 		})
 	} else {
