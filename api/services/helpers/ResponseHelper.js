@@ -19,7 +19,40 @@ const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTH
 
 const NUMBER_OF_DEPUTIES = 577;
 
+const BASE_URL = 'http://www2.assemblee-nationale.fr/';
+const PARAM_DEPUTY_ID = '{deputy_id}';
+const PARAM_MANDATE_NUMBER = '15';
+const DEPUTY_PHOTO_URL = BASE_URL + 'static/tribun/' + PARAM_MANDATE_NUMBER + '/photos/' + PARAM_DEPUTY_ID + '.jpg'
+
 let self = module.exports = {
+    prepareSimpleDeputyResponse: function(deputy, department) {
+        deputy = self.prepareDeputyResponse(deputy, department);
+        delete deputy.commission;
+        delete deputy.phone;
+        delete deputy.email;
+        delete deputy.job;
+        delete deputy.currentMandateStartDate;
+        return deputy;
+    },
+
+    prepareDeputyResponse: function(deputy, department) {
+        deputy.id = parseInt(deputy.officialId);
+        deputy.seatNumber = parseInt(deputy.seatNumber)
+        deputy.department = {}
+        deputy.department.id = parseInt(department.id)
+        deputy.department.code = department.code
+        deputy.department.name = department.name
+        deputy.district = parseInt(deputy.district)
+        deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
+        delete deputy.officialId;
+        delete deputy.gender;
+        delete deputy.createdAt;
+        delete deputy.updatedAt;
+        delete deputy.mandateEndDate;
+        delete deputy.mandateEndReason;
+        return deputy;
+    },
+
     createBallotDetailsResponse: function(ballot, deputy, voteValue) {
         let ballotResponse = self.prepareBallotResponse(ballot);
         ballotResponse.deputyVote = {

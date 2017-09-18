@@ -1,10 +1,6 @@
 let Promise = require('bluebird');
 let DateHelper = require('./helpers/DateHelper.js');
-
-const PARAM_DEPUTY_ID = '{deputy_id}';
-const PARAM_MANDATE_NUMBER = '15';
-const BASE_URL = 'http://www2.assemblee-nationale.fr/';
-const DEPUTY_PHOTO_URL = BASE_URL + 'static/tribun/' + PARAM_MANDATE_NUMBER + '/photos/' + PARAM_DEPUTY_ID + '.jpg'
+let ResponseHelper = require('./helpers/ResponseHelper.js');
 
 let self = module.exports = {
 	findDeputyWithId: function(deputyId) {
@@ -31,7 +27,7 @@ let self = module.exports = {
 			.then(function(deputies) {
 				let deputiesInfos = [];
 				for (let i in deputies) {
-					deputiesInfos.push(prepareSimpleDeputyResponse(deputies[i], department));
+					deputiesInfos.push(ResponseHelper.prepareSimpleDeputyResponse(deputies[i], department));
 				}
 				return deputiesInfos;
 			})
@@ -93,7 +89,6 @@ let formatDeputyResponse = function(deputy) {
 	if (deputy) {
 		return DepartmentService.findDepartmentWithId(deputy.departmentId)
 		.then(function(department) {
-			deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
 			return MandateService.getPoliticalAgeOfDeputy(deputy.officialId, deputy.currentMandateStartDate)
 			.then(function(parliamentAgeInYears) {
 				deputy.parliamentAgeInYears = parliamentAgeInYears;
@@ -120,7 +115,7 @@ let formatDeputyResponse = function(deputy) {
 					if (deputy.currentMandateStartDate) {
 						deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
 					}
-					return prepareDeputyResponse(deputy, department);
+					return ResponseHelper.prepareDeputyResponse(deputy, department);
 				})
 			})
 		})
@@ -153,32 +148,4 @@ let findActivityRate = function(deputy, solemnBallotsOnly) {
 			})
 		}
 	})
-}
-
-let prepareSimpleDeputyResponse = function(deputy, department) {
-	deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
-	deputy = prepareDeputyResponse(deputy, department);
-	delete deputy.commission;
-	delete deputy.phone;
-	delete deputy.email;
-	delete deputy.job;
-	delete deputy.currentMandateStartDate;
-	return deputy;
-}
-
-let prepareDeputyResponse = function(deputy, department) {
-	delete deputy.gender;
-	delete deputy.createdAt;
-	delete deputy.updatedAt;
-	delete deputy.mandateEndDate;
-	delete deputy.mandateEndReason;
-	deputy.id = parseInt(deputy.officialId);
-	delete deputy.officialId;
-	deputy.seatNumber = parseInt(deputy.seatNumber)
-	deputy.department = {}
-	deputy.department.id = parseInt(department.id)
-	deputy.department.code = department.code
-	deputy.department.name = department.name
-	deputy.district = parseInt(deputy.district)
-	return deputy;
 }
