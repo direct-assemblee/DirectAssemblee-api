@@ -15,8 +15,8 @@ const VICE_PRESIDENT_REGEX = /Vice-président.{0,1}/;
 const QUESTERS_REGEX = /Questeur.{0,1}/;
 const COMMISSION_REGEX = /Commission.*/;
 const FINANCIAL_COMMISSION_REGEX = /Commission.*des\sfinances/;
-const GENERAL_REPORTER_REGEX = /Rapporteur.{0,1}\sgénérale/;
-const SECRETARY_REGEX = /Secrétaire.$/;
+const GENERAL_REPORTER_REGEX = /Rapporteur.{0,1}\sgénéral.{0,1}/;
+const SECRETARY_REGEX = /Secrétaire/;
 const SALARY_SCIENTIFIC_CHOICE_REGEX = /Office\sparlementaire\sd.évaluation\sdes\schoix\sscientifiques\set\stechnologiques/;
 
 const EXTRA_POSITIONS = [
@@ -34,6 +34,10 @@ let self = module.exports = {
     SALARY_PRESIDENT: SALARY_PRESIDENT, // test purpose
     SALARY_QUESTER: SALARY_QUESTER, // test purpose
     SALARY_VICE_PRESIDENT: SALARY_VICE_PRESIDENT, // test purpose
+    SALARY_COMMISSION_PRESIDENT: SALARY_COMMISSION_PRESIDENT, // test purpose
+    SALARY_GENERAL_REPORTER: SALARY_GENERAL_REPORTER, // test purpose
+    SALARY_SCIENTIFIC_CHOICE_PRESIDENT: SALARY_SCIENTIFIC_CHOICE_PRESIDENT, // test purpose
+    SALARY_SECRETARY: SALARY_SECRETARY, // test purpose
 
     findExtraPositionsForDeputy: function(deputyId) {
         return ExtraPosition.find()

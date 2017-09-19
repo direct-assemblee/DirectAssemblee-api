@@ -5,6 +5,7 @@ let Promise = require('bluebird');
 describe('The ExtraPositionService', function () {
     before(function(done) {
         let promises = [];
+        promises.push(ExtraPosition.create({ deputyId: 2, position: 'Secrétaire', office: 'Assemblée nationale' }))
         promises.push(ExtraPosition.create({ deputyId: 3, position: 'Membre' }))
         promises.push(ExtraPosition.create({ deputyId: 4, position: 'Président', office: 'Assemblée nationale' }))
         promises.push(ExtraPosition.create({ deputyId: 41, position: 'Présidente', office: 'Assemblée nationale' }))
@@ -12,6 +13,13 @@ describe('The ExtraPositionService', function () {
         promises.push(ExtraPosition.create({ deputyId: 51, position: 'Questeur', office: 'Assemblée nationale' }))
         promises.push(ExtraPosition.create({ deputyId: 6, position: 'Vice-président', office: 'Assemblée nationale' }))
         promises.push(ExtraPosition.create({ deputyId: 61, position: 'Vice-présidente', office: 'Assemblée nationale' }))
+        promises.push(ExtraPosition.create({ deputyId: 7, position: 'Président', office: 'Commission des conneries' }))
+        promises.push(ExtraPosition.create({ deputyId: 71, position: 'Présidente', office: 'Commission de la révolution' }))
+        promises.push(ExtraPosition.create({ deputyId: 8, position: 'Rapporteur général', office: 'Commission des finances' }))
+        promises.push(ExtraPosition.create({ deputyId: 81, position: 'Rapporteure générale', office: 'Commission des finances' }))
+        promises.push(ExtraPosition.create({ deputyId: 82, position: 'Rapporteur général', office: 'Commission de la bienveillance' }))
+        promises.push(ExtraPosition.create({ deputyId: 9, position: 'Président', office: 'Office parlementaire d\'évaluation des choix scientifiques et technologiques' }))
+        promises.push(ExtraPosition.create({ deputyId: 91, position: 'Président', office: 'Office parlementaire d\'évaluation des choix scientifiques et technologiques' }))
         Promise.all(promises)
         .then(function() {
             done();
@@ -20,6 +28,7 @@ describe('The ExtraPositionService', function () {
 
     after(function(done) {
         let promises = [];
+        promises.push(ExtraPosition.destroy({ deputyId: 2 }))
         promises.push(ExtraPosition.destroy({ deputyId: 3 }))
         promises.push(ExtraPosition.destroy({ deputyId: 4 }))
         promises.push(ExtraPosition.destroy({ deputyId: 41 }))
@@ -27,6 +36,12 @@ describe('The ExtraPositionService', function () {
         promises.push(ExtraPosition.destroy({ deputyId: 51 }))
         promises.push(ExtraPosition.destroy({ deputyId: 6 }))
         promises.push(ExtraPosition.destroy({ deputyId: 61 }))
+        promises.push(ExtraPosition.destroy({ deputyId: 7 }))
+        promises.push(ExtraPosition.destroy({ deputyId: 71 }))
+        promises.push(ExtraPosition.destroy({ deputyId: 8 }))
+        promises.push(ExtraPosition.destroy({ deputyId: 81 }))
+        promises.push(ExtraPosition.destroy({ deputyId: 9 }))
+        promises.push(ExtraPosition.destroy({ deputyId: 91 }))
         Promise.all(promises)
         .then(function() {
             done();
@@ -56,6 +71,16 @@ describe('The ExtraPositionService', function () {
         ExtraPositionService.getSalaryForDeputy(3)
         .then(function(salary) {
             salary.should.equal(ExtraPositionService.SALARY_BASE);
+            done();
+        })
+        .catch(done);
+    });
+
+
+    it('should return salary for secretary', function(done) {
+        ExtraPositionService.getSalaryForDeputy(2)
+        .then(function(salary) {
+            salary.should.equal(ExtraPositionService.SALARY_BASE + ExtraPositionService.SALARY_SECRETARY);
             done();
         })
         .catch(done);
@@ -110,6 +135,69 @@ describe('The ExtraPositionService', function () {
         ExtraPositionService.getSalaryForDeputy(61)
         .then(function(salary) {
             salary.should.equal(ExtraPositionService.SALARY_BASE + ExtraPositionService.SALARY_VICE_PRESIDENT);
+            done();
+        })
+        .catch(done);
+    });
+
+    it('should return salary for male commission president', function(done) {
+        ExtraPositionService.getSalaryForDeputy(7)
+        .then(function(salary) {
+            salary.should.equal(ExtraPositionService.SALARY_BASE + ExtraPositionService.SALARY_COMMISSION_PRESIDENT);
+            done();
+        })
+        .catch(done);
+    });
+
+    it('should return salary for female commission president', function(done) {
+        ExtraPositionService.getSalaryForDeputy(71)
+        .then(function(salary) {
+            salary.should.equal(ExtraPositionService.SALARY_BASE + ExtraPositionService.SALARY_COMMISSION_PRESIDENT);
+            done();
+        })
+        .catch(done);
+    });
+
+    it('should return salary for male general reporter', function(done) {
+        ExtraPositionService.getSalaryForDeputy(8)
+        .then(function(salary) {
+            salary.should.equal(ExtraPositionService.SALARY_BASE + ExtraPositionService.SALARY_GENERAL_REPORTER);
+            done();
+        })
+        .catch(done);
+    });
+
+    it('should return salary for female general reporter', function(done) {
+        ExtraPositionService.getSalaryForDeputy(81)
+        .then(function(salary) {
+            salary.should.equal(ExtraPositionService.SALARY_BASE + ExtraPositionService.SALARY_GENERAL_REPORTER);
+            done();
+        })
+        .catch(done);
+    });
+
+    it('should return salary for other reporter', function(done) {
+        ExtraPositionService.getSalaryForDeputy(82)
+        .then(function(salary) {
+            salary.should.equal(ExtraPositionService.SALARY_BASE);
+            done();
+        })
+        .catch(done);
+    });
+
+    it('should return salary for male scientific choice president', function(done) {
+        ExtraPositionService.getSalaryForDeputy(9)
+        .then(function(salary) {
+            salary.should.equal(ExtraPositionService.SALARY_BASE + ExtraPositionService.SALARY_SCIENTIFIC_CHOICE_PRESIDENT);
+            done();
+        })
+        .catch(done);
+    });
+
+    it('should return salary for female scientific choice president', function(done) {
+        ExtraPositionService.getSalaryForDeputy(91)
+        .then(function(salary) {
+            salary.should.equal(ExtraPositionService.SALARY_BASE + ExtraPositionService.SALARY_SCIENTIFIC_CHOICE_PRESIDENT);
             done();
         })
         .catch(done);
