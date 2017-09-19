@@ -2,18 +2,18 @@ require('../../bootstrap');
 
 var createdId;
 
-beforeEach(function(done) {
-    Department.create({ code: '3' })
-    .then(function() {
-        DepartmentService.findDepartmentWithCode('3')
-        .then(function(department) {
-            createdId = department.id;
-        })
-        done();
-    })
-});
-
 describe('The DepartmentService', function () {
+    beforeEach(function(done) {
+        Department.create({ code: '3' })
+        .then(function() {
+            DepartmentService.findDepartmentWithCode('3')
+            .then(function(department) {
+                createdId = department.id;
+                done();
+            })
+        })
+    });
+
     it('should return department with given code', function(done) {
         DepartmentService.findDepartmentWithCode('3')
         .then(function(department) {

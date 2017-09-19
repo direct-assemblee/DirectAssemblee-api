@@ -23,7 +23,7 @@ let self = module.exports = {
 		let circNumber = district.district;
 		return DepartmentService.findDepartmentWithCode(departmentCode)
 		.then(function(department) {
-			return self.findDeputiesForDistrict(department.id, circNumber, true)
+			return findDeputiesForDistrict(department.id, circNumber, true)
 			.then(function(deputies) {
 				let deputiesInfos = [];
 				for (let i in deputies) {
@@ -65,17 +65,9 @@ let self = module.exports = {
 					return diff < 0 ? -1 : 1;
 				});
 			}
+
 			return deputies;
 		})
-	},
-
-	findDeputiesForDistrict: function(departmentId, district, onlyMandateInProgress) {
-		let options = { departmentId: departmentId, district: district };
-		if (onlyMandateInProgress) {
-			options.currentMandateStartDate = {'!': null};
-		}
-		return Deputy.find()
-		.where(options)
 	},
 
 	findCurrentDeputies: function() {
@@ -84,6 +76,16 @@ let self = module.exports = {
 		.where(options);
 	}
 };
+
+let findDeputiesForDistrict = function(departmentId, district,
+	onlyMandateInProgress) {
+	let options = { departmentId: departmentId, district: district };
+	if (onlyMandateInProgress) {
+		options.currentMandateStartDate = {'!': null};
+	}
+	return Deputy.find()
+	.where(options)
+}
 
 let formatDeputyResponse = function(deputy) {
 	if (deputy) {
