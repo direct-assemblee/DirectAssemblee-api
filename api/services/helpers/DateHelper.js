@@ -44,8 +44,8 @@ let self = module.exports = {
         return diff;
     },
 
-    convertDaysToYears: function(days) {
-        return Math.floor(days / 365);
+    convertDaysToMonths: function(days) {
+        return Math.floor(days * 12 / 365);
     },
 
     getDateForMonthsBack: function(numberOfMonths) {

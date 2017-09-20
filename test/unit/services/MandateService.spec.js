@@ -5,7 +5,7 @@ let Promise = require('bluebird');
 
 let today = moment().format('DD/MM/YYYY');
 
-describe('The DepartmentService', function () {
+describe('The MandaService', function () {
     before(function(done) {
         let promises = [];
         promises.push(Mandate.create({ deputyId: 3, name: 'Très petit mandat', startingDate: '2014-06-04', endingDate: '2014-08-04' }))
@@ -28,8 +28,8 @@ describe('The DepartmentService', function () {
         })
     });
 
-    it('should return political age for unexperienced deputy', function(done) {
-        MandateService.getPoliticalAgeOfDeputy('3', today)
+    it('should return political age for deputy with no experience', function(done) {
+        MandateService.getPoliticalAgeOfDeputy('2', today)
         .then(function(age) {
             age.should.equal(0);
             done();
@@ -37,12 +37,20 @@ describe('The DepartmentService', function () {
         .catch(done);
     });
 
+    it('should return political age for unexperienced deputy', function(done) {
+        MandateService.getPoliticalAgeOfDeputy('3', today)
+        .then(function(age) {
+            age.should.equal(2);
+            done();
+        })
+        .catch(done);
+    });
+
     it('should return political age for unexperienced deputy and current mandate well started', function(done) {
         let currentMandateStartDate = moment().subtract(3, 'years').format('DD/MM/YYYY');
-        console.log(currentMandateStartDate)
         MandateService.getPoliticalAgeOfDeputy('3', currentMandateStartDate)
         .then(function(age) {
-            age.should.equal(3);
+            age.should.equal(38);
             done();
         })
         .catch(done);
@@ -51,7 +59,7 @@ describe('The DepartmentService', function () {
     it('should return political age for deputy with only one experience', function(done) {
         MandateService.getPoliticalAgeOfDeputy('4', today)
         .then(function(age) {
-            age.should.equal(2);
+            age.should.equal(26);
             done();
         })
         .catch(done);
@@ -59,10 +67,9 @@ describe('The DepartmentService', function () {
 
     it('should return political age for deputy with only one experience and current mandate well started', function(done) {
         let currentMandateStartDate = moment().subtract(3, 'years').format('DD/MM/YYYY');
-        console.log(currentMandateStartDate)
         MandateService.getPoliticalAgeOfDeputy('4', currentMandateStartDate)
         .then(function(age) {
-            age.should.equal(5);
+            age.should.equal(62);
             done();
         })
         .catch(done);
@@ -71,7 +78,7 @@ describe('The DepartmentService', function () {
     it('should return political age for deputy with much experience', function(done) {
         MandateService.getPoliticalAgeOfDeputy('5', today)
         .then(function(age) {
-            age.should.equal(6);
+            age.should.equal(72);
             done();
         })
         .catch(done);
@@ -79,10 +86,9 @@ describe('The DepartmentService', function () {
 
     it('should return political age deputy with much experience and current mandate well started', function(done) {
         let currentMandateStartDate = moment().subtract(3, 'years').add(2, 'days').format('DD/MM/YYYY');
-        console.log(currentMandateStartDate)
         MandateService.getPoliticalAgeOfDeputy('5', currentMandateStartDate)
         .then(function(age) {
-            age.should.equal(8);
+            age.should.equal(107);
             done();
         })
         .catch(done);

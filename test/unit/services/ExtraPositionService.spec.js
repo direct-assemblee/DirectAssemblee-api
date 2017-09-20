@@ -67,20 +67,19 @@ describe('The ExtraPositionService', function () {
         .catch(done);
     });
 
-    it('should return salary for regular deputy', function(done) {
-        ExtraPositionService.getSalaryForDeputy(3)
+    it('should return salary for secretary', function(done) {
+        ExtraPositionService.getSalaryForDeputy(2)
         .then(function(salary) {
-            salary.should.equal(ExtraPositionService.SALARY_BASE);
+            salary.should.equal(ExtraPositionService.SALARY_BASE + ExtraPositionService.SALARY_SECRETARY);
             done();
         })
         .catch(done);
     });
 
-
-    it('should return salary for secretary', function(done) {
-        ExtraPositionService.getSalaryForDeputy(2)
+    it('should return salary for regular deputy', function(done) {
+        ExtraPositionService.getSalaryForDeputy(3)
         .then(function(salary) {
-            salary.should.equal(ExtraPositionService.SALARY_BASE + ExtraPositionService.SALARY_SECRETARY);
+            salary.should.equal(ExtraPositionService.SALARY_BASE);
             done();
         })
         .catch(done);

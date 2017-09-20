@@ -92,8 +92,8 @@ let formatDeputyResponse = function(deputy) {
 		return DepartmentService.findDepartmentWithId(deputy.departmentId)
 		.then(function(department) {
 			return MandateService.getPoliticalAgeOfDeputy(deputy.officialId, deputy.currentMandateStartDate)
-			.then(function(parliamentAgeInYears) {
-				deputy.parliamentAgeInYears = parliamentAgeInYears;
+			.then(function(parliamentAgeInMonths) {
+				deputy.parliamentAgeInMonths = parliamentAgeInMonths;
 				return deputy;
 			})
 			.then(function(deputy) {
