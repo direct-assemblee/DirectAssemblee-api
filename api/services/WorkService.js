@@ -29,7 +29,7 @@ module.exports = {
         .then(function(lastWorks) {
             if (lastWorks) {
                 return Promise.filter(lastWorks, function(work) {
-                    return DateHelper.isLater(work.createdAt, work.date);
+                    return DateHelper.isLaterOrSame(work.createdAt, work.date);
                 })
                 .then(function(filteredWorks) {
                     return mapWorksByDeputy(filteredWorks);

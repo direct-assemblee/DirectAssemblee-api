@@ -18,7 +18,7 @@ let getAllMandatesDuration = function(mandates, currentMandateStartDate) {
     let days = DateHelper.getDaysFromNow(currentMandateStartDate);
     for (let i in mandates) {
         let mandate = mandates[i];
-        days = days + DateHelper.getDurationInDays(mandate.startingDate, mandate.endingDate);
+        days = days + DateHelper.getDiffInDays(mandate.startingDate, mandate.endingDate);
     }
     return DateHelper.convertDaysToMonths(days);
 }

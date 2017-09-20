@@ -61,8 +61,8 @@ let self = module.exports = {
 		.then(function(deputies) {
 			if (deputies && deputies.length > 0) {
 				deputies.sort(function(a, b) {
-					let diff = DateHelper.getDiff(b.currentMandateStartDate, a.currentMandateStartDate);
-					return diff < 0 ? -1 : 1;
+					let diff = DateHelper.getDiffInDays(a.currentMandateStartDate, b.currentMandateStartDate);
+					return diff == 0 ? 0 : diff > 0 ? 1 : -1;
 				});
 			}
 

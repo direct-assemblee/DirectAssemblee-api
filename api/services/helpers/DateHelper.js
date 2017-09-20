@@ -20,26 +20,22 @@ let self = module.exports = {
     },
 
     getDaysFromNow: function(start) {
-        return self.getDurationInDays(start, moment());
-    },
-
-    getDurationInDays: function(start, end) {
-        return self.getDiff(end, start)
+        return self.getDiffInDays(start, moment());
     },
 
     sortItemsWithDate: function(items) {
         items.sort(function(a, b) {
-            var diff = self.getDiff(b.date, a.date);
+            var diff = self.getDiffInDays(a.date, b.date);
             var result = diff == 0 ? 0 : diff > 0 ? 1 : -1;
             return result
         });
         return items;
     },
 
-    getDiff: function(date1, date2) {
+    getDiffInDays: function(date1, date2) {
         var diff = 0;
         if (date1 && date2) {
-            diff = moment(date1, 'DD/MM/YYYY').diff(moment(date2, 'DD/MM/YYYY'), 'days');
+            diff = moment(date2, 'DD/MM/YYYY').diff(moment(date1, 'DD/MM/YYYY'), 'days');
         }
         return diff;
     },
@@ -52,17 +48,13 @@ let self = module.exports = {
         return self.substractAndFormat(moment(), numberOfMonths, 'months');
     },
 
-    substractAndFormat: function(date, numberOfMonths, unit) {
-        var newDate = moment(date).subtract(numberOfMonths, unit);
+    substractAndFormat: function(date, quantity, timeUnit) {
+        var newDate = moment(date).subtract(quantity, timeUnit);
         return newDate.format('YYYY-MM-DD');
     },
 
-    isLater: function(date1, date2) {
-        var result = false;
-        if (self.formatSimpleDate(date1) >= self.formatSimpleDate(date2)) {
-            result = moment(date1) >= moment(date2);
-        }
-        return result
+    isLaterOrSame: function(date1, date2) {
+        return self.formatSimpleDate(date1) >= self.formatSimpleDate(date2);
     },
 
     formatSimpleDate: function(date) {

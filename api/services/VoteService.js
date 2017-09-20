@@ -66,7 +66,7 @@ let self = module.exports = {
 		.then(function(lastBallots) {
 			if (lastBallots.length > 0) {
 				return Promise.filter(lastBallots, function(ballot) {
-					return DateHelper.isLater(ballot.createdAt, ballot.date);
+					return DateHelper.isLaterOrSame(ballot.createdAt, ballot.date);
 				})
 				.map(function(ballot) {
 					return findVotesForBallot(ballot, currentDeputies)
