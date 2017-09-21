@@ -27,6 +27,7 @@ module.exports = {
     findLastWorksByDeputy: function(afterDate) {
         return Work.find()
         .where({ date: { '>=': afterDate }})
+        .populate('themeId')
         .then(function(lastWorks) {
             if (lastWorks) {
                 return Promise.filter(lastWorks, function(work) {
