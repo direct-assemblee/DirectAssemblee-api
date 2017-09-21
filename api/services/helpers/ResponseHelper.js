@@ -108,7 +108,7 @@ let self = module.exports = {
         ballot.blankVotes = ballot.totalVotes - ballot.yesVotes - ballot.noVotes;
         ballot.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes - ballot.nonVoting;
         ballot.isAdopted = ballot.isAdopted ? true : false;
-        ballot.theme =
+        ballot.ballotTheme =
         createBallotThemeResponse(ballot.ballotThemeId);
         delete ballot.createdAt;
         delete ballot.updatedAt;
