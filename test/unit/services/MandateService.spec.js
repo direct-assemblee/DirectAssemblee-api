@@ -5,7 +5,7 @@ let Promise = require('bluebird');
 
 let today = moment().format('DD/MM/YYYY');
 
-describe('The MandaService', function () {
+describe('The MandateService', function () {
     before(function(done) {
         let promises = [];
         promises.push(Mandate.create({ deputyId: 3, name: 'Très petit mandat', startingDate: '2014-06-04', endingDate: '2014-08-04' }))
