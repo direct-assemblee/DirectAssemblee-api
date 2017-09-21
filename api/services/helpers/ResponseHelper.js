@@ -56,8 +56,8 @@ let self = module.exports = {
 
     createBallotDetailsResponse: function(ballot, deputy, voteValue) {
         let ballotResponse = self.prepareBallotResponse(ballot);
-        ballotResponse.deputyVote = {
-            'voteValue': voteValue,
+        ballotResponse.extraBallotInfo.deputyVote = {
+            'voteValue': self.createVoteValueForWS(ballot.type, voteValue),
             'deputy': {
                 'firstname': deputy.firstname,
                 'lastname': deputy.lastname
@@ -71,7 +71,7 @@ let self = module.exports = {
             type: work.type,
             date: DateHelper.formatDateForWS(work.date),
             title: work.title,
-            theme: work.theme,
+            theme: createThemeResponse(work.themeId),
             description: work.description
         }
     },
@@ -82,7 +82,7 @@ let self = module.exports = {
         response.date = DateHelper.formatDateForWS(ballot.date);
         response.description = ballot.title;
         response.title = self.getBallotTypeDisplayName(ballot.type);
-        response.theme = createBallotThemeResponse(ballot.ballotThemeId);
+        response.theme = createThemeResponse(ballot.themeId);
         return response;
     },
 
@@ -91,7 +91,7 @@ let self = module.exports = {
             id: ballot.id,
             date: DateHelper.formatDateForWS(ballot.date),
             title: self.getBallotTypeDisplayName(ballot.type),
-            theme: createBallotThemeResponse(ballot.ballotThemeId),
+            theme: createThemeResponse(ballot.themeId),
             description: ballot.title,
             type: self.getBallotTypeName(ballot.type),
             isAdopted: ballot.isAdopted ? true : false
@@ -103,20 +103,33 @@ let self = module.exports = {
         ballot.description = ballot.title;
         ballot.title = self.getBallotTypeDisplayName(ballot.type);
         ballot.type = self.getBallotTypeName(ballot.type)
-        ballot.totalVotes = parseInt(ballot.totalVotes);
-        ballot.yesVotes = parseInt(ballot.yesVotes);
-        ballot.noVotes = parseInt(ballot.noVotes);
-        ballot.blankVotes = ballot.totalVotes - ballot.yesVotes - ballot.noVotes;
-        ballot.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes - ballot.nonVoting;
-        ballot.isAdopted = ballot.isAdopted ? true : false;
-        ballot.ballotTheme =
-        createBallotThemeResponse(ballot.ballotThemeId);
+        ballot.theme = createThemeResponse(ballot.themeId);
+        ballot.extraBallotInfo = {};
+        ballot.extraBallotInfo.id = parseInt(ballot.id);
+        ballot.extraBallotInfo.totalVotes = parseInt(ballot.totalVotes);
+        ballot.extraBallotInfo.yesVotes = parseInt(ballot.yesVotes);
+        ballot.extraBallotInfo.noVotes = parseInt(ballot.noVotes);
+        ballot.extraBallotInfo.nonVoting = parseInt(ballot.nonVoting);
+        ballot.extraBallotInfo.blankVotes = ballot.totalVotes - ballot.yesVotes - ballot.noVotes;
+        ballot.extraBallotInfo.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes - ballot.nonVoting;
+        ballot.extraBallotInfo.isAdopted = ballot.isAdopted ? true : false;
+        ballot.extraBallotInfo.fileUrl = ballot.fileUrl;
+
+        delete ballot.id;
+        delete ballot.fileUrl;
+        delete ballot.nonVoting;
+        delete ballot.totalVotes;
+        delete ballot.yesVotes;
+        delete ballot.noVotes;
+        delete ballot.blankVotes;
+        delete ballot.missing;
+        delete ballot.isAdopted;
         delete ballot.createdAt;
         delete ballot.updatedAt;
         delete ballot.officialId;
         delete ballot.dateDetailed;
         delete ballot.analysisUrl;
-        delete ballot.ballotThemeId;
+        delete ballot.themeId;
         return ballot;
     },
 
@@ -139,7 +152,7 @@ let self = module.exports = {
     createVoteForPush: function(ballot, vote) {
         return {
             title: ballot.title,
-            theme: ballot.ballotThemeId.name,
+            theme: ballot.themeId.name,
             ballotId : ballot.id,
             deputyId : vote.deputyId.officialId,
             value : self.createVoteValueForWS(ballot.type, vote.value)
@@ -149,7 +162,7 @@ let self = module.exports = {
     createMissingVoteForPush: function(ballot, deputy) {
         return {
             title: ballot.title,
-            theme: ballot.ballotThemeId.name,
+            theme: ballot.themeId.name,
             ballotId : ballot.id,
             deputyId : deputy.officialId,
             value : 'missing'
@@ -179,7 +192,7 @@ let getBallotType = function(ballotType) {
 }
 
 let createPayloadForVote = function(deputyId, vote) {
-    let body = vote.theme ? vote.theme + ' : ' : '';
+    let body = vote.themeId ? vote.themeId.name + ' : ' : '';
     body += vote.title;
     let payload = {
         notification: {
@@ -196,7 +209,7 @@ let createPayloadForVote = function(deputyId, vote) {
 
 let createPayloadForWork = function(deputyId, work) {
     let title = createWorkTitleForPush(work)
-    let body = work.theme ? work.theme + ' : ' : '';
+    let body = work.themeId ? work.themeId.name + ' : ' : '';
     body += work.description;
     let payload = {
         notification: {
@@ -262,9 +275,9 @@ let createWorkTitleForPush = function(work) {
     return title;
 }
 
-let createBallotThemeResponse = function(ballotTheme) {
-    if (ballotTheme) {
-        delete ballotTheme.typeName;
+let createThemeResponse = function(theme) {
+    if (theme) {
+        delete theme.typeName;
     }
-    return ballotTheme;
+    return theme;
 }

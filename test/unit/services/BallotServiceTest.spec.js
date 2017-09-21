@@ -2,7 +2,7 @@ require('../../bootstrap');
 let moment = require('moment');
 
 let fifthBallotCreatedId;
-let ballotThemeCreatedId;
+let themeCreatedId;
 
 describe('The BallotService', function () {
     beforeEach(function(done) {
@@ -16,12 +16,12 @@ describe('The BallotService', function () {
     describe('pagination', function () {
         before(function(done) {
             let promises = [];
-            promises = promises.concat(BallotTheme.create({ name: 'Education', typeName: 'EDUCATION' }));
+            promises = promises.concat(Theme.create({ name: 'Education', typeName: 'EDUCATION' }));
             Promise.all(promises)
             .then(function() {
-                BallotTheme.findOne({ name: 'Education' })
-                .then(function(ballotTheme) {
-                    ballotThemeCreatedId = ballotTheme.id;
+                Theme.findOne({ name: 'Education' })
+                .then(function(theme) {
+                    themeCreatedId = theme.id;
                     createBallotsForFirstTests(done);
                 })
             });
@@ -87,8 +87,8 @@ describe('The BallotService', function () {
             .then(function(ballot) {
                 ballot.id.should.equal(fifthBallotCreatedId);
                 ballot.officialId.should.equal('5');
-                ballot.ballotThemeId.name.should.equal('Education');
-                ballot.ballotThemeId.typeName.should.equal('EDUCATION');
+                ballot.themeId.name.should.equal('Education');
+                ballot.themeId.typeName.should.equal('EDUCATION');
                 done();
             })
         });
@@ -101,7 +101,7 @@ let createOneBallotADay = function(size, type, startingId) {
     for (let i = 0 ; i < size ; i++) {
         let date = moment(startingDate).subtract(startingId + i, 'days').format('YYYY-MM-DD');
         // console.log('push : ' + (i+startingId) + " -- date " + date + ' -- type ' + type)
-        promises.push(Ballot.create({ 'officialId': startingId + i, 'date': date, 'type': type, ballotThemeId: ballotThemeCreatedId }));
+        promises.push(Ballot.create({ 'officialId': startingId + i, 'date': date, 'type': type, themeId: themeCreatedId }));
     }
     return promises;
 }

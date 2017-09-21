@@ -16,12 +16,12 @@ let self = module.exports = {
         : { date: { '>': searchedDate } };
         return Ballot.find()
         .where(options)
-        .populate('ballotThemeId')
+        .populate('themeId')
     },
 
     getBallotWithId: function(id) {
         return Ballot.findOne({ id: id })
-        .populate('ballotThemeId')
+        .populate('themeId')
     },
 
     getBallotWithIdAndDeputyVote: function(id, departmentId, district) {
@@ -69,12 +69,12 @@ let addBallotVoteForDeputy = function(ballot, deputy) {
 let findBallotsBetweenDates = function(beforeDate, afterDate) {
     return Ballot.find()
     .where({ date: { '<=': beforeDate , '>': afterDate } })
-    .populate('ballotThemeId');
+    .populate('themeId');
 }
 
 let findBallotsWithOffset = function(offset) {
     return Ballot.find()
-    .populate('ballotThemeId')
+    .populate('themeId')
     .limit(BALLOTS_PAGE_ITEMS_COUNT)
     .skip(offset)
     .then(function(ballots) {

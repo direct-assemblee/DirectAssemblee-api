@@ -16,6 +16,7 @@ module.exports = {
     findWorksForDeputyFromDate: function(deputyId, beforeDate, afterDate) {
         return Work.find()
         .where({ deputyId: deputyId, date: { '<=': beforeDate, '>': afterDate } })
+        .populate('themeId')
         .then(function(works) {
             return Promise.map(works, function(work) {
                 return ResponseHelper.createWorkForTimeline(work)
