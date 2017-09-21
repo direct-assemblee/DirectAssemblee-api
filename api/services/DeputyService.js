@@ -27,7 +27,8 @@ let self = module.exports = {
 			.then(function(deputies) {
 				let deputiesInfos = [];
 				for (let i in deputies) {
-					deputiesInfos.push(ResponseHelper.prepareSimpleDeputyResponse(deputies[i], department));
+					deputies[i].department = department;
+					deputiesInfos.push(ResponseHelper.prepareSimpleDeputyResponse(deputies[i]));
 				}
 				return deputiesInfos;
 			})
@@ -74,6 +75,22 @@ let self = module.exports = {
 		var options = { currentMandateStartDate:  {'!': null}, mandateEndDate: null };
 		return Deputy.find()
 		.where(options);
+	},
+
+	retrieveParliamentAgeForDeputy: function(deputy) {
+		return retrieveParliamentAgeForDeputy(deputy);
+	},
+
+	retrieveDeclarationsForDeputy: function(deputy) {
+		return retrieveDeclarationsForDeputy(deputy);
+	},
+
+	retrieveSalaryForDeputy: function(deputy) {
+		return retrieveSalaryForDeputy(deputy);
+	},
+
+	retrieveActivityRateForDeputy: function(deputy) {
+		return retrieveActivityRateForDeputy(deputy);
 	}
 };
 
@@ -88,42 +105,62 @@ let findDeputiesForDistrict = function(departmentId, district,
 }
 
 let formatDeputyResponse = function(deputy) {
-	if (deputy) {
-		return DepartmentService.findDepartmentWithId(deputy.departmentId)
-		.then(function(department) {
-			return MandateService.getPoliticalAgeOfDeputy(deputy.officialId, deputy.currentMandateStartDate)
-			.then(function(parliamentAgeInMonths) {
-				deputy.parliamentAgeInMonths = parliamentAgeInMonths;
-				return deputy;
-			})
-			.then(function(deputy) {
-				return DeclarationService.getDeclarationsForDeputy(deputy.officialId)
-				.then(function(declarations) {
-					deputy.declarations = declarations;
-					return deputy;
-				})
-			})
-			.then(function(deputy) {
-				return findActivityRate(deputy, false)
-				.then(function(activityRate) {
-					deputy.activityRate = activityRate;
-					return deputy;
-				})
-			})
-			.then(function(deputy) {
-				return ExtraPositionService.getSalaryForDeputy(deputy.officialId)
-				.then(function(salary) {
-					deputy.salary = salary;
-					if (deputy.currentMandateStartDate) {
-						deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
-					}
-					return ResponseHelper.prepareDeputyResponse(deputy, department);
-				})
-			})
-		})
-	} else {
-		return deputy;
-	}
+	return DepartmentService.findDepartmentWithId(deputy.departmentId)
+	.then(function(department) {
+		deputy.department = department;
+		return retrieveParliamentAgeForDeputy(deputy);
+	})
+	.then(function(deputy) {
+		return retrieveDeclarationsForDeputy(deputy);
+	})
+	.then(function(deputy) {
+		return retrieveActivityRateForDeputy(deputy);
+	})
+	.then(function(deputy) {
+		return retrieveSalaryForDeputy(deputy);
+	})
+	.then(function(deputy) {
+		if (deputy.currentMandateStartDate) {
+			deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
+		}
+		return ResponseHelper.prepareDeputyResponse(deputy);
+	})
+}
+
+let retrieveParliamentAgeForDeputy = function(deputyIn) {
+	return MandateService.getPoliticalAgeOfDeputy(deputyIn.officialId, deputyIn.currentMandateStartDate)
+	.then(function(parliamentAgeInMonths) {
+		let deputyOut = deputyIn;
+		deputyOut.parliamentAgeInMonths = parliamentAgeInMonths;
+		return deputyOut;
+	})
+}
+
+let retrieveDeclarationsForDeputy = function(deputyIn) {
+	return DeclarationService.getDeclarationsForDeputy(deputyIn.officialId)
+	.then(function(declarations) {
+		let deputyOut = deputyIn;
+		deputyOut.declarations = declarations;
+		return deputyOut;
+	})
+}
+
+let retrieveActivityRateForDeputy = function(deputyIn) {
+	return findActivityRate(deputyIn, false)
+	.then(function(activityRate) {
+		let deputyOut = deputyIn;
+		deputyOut.activityRate = activityRate;
+		return deputyOut;
+	})
+}
+
+let retrieveSalaryForDeputy = function(deputyIn) {
+	return ExtraPositionService.getSalaryForDeputy(deputyIn.officialId)
+	.then(function(salary) {
+		let deputyOut = deputyIn;
+		deputyOut.salary = salary;
+		return deputyOut;
+	})
 }
 
 let findActivityRate = function(deputy, solemnBallotsOnly) {

@@ -25,8 +25,8 @@ const PARAM_MANDATE_NUMBER = '15';
 const DEPUTY_PHOTO_URL = BASE_URL + 'static/tribun/' + PARAM_MANDATE_NUMBER + '/photos/' + PARAM_DEPUTY_ID + '.jpg'
 
 let self = module.exports = {
-    prepareSimpleDeputyResponse: function(deputy, department) {
-        deputy = self.prepareDeputyResponse(deputy, department);
+    prepareSimpleDeputyResponse: function(deputy) {
+        deputy = self.prepareDeputyResponse(deputy);
         delete deputy.commission;
         delete deputy.phone;
         delete deputy.email;
@@ -35,15 +35,16 @@ let self = module.exports = {
         return deputy;
     },
 
-    prepareDeputyResponse: function(deputy, department) {
+    prepareDeputyResponse: function(deputy) {
         deputy.id = parseInt(deputy.officialId);
         deputy.seatNumber = parseInt(deputy.seatNumber)
-        deputy.department = {}
-        deputy.department.id = parseInt(department.id)
-        deputy.department.code = department.code
-        deputy.department.name = department.name
+        deputy.department.id = parseInt(deputy.department.id)
         deputy.district = parseInt(deputy.district)
         deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
+        delete deputy.department.slug;
+        delete deputy.department.soundexName;
+        delete deputy.department.nameUppercase;
+        delete deputy.departmentId;
         delete deputy.officialId;
         delete deputy.gender;
         delete deputy.createdAt;
