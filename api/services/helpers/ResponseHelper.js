@@ -32,6 +32,7 @@ let self = module.exports = {
         delete deputy.email;
         delete deputy.job;
         delete deputy.currentMandateStartDate;
+        delete deputy.age;
         return deputy;
     },
 
