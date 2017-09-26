@@ -41,6 +41,8 @@ let self = module.exports = {
         deputy.department.id = parseInt(deputy.department.id)
         deputy.district = parseInt(deputy.district)
         deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
+        deputy.age = DateHelper.findAge(deputy.birthDate);
+        delete deputy.birthDate;
         delete deputy.department.slug;
         delete deputy.department.soundexName;
         delete deputy.department.nameUppercase;

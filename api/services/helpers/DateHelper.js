@@ -1,6 +1,11 @@
 let moment = require('moment');
 
 let self = module.exports = {
+    findAge: function(birthdate) {
+        let date = self.formatDateWithTemplate(birthdate, 'YYYY-MM-DD' ,'DD/MM/YYYY');
+        return Math.floor(self.getDaysFromNow(date) / 365)
+    },
+
     formatDate: function(dateString) {
         return self.formatDateWithTemplate(dateString, 'DD/MM/YYYY', 'YYYY-MM-DD');
     },
