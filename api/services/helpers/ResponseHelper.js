@@ -1,4 +1,5 @@
 let DateHelper = require('./DateHelper.js');
+let QuestionHelper = require('./QuestionHelper.js')
 
 const WORK_TYPE_VOTE_SOLEMN = 'vote_solemn';
 const WORK_TYPE_VOTE_ORDINARY = 'vote_ordinary';
@@ -70,12 +71,16 @@ let self = module.exports = {
     },
 
     createWorkForTimeline: function(work) {
+        let description = work.description;
+        if (work.type === WORK_TYPE_QUESTIONS) {
+            description = QuestionHelper.formatQuestionWithLineBreaks(description);
+        }
         return {
             type: work.type,
             date: DateHelper.formatDateForWS(work.date),
             title: work.title,
             theme: createThemeResponse(work.themeId),
-            description: work.description
+            description: description
         }
     },
 
