@@ -27,7 +27,10 @@ module.exports = {
                 }
                 newText += '\n';
             }
-            newText += sentences[sentences.length - 1].trim();
+            let lastSentence = sentences[sentences.length - 1];
+            if (lastSentence) {
+                newText += lastSentence.trim();
+            }
         } else {
             newText = question;
         }
