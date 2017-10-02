@@ -286,6 +286,11 @@ let createWorkTitleForPush = function(work) {
 let createThemeResponse = function(theme) {
     if (theme) {
         delete theme.typeName;
+    } else {
+        theme = {
+            id: 0,
+            name: 'Catégorisation à venir'
+        }
     }
     return theme;
 }
