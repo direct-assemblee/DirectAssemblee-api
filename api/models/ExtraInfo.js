@@ -10,7 +10,7 @@ module.exports = {
         label: {
             type: 'string'
         },
-        text: 'string',
+        text: 'text',
         workId: {
             type: 'int',
             model: 'Work'
