@@ -70,7 +70,7 @@ let self = module.exports = {
         return ballotResponse;
     },
 
-    createWorkForTimeline: function(work) {
+    createWorkForTimeline: function(work, extraInfos) {
         let response = {
             type: work.type,
             date: DateHelper.formatDateForWS(work.date),
@@ -81,10 +81,14 @@ let self = module.exports = {
         let description = work.description;
         if (work.type === WORK_TYPE_QUESTIONS) {
             description = QuestionHelper.formatQuestionWithLineBreaks(description);
-        } else if (work.type === WORK_TYPE_PROPOSITIONS || work.type === WORK_TYPE_COSIGNED_PROPOSITIONS) {
-            response.extraInfo = work.extraInfo;
         }
         response.description = description;
+        if (extraInfos && extraInfos.length > 0) {
+            response.extraInfos = [];
+            for (let i in extraInfos) {
+                response.extraInfos.push({ 'label': extraInfos[i].label, 'text': extraInfos[i].text } )
+            }
+        }
         return response;
     },
 

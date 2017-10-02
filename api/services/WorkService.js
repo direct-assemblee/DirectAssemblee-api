@@ -19,7 +19,10 @@ module.exports = {
         .populate('themeId')
         .then(function(works) {
             return Promise.map(works, function(work) {
-                return ResponseHelper.createWorkForTimeline(work)
+                return ExtraInfoService.findExtraInfosForWork(work.id)
+                .then(function(extraInfos) {
+                    return ResponseHelper.createWorkForTimeline(work, extraInfos)
+                })
             })
         })
     },
