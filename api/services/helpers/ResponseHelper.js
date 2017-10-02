@@ -71,17 +71,21 @@ let self = module.exports = {
     },
 
     createWorkForTimeline: function(work) {
-        let description = work.description;
-        if (work.type === WORK_TYPE_QUESTIONS) {
-            description = QuestionHelper.formatQuestionWithLineBreaks(description);
-        }
-        return {
+        let response = {
             type: work.type,
             date: DateHelper.formatDateForWS(work.date),
             title: work.title,
             theme: createThemeResponse(work.themeId),
-            description: description
+            fileUrl: work.url
         }
+        let description = work.description;
+        if (work.type === WORK_TYPE_QUESTIONS) {
+            description = QuestionHelper.formatQuestionWithLineBreaks(description);
+        } else if (work.type === WORK_TYPE_PROPOSITIONS || work.type === WORK_TYPE_COSIGNED_PROPOSITIONS) {
+            response.extraInfo = work.extraInfo;
+        }
+        response.description = description;
+        return response;
     },
 
     createBallotResponse: function(ballot, addToCurrentBallot) {
@@ -121,10 +125,8 @@ let self = module.exports = {
         ballot.extraBallotInfo.blankVotes = ballot.totalVotes - ballot.yesVotes - ballot.noVotes;
         ballot.extraBallotInfo.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes - ballot.nonVoting;
         ballot.extraBallotInfo.isAdopted = ballot.isAdopted ? true : false;
-        ballot.extraBallotInfo.fileUrl = ballot.fileUrl;
 
         delete ballot.id;
-        delete ballot.fileUrl;
         delete ballot.nonVoting;
         delete ballot.totalVotes;
         delete ballot.yesVotes;
