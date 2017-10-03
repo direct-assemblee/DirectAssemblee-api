@@ -9,7 +9,7 @@ const COLLAPSE_KEY = 'NOTIF_VOTE';
 const FIREBASE_INSTANCE_ID_SERVICE_URL = 'https://iid.googleapis.com/iid/';
 const PARAM_IID_TOKEN = '{IID_TOKEN}';
 const PARAM_TOPIC_NAME = '{TOPIC_NAME}';
-const PARAM_TOPIC_PREFIX_DEPUTY = 'DEPUTY_';
+const PARAM_TOPIC_PREFIX_DEPUTY = 'DEPUTY_v0_';
 const ADD_TO_TOPIC_URL = FIREBASE_INSTANCE_ID_SERVICE_URL + 'v1/' + PARAM_IID_TOKEN + '/rel/topics/' + PARAM_TOPIC_NAME;
 const REMOVE_FROM_TOPIC_URL = FIREBASE_INSTANCE_ID_SERVICE_URL + 'v1:batchRemove';
 const RANGE_STEP = 20;
@@ -79,7 +79,7 @@ module.exports = {
 let pushDeputyActivitiesByRange = function(deputyId, activities, start) {
     let end = start + RANGE_STEP;
     if (end > activities.length) {
-        end = activities.length;
+        end = start + activities.length;
     }
     let activitiesRange = activities.slice(start, end);
     return pushDeputyActivities(deputyId, activitiesRange)
