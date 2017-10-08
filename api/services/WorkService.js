@@ -27,9 +27,9 @@ module.exports = {
         })
     },
 
-    findLastWorksByDeputy: function(afterDate) {
+    findLastWorksForDeputy: function(deputyId, afterDate) {
         return Work.find()
-        .where({ date: { '>=': afterDate }})
+        .where({ deputyId: deputyId, date: { '>=': afterDate }})
         .populate('themeId')
         .then(function(lastWorks) {
             if (lastWorks) {
@@ -37,28 +37,9 @@ module.exports = {
                     return DateHelper.isLaterOrSame(work.createdAt, work.date);
                 })
                 .then(function(filteredWorks) {
-                    return mapWorksByDeputy(filteredWorks);
+                    return filteredWorks;
                 })
             }
         })
     }
-}
-
-let mapWorksByDeputy = function(allWorks) {
-    allWorks.sort(function(a, b) {
-        return a.deputyId - b.deputyId;
-    });
-
-    let worksByDeputy = [];
-    for (let i in allWorks) {
-        let work = allWorks[i];
-        let picked = worksByDeputy.find(o => o.deputyId === work.deputyId);
-        if (!picked) {
-            picked = { 'deputyId': work.deputyId, 'activities': [] };
-            worksByDeputy.push(picked);
-        }
-        delete work.deputyId;
-        picked['activities'].push(work);
-    }
-    return worksByDeputy;
 }

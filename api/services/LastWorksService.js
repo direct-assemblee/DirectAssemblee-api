@@ -1,90 +1,59 @@
-let cron = require('node-cron');
-let Promise = require('bluebird');
-let moment = require('moment');
 let storage = require('node-persist');
-let VoteService = require('./VoteService');
-
-const CRON_TIMES = '0 11,16,19 * * *';
 
 const LAST_SCAN_TIME_KEY = 'LAST_SCAN_TIME_KEY';
-let YESTERDAY = moment().subtract(1, 'days').format('YYYY-MM-DD');
+let lastScanTime;
 
-let self = module.exports = {
-    startService: function() {
-        cron.schedule(CRON_TIMES, function() {
-            console.log('start looking for new activities');
-            self.pushNewActivity()
-        });
+module.exports = {
+    findNewWorks: function(deputyId) {
+        return getLastScanTime()
+        .then(function(lastScanTime) {
+            if (lastScanTime) {
+                return WorkService.findLastWorksForDeputy(deputyId, lastScanTime)
+            }
+        })
     },
 
-    pushNewActivity: function() {
-        initLastScanTime()
+    findNewVotes: function() {
+        return getLastScanTime()
         .then(function(lastScanTime) {
-            console.log('last scan time : ' + lastScanTime)
-            return pushNewVotes(lastScanTime)
-            .then(function() {
-                return pushNewWorks(lastScanTime)
+            return DeputyService.findCurrentDeputies()
+            .then(function(deputies) {
+                return VoteService.findLastVotesByDeputy(lastScanTime, deputies)
             })
+        })
+    },
+
+    updateLastScanTime: function() {
+        lastScanTime = new Date();
+        return storage.init()
+        .then(function() {
+            return storage.setItem(LAST_SCAN_TIME_KEY, lastScanTime)
             .then(function() {
-                updateLastScanTime();
-            });
+                return storage.getItem(LAST_SCAN_TIME_KEY)
+            })
+            .then(function(value) {
+                console.log('updated last scan date : ' + value);
+            })
         });
     }
 }
 
-let initLastScanTime = function() {
-    return storage.init()
-    .then(function() {
-        return storage.getItem(LAST_SCAN_TIME_KEY)
-    })
-    .then(function(time) {
-        let lastScanTime;
-        if (time) {
-            lastScanTime = time;
-        } else {
-            lastScanTime = YESTERDAY;
-        }
-        return lastScanTime;
-    });
-};
-
-let pushNewVotes = function(lastScanTime) {
-    return DeputyService.findCurrentDeputies()
-    .then(function(deputies) {
-        return VoteService.findLastVotesByDeputy(lastScanTime, deputies)
-        .then(function(lastVotesByDeputy) {
-            if (lastVotesByDeputy) {
-                return Promise.map(lastVotesByDeputy, function(deputyVotes) {
-                    console.log('- deputy ' + deputyVotes.deputyId + ' voted for ' + deputyVotes.activities.length + ' ballots to be pushed')
-                    return PushNotifService.pushDeputyActivities(deputyVotes);
-                }, {concurrency: 10})
-            }
+let getLastScanTime = function() {
+    if (lastScanTime) {
+        return new Promise(function(resolve) {
+            resolve(lastScanTime);
         })
-    })
-}
-
-let pushNewWorks = function(lastScanTime) {
-    return WorkService.findLastWorksByDeputy(lastScanTime)
-    .then(function(lastWorksByDeputy) {
-        if (lastWorksByDeputy) {
-            return Promise.map(lastWorksByDeputy, function(deputyWorks) {
-                console.log('- deputy ' + deputyWorks.deputyId + ' has ' + deputyWorks.activities.length + ' new works to be pushed')
-                return PushNotifService.pushDeputyActivities(deputyWorks);
-            }, {concurrency: 10})
-        }
-    })
-}
-
-let updateLastScanTime = function() {
-    storage.init()
-    .then(function() {
-        //then start using it
-        storage.setItem(LAST_SCAN_TIME_KEY, new Date())
+    } else {
+        return storage.init()
         .then(function() {
             return storage.getItem(LAST_SCAN_TIME_KEY)
         })
-        .then(function(value) {
-            console.log('updated last scan date : ' + value);
+        .then(function(time) {
+            if (time) {
+                return time;
+            } else {
+                return storage.setItem(LAST_SCAN_TIME_KEY, new Date())
+            }
         })
-    });
+    }
 }

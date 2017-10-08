@@ -11,7 +11,6 @@
 
 module.exports.bootstrap = function(cb) {
   sails.on('lifted', function() {
-    LastWorksService.startService();
   });
 
   // It's very important to trigger this callback method when you are finished

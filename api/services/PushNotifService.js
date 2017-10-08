@@ -71,8 +71,8 @@ module.exports = {
         })
     },
 
-    pushDeputyActivities: function(deputyActivities) {
-        return pushDeputyActivitiesByRange(deputyActivities.deputyId, deputyActivities.activities, 0)
+    pushDeputyActivities: function(deputyId, activities) {
+        return pushDeputyActivitiesByRange(deputyId, activities, 0)
     }
 }
 

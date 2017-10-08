@@ -33,6 +33,7 @@ module.exports = {
        'ExtraPositionService': true,
        'DeputyService': true,
        'GeolocService': true,
+       'LastWorksService': true,
        'MandateService': true,
        'PushNotifService': true,
        'TestService': true,

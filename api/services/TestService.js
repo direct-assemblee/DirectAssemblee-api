@@ -3,7 +3,7 @@ let Constants = require('./Constants.js');
 module.exports = {
 	sendPush: function(deputyId, type) {
 		let activity = mockActivityOfType(type);
-		PushNotifService.pushDeputyActivities({ 'deputyId': deputyId, 'activities': [activity] });
+		PushNotifService.pushDeputyActivities(deputyId, [activity]);
     }
 };
 
