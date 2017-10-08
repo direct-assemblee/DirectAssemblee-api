@@ -24,7 +24,7 @@ let getDeputyTimeline = function(deputy, mandateStartDate, beforeDate, afterDate
             return nextDeputyTimeline(deputy, mandateStartDate, beforeDate, afterDate, offset, timelineItems);
         }
 
-        let sortedItems = DateHelper.sortItemsWithDate(foundItems);
+        let sortedItems = sortItemsWithDateAndOfficialId(foundItems);
         let newOffset = itemsOffset;
         for (let i = itemsOffset ; i < sortedItems.length && timelineItems && timelineItems.length < TIMELINE_PAGE_ITEMS_COUNT ; i++) {
             if (sortedItems[i]) {
@@ -38,6 +38,18 @@ let getDeputyTimeline = function(deputy, mandateStartDate, beforeDate, afterDate
             return nextDeputyTimeline(deputy, mandateStartDate, beforeDate, afterDate, newOffset, timelineItems);
         }
     })
+}
+
+let sortItemsWithDateAndOfficialId = function(items) {
+    items.sort(function(a, b) {
+        var diff = DateHelper.getDiffInDays(a.date, b.date);
+        var result = diff == 0 ? 0 : diff > 0 ? 1 : -1;
+        if (result === 0 && a.type.startsWith('vote') && b.type.startsWith('vote')) {
+            result = parseInt(a.officialId) > parseInt(b.officialId) ? 1 : -1;
+        }
+        return result
+    });
+    return items;
 }
 
 let findTimelineItems = function(deputy, beforeDate, afterDate) {

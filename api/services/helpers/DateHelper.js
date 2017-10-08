@@ -28,15 +28,6 @@ let self = module.exports = {
         return self.getDiffInDays(start, moment());
     },
 
-    sortItemsWithDate: function(items) {
-        items.sort(function(a, b) {
-            var diff = self.getDiffInDays(a.date, b.date);
-            var result = diff == 0 ? 0 : diff > 0 ? 1 : -1;
-            return result
-        });
-        return items;
-    },
-
     getDiffInDays: function(date1, date2) {
         var diff = 0;
         if (date1 && date2) {

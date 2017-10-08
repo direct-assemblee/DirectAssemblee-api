@@ -44,19 +44,6 @@ describe('The DateHelper', function () {
         done();
     });
 
-    it('should sort items - most recent first', function(done) {
-        let now = moment();
-        let recentDate = moment(now).subtract(10, 'days');
-        let olderDate = moment(now).subtract(18, 'days');
-        let oldestDate = moment(now).subtract(40, 'days');
-        let sortedDates = DateHelper.sortItemsWithDate([ { date: oldestDate }, { date: recentDate }, { date: olderDate }]);
-        sortedDates.length.should.equal(3);
-        sortedDates[0].date.should.equal(recentDate);
-        sortedDates[1].date.should.equal(olderDate);
-        sortedDates[2].date.should.equal(oldestDate);
-        done();
-    });
-
     it('should convert days to months', function(done) {
         let months = DateHelper.convertDaysToMonths(110);
         months.should.equal(3);
