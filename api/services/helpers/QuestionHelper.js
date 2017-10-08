@@ -19,13 +19,13 @@ module.exports = {
             }
         }
         if (sentences) {
-            newText = sentences[0] + '\n';
+            newText = sentences[0] + '\n\n';
             for (let i = 1 ; i < sentences.length - 1 ; i += 2) {
                 newText += sentences[i].trim();
                 if (i + 2 <= sentences.length - 1) {
                     newText += sentences[i + 1];
                 }
-                newText += '\n';
+                newText += '\n\n';
             }
             let lastSentence = sentences[sentences.length - 1];
             if (lastSentence) {
