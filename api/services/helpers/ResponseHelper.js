@@ -75,8 +75,10 @@ let self = module.exports = {
             type: work.type,
             date: DateHelper.formatDateForWS(work.date),
             title: work.title,
-            theme: createThemeResponse(work.themeId),
             fileUrl: work.url
+        }
+        if (work.type !== WORK_TYPE_COMMISSIONS && work.type !== WORK_TYPE_PUBLIC_SESSIONS) {
+            response.theme = createThemeResponse(work.themeId);
         }
         let description = work.description;
         if (work.type === WORK_TYPE_QUESTIONS) {
@@ -86,7 +88,7 @@ let self = module.exports = {
         if (extraInfos && extraInfos.length > 0) {
             response.extraInfos = [];
             for (let i in extraInfos) {
-                response.extraInfos.push({ 'label': extraInfos[i].label, 'text': extraInfos[i].text } )
+                response.extraInfos.push({ 'info': extraInfos[i].info, 'value': extraInfos[i].value } )
             }
         }
         return response;

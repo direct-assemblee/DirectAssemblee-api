@@ -4,11 +4,11 @@ module.exports = {
 		if (deputyId) {
 			return LastWorksService.findNewWorks(deputyId)
 			.then(function(newWorks) {
-				if (newWorks) {
+				if (newWorks && newWorks.length > 0) {
                     console.log('- deputy ' + deputyId + ' has ' + newWorks.length + ' new works to be pushed')
                     return PushNotifService.pushDeputyActivities(deputyId, newWorks);
                 } else {
-					console.log('- deputy ' + deputyId + ' has no new works to be pushed')
+					// console.log('- deputy ' + deputyId + ' has no new works to be pushed')
 				}
 				return res.json(200);
 			})
