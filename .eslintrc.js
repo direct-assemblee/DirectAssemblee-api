@@ -12,6 +12,13 @@ module.exports = {
        'sails': true,
        'async': true,
        'server': true,
+       'describe': true,
+       'before': true,
+       'beforeEach': true,
+       'after': true,
+       'afterEach': true,
+       'it': true,
+       'should': true,
 
        'Constants': true,
        'Ballot': true,

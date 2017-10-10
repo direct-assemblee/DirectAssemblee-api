@@ -1,7 +1,5 @@
 require('../../bootstrap');
 
-var createdId;
-
 describe('The DeclarationService', function () {
     beforeEach(function(done) {
         let promises = [];
