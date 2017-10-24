@@ -14,6 +14,15 @@ describe('The DepartmentService', function () {
         })
     });
 
+    after(function(done) {
+        let promises = [];
+        promises.push(Department.destroy())
+        Promise.all(promises)
+        .then(function() {
+            done();
+        })
+    });
+
     it('should return department with given code', function(done) {
         DepartmentService.findDepartmentWithCode('3')
         .then(function(department) {

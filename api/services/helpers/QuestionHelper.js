@@ -18,7 +18,7 @@ module.exports = {
                 sentences.push(matchedSentences[i]);
             }
         }
-        if (sentences) {
+        if (sentences && sentences.length > 0) {
             newText = sentences[0] + '\n\n';
             for (let i = 1 ; i < sentences.length - 1 ; i += 2) {
                 newText += sentences[i].trim();

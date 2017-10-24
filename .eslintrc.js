@@ -33,6 +33,8 @@ module.exports = {
        'Vote': true,
        'Work': true,
 
+       'DeputyController': true,
+
        'BallotService': true,
        'DeclarationService': true,
        'DepartmentService': true,
@@ -46,7 +48,9 @@ module.exports = {
        'TestService': true,
        'TimelineService': true,
        'VoteService': true,
-       'WorkService': true
+       'WorkService': true,
+
+       'ResponseHelper': true
    },
     'rules': {
         'no-console':0,

@@ -2,10 +2,21 @@ let Promise = require('bluebird');
 let ResponseHelper = require('./helpers/ResponseHelper.js');
 let DateHelper = require('./helpers/DateHelper.js');
 
-module.exports = {
-    findWorksDatesForDeputyFromDate: function(deputyId, afterDate) {
-        return Work.find()
-        .where({ deputyId: deputyId, date: { '>': afterDate } })
+let self = module.exports = {
+    findWorksWithThemeForDeputyAfterDate: function(deputyId, date) {
+        return findWorksForDeputyAfterDate(deputyId, date)
+        .populate('themeId');
+    },
+
+    findLastCreatedWorksWithThemeForDeputyAfterDate: function(deputyId, date) {
+        return self.findWorksWithThemeForDeputyAfterDate(deputyId, date)
+        .filter(function(work) {
+            return DateHelper.isLaterOrSame(work.createdAt, work.date);
+        })
+    },
+
+    findWorksDatesForDeputyAfterDate: function(deputyId, date) {
+        return findWorksForDeputyAfterDate(deputyId, date)
         .then(function(works) {
             return Promise.map(works, function(work) {
                 return DateHelper.formatSimpleDate(work.date);
@@ -13,9 +24,9 @@ module.exports = {
         })
     },
 
-    findWorksForDeputyFromDate: function(deputyId, beforeDate, afterDate) {
+    findWorksForDeputyBetweenDates: function(deputyId, afterDate,  beforeDate) {
         return Work.find()
-        .where({ deputyId: deputyId, date: { '<=': beforeDate, '>': afterDate } })
+        .where({ deputyId: deputyId, date: { '>': afterDate, '<=': beforeDate } })
         .populate('themeId')
         .then(function(works) {
             return Promise.map(works, function(work) {
@@ -25,21 +36,10 @@ module.exports = {
                 })
             })
         })
-    },
-
-    findLastWorksForDeputy: function(deputyId, afterDate) {
-        return Work.find()
-        .where({ deputyId: deputyId, date: { '>=': afterDate }})
-        .populate('themeId')
-        .then(function(lastWorks) {
-            if (lastWorks) {
-                return Promise.filter(lastWorks, function(work) {
-                    return DateHelper.isLaterOrSame(work.createdAt, work.date);
-                })
-                .then(function(filteredWorks) {
-                    return filteredWorks;
-                })
-            }
-        })
     }
+}
+
+let findWorksForDeputyAfterDate = function(deputyId, date) {
+    return Work.find()
+    .where({ deputyId: deputyId, date: { '>=': date } })
 }

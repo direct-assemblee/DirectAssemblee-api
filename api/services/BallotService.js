@@ -88,9 +88,12 @@ let findBallotsWithOffset = function(offset) {
 
 let getBallotWithDeputyVote = function(ballot, deputy) {
     if (deputy) {
-        return VoteService.findVoteValueForDeputyAndBallot(deputy.officialId, ballot.id, ballot.type)
-        .then(function(voteValue) {
-            return ResponseHelper.createBallotDetailsResponse(ballot, deputy, voteValue);
+        return VoteService.findVoteForDeputyAndBallot(deputy.officialId, ballot.id)
+        .then(function(vote) {
+            if (vote) {
+                let voteValue = ResponseHelper.createVoteValueForWS(ballot.type, vote.value);
+                return ResponseHelper.createBallotDetailsResponse(ballot, deputy, voteValue);
+            }
         })
     } else {
         return ballot;

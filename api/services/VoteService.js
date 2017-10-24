@@ -2,13 +2,7 @@ let Promise = require('bluebird');
 let ResponseHelper = require('./helpers/ResponseHelper.js');
 let DateHelper = require('./helpers/DateHelper.js');
 
-let self = module.exports = {
-	findAllVotes: function(deputyId) {
-		return Vote.find()
-		.where({ deputyId: deputyId })
-		.populate('ballotId');
-	},
-
+module.exports = {
 	findVotesBallotIds: function(deputyId) {
 		return Vote.find()
 		.where({ deputyId: deputyId })
@@ -19,50 +13,20 @@ let self = module.exports = {
 		})
 	},
 
-	findVotesDates: function(deputyId, solemnOnly) {
-		return self.findVotes(deputyId, solemnOnly)
-		.map(function(vote) {
-			return DateHelper.formatSimpleDate(vote.ballotId.date);
-		})
-	},
-
-	findVotes: function(deputyId, solemnOnly) {
-		return self.findAllVotes(deputyId)
-		.then(function (votesForDeputy) {
-			if (solemnOnly) {
-				let votesArray = [];
-				let vote;
-				for (let i in votesForDeputy) {
-					vote = votesForDeputy[i];
-					if (vote.ballotId.type === 'SSO') {
-						votesArray.push(vote);
-					}
-				}
-				return votesArray;
-			} else {
-				return votesForDeputy;
-			}
-		})
-	},
-
 	findVotesWithValueForBallot: function(ballotId, value) {
 		return Vote.find()
 		.where({ ballotId: ballotId , value: value })
 	},
 
-	findVoteValueForDeputyAndBallot: function(deputyId, ballotId, ballotType) {
+	findVoteForDeputyAndBallot: function(deputyId, ballotId) {
 		return Vote.findOne()
-		.where({ ballotId: ballotId, deputyId: deputyId })
-		.then(function(vote) {
-			if (vote) {
-				return ResponseHelper.createVoteValueForWS(ballotType, vote.value)
-			}
-		})
+		.where({ ballotId: ballotId, deputyId: deputyId });
 	},
 
 	findLastVotesByDeputy: function(afterDate, currentDeputies) {
 		return Ballot.find()
 		.where({ date: { '>=': afterDate }})
+		.populate('themeId')
 		.then(function(lastBallots) {
 			if (lastBallots.length > 0) {
 				return Promise.filter(lastBallots, function(ballot) {

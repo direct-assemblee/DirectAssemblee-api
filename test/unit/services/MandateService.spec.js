@@ -21,7 +21,7 @@ describe('The MandateService', function () {
 
     after(function(done) {
         let promises = [];
-        promises.push(Mandate.destroy({ deputyId: 3 }))
+        promises.push(Mandate.destroy())
         Promise.all(promises)
         .then(function() {
             done();

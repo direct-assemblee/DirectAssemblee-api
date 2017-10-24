@@ -8,7 +8,7 @@ module.exports = {
         return getLastScanTime()
         .then(function(lastScanTime) {
             if (lastScanTime) {
-                return WorkService.findLastWorksForDeputy(deputyId, lastScanTime)
+                return WorkService.findLastCreatedWorksWithThemeForDeputyAfterDate(deputyId, lastScanTime);
             }
         })
     },

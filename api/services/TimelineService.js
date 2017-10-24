@@ -9,12 +9,12 @@ module.exports = {
         let beforeDate = DateHelper.getFormattedNow();
         let afterDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
         let itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
-        return getDeputyTimeline(deputy, mandateStartDate, beforeDate, afterDate, itemsOffset, []);
+        return getDeputyTimeline(deputy, mandateStartDate, afterDate, beforeDate, itemsOffset, []);
     }
 }
 
-let getDeputyTimeline = function(deputy, mandateStartDate, beforeDate, afterDate, itemsOffset, timelineItems) {
-    return findTimelineItems(deputy, beforeDate, afterDate)
+let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate, itemsOffset, timelineItems) {
+    return findTimelineItems(deputy, afterDate, beforeDate)
     .then(function(foundItems) {
         if (foundItems.length == 0 && afterDate < mandateStartDate) {
             return timelineItems;
@@ -52,10 +52,10 @@ let sortItemsWithDateAndOfficialId = function(items) {
     return items;
 }
 
-let findTimelineItems = function(deputy, beforeDate, afterDate) {
+let findTimelineItems = function(deputy, afterDate, beforeDate) {
     return BallotService.getDetailedBallotsBetweenDates(deputy, beforeDate, afterDate)
     .then(function(results) {
-        return WorkService.findWorksForDeputyFromDate(deputy.officialId, beforeDate, afterDate)
+        return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
         .then(function(works) {
             return results.concat(works)
         })
@@ -65,5 +65,5 @@ let findTimelineItems = function(deputy, beforeDate, afterDate) {
 let nextDeputyTimeline = function(deputy, mandateStartDate, beforeDate, afterDate, itemsOffset, timelineItems) {
     let newBeforeDate = DateHelper.substractAndFormat(beforeDate, TIMELINE_MONTHS_INCREMENT_STEP, 'months');
     let newAfterDate = DateHelper.substractAndFormat(afterDate, TIMELINE_MONTHS_INCREMENT_STEP, 'months');
-    return getDeputyTimeline(deputy, mandateStartDate, newBeforeDate, newAfterDate, itemsOffset, timelineItems);
+    return getDeputyTimeline(deputy, mandateStartDate, newAfterDate, newBeforeDate, itemsOffset, timelineItems);
 }

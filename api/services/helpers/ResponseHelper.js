@@ -44,6 +44,7 @@ let self = module.exports = {
         deputy.district = parseInt(deputy.district)
         deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
         deputy.age = DateHelper.findAge(deputy.birthDate);
+        deputy.declarations = self.prepareDeclarationsResponse(deputy.declarations);
         delete deputy.birthDate;
         delete deputy.department.slug;
         delete deputy.department.soundexName;
@@ -56,6 +57,17 @@ let self = module.exports = {
         delete deputy.mandateEndDate;
         delete deputy.mandateEndReason;
         return deputy;
+    },
+
+    prepareDeclarationsResponse: function(declarations) {
+        for (let i in declarations) {
+            delete declarations[i].deputyId;
+            delete declarations[i].id;
+            delete declarations[i].createdAt;
+            delete declarations[i].updatedAt;
+            declarations[i].date = DateHelper.formatDateForWS(declarations[i].date);
+        }
+        return declarations;
     },
 
     createBallotDetailsResponse: function(ballot, deputy, voteValue) {

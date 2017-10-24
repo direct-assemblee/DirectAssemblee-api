@@ -29,7 +29,7 @@ describe('The BallotService', function () {
 
         after(function(done) {
             let promises = [];
-            promises.push(destroyBallots(37, 0));
+            promises.push(Ballot.destroy());
             Promise.all(promises)
             .then(function() {
                 done();
@@ -119,12 +119,4 @@ let createBallotsForFirstTests = function(done) {
             done();
         })
     });
-}
-
-let destroyBallots = function(startingId, size) {
-    let promises = [];
-    for (let i = startingId ; i < size ; i++) {
-        promises.push(Ballot.destroy({ 'officialId': i }));
-    }
-    return promises;
 }

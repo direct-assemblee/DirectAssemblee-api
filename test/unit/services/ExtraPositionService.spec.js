@@ -28,20 +28,7 @@ describe('The ExtraPositionService', function () {
 
     after(function(done) {
         let promises = [];
-        promises.push(ExtraPosition.destroy({ deputyId: 2 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 3 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 4 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 41 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 5 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 51 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 6 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 61 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 7 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 71 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 8 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 81 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 9 }))
-        promises.push(ExtraPosition.destroy({ deputyId: 91 }))
+        promises.push(ExtraPosition.destroy())
         Promise.all(promises)
         .then(function() {
             done();
