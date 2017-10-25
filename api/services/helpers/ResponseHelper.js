@@ -70,10 +70,10 @@ let self = module.exports = {
         return declarations;
     },
 
-    createBallotDetailsResponse: function(ballot, deputy, voteValue) {
+    createBallotDetailsResponse: function(ballot, deputy) {
         let ballotResponse = self.prepareBallotResponse(ballot);
         ballotResponse.extraBallotInfo.deputyVote = {
-            'voteValue': self.createVoteValueForWS(ballot.type, voteValue),
+            'voteValue': self.createVoteValueForWS(ballot.type, ballot.deputyVote),
             'deputy': {
                 'firstname': deputy.firstname,
                 'lastname': deputy.lastname
@@ -129,36 +129,24 @@ let self = module.exports = {
     },
 
     prepareBallotResponse: function(ballot) {
-        ballot.date = DateHelper.formatDateForWS(ballot.date);
-        ballot.description = ballot.title;
-        ballot.title = self.getBallotTypeDisplayName(ballot.type);
-        ballot.type = self.getBallotTypeName(ballot.type)
-        ballot.theme = createThemeResponse(ballot.themeId);
-        ballot.extraBallotInfo = {};
-        ballot.extraBallotInfo.id = parseInt(ballot.id);
-        ballot.extraBallotInfo.totalVotes = parseInt(ballot.totalVotes);
-        ballot.extraBallotInfo.yesVotes = parseInt(ballot.yesVotes);
-        ballot.extraBallotInfo.noVotes = parseInt(ballot.noVotes);
-        ballot.extraBallotInfo.nonVoting = parseInt(ballot.nonVoting);
-        ballot.extraBallotInfo.blankVotes = ballot.totalVotes - ballot.yesVotes - ballot.noVotes;
-        ballot.extraBallotInfo.missing = NUMBER_OF_DEPUTIES - ballot.totalVotes - ballot.nonVoting;
-        ballot.extraBallotInfo.isAdopted = ballot.isAdopted ? true : false;
-
-        delete ballot.id;
-        delete ballot.nonVoting;
-        delete ballot.totalVotes;
-        delete ballot.yesVotes;
-        delete ballot.noVotes;
-        delete ballot.blankVotes;
-        delete ballot.missing;
-        delete ballot.isAdopted;
-        delete ballot.createdAt;
-        delete ballot.updatedAt;
-        delete ballot.officialId;
-        delete ballot.dateDetailed;
-        delete ballot.analysisUrl;
-        delete ballot.themeId;
-        return ballot;
+        return {
+            date: DateHelper.formatDateForWS(ballot.date),
+            description: ballot.title,
+            title: self.getBallotTypeDisplayName(ballot.type),
+            type: self.getBallotTypeName(ballot.type),
+            theme: createThemeResponse(ballot.themeId),
+            fileUrl: ballot.fileUrl,
+            extraBallotInfo: {
+                id: parseInt(ballot.id),
+                totalVotes: parseInt(ballot.totalVotes),
+                yesVotes: parseInt(ballot.yesVotes),
+                noVotes: parseInt(ballot.noVotes),
+                nonVoting: parseInt(ballot.nonVoting),
+                blankVotes: ballot.totalVotes - ballot.yesVotes - ballot.noVotes,
+                missing: NUMBER_OF_DEPUTIES - parseInt(ballot.totalVotes) - parseInt(ballot.nonVoting),
+                isAdopted: ballot.isAdopted ? true : false
+            }
+        }
     },
 
     getBallotTypeName: function(ballotType) {

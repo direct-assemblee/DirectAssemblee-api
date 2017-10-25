@@ -49,8 +49,6 @@ module.exports.routes = {
 'GET /api/deputies': 'DeputyController.getDeputies',  // optional ?latitude=XXX&longitude=YYY
 'GET /api/deputy': 'DeputyController.getDeputy',  // ?departmentId=13&district=12
 'GET /api/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
-'GET /api/ballots': 'BallotController.getBallots', // ?offset=XXX
-'GET /api/ballotDetails': 'BallotController.getBallotDetails', // ?id=id&departmentId=13&district=12
 'POST /api/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
 'POST /api/unsubscribe' : 'SubscriberController.unsubscribeToDeputy', // ?deputyId=13
 // TODO disable for PROD

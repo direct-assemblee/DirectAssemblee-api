@@ -36,7 +36,7 @@
   "scripts": {
     "debug": "node debug app.js",
     "start": "node app.js",
-    "test": "nyc --reporter=text mocha"
+    "test": "nyc --reporter=html --reporter=text mocha"
   },
   "main": "app.js",
   "repository": {

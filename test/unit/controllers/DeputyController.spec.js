@@ -15,7 +15,7 @@ describe('The DeputyController has a valid deputy', function () {
                 '../services/VoteService.js': StubsBuilder.buildVoteServiceStub(),
                 '../services/WorkService.js': StubsBuilder.buildWorkServiceStub(),
                 '../services/helpers/DateHelper.js': StubsBuilder.buildDateHelperStub(),
-                '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true),
+                '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),
                 '../services/ExtraPositionService.js': StubsBuilder.buildExtraPositionServiceStub()
             }
             DeputyController = StubsBuilder.buildClassWithStubs('controllers/DeputyController', stubs);
@@ -81,7 +81,7 @@ describe('The DeputyController has a valid deputy', function () {
                 '../services/VoteService.js': StubsBuilder.buildVoteServiceStub(),
                 '../services/WorkService.js': StubsBuilder.buildWorkServiceStub(),
                 '../services/helpers/DateHelper.js': StubsBuilder.buildDateHelperStub(),
-                '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(false),
+                '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(false, false),
                 '../services/ExtraPositionService.js': StubsBuilder.buildExtraPositionServiceStub()
             }
             DeputyController = StubsBuilder.buildClassWithStubs('controllers/DeputyController', stubs);

@@ -12,7 +12,6 @@ let DeputyService = require('../services/DeputyService.js');
 let ExtraPositionService = require('../services/ExtraPositionService.js');
 
 let self = module.exports = {
-
 	getDeputies: function(req, res) {
 		if (req.param('latitude') || req.param('longitude')) {
 			return getDeputiesWithCoordinates(req, res);
@@ -45,7 +44,6 @@ let self = module.exports = {
 					} else {
 						return formatDeputyResponse(deputy)
 						.then(function(formattedDeputy) {
-							console.log('dp ' + formattedDeputy)
 							return { code: 200, response: formattedDeputy }
 						});
 					}
@@ -156,7 +154,6 @@ let findActivityRate = function(deputy, solemnBallotsOnly) {
 				return WorkService.findWorksDatesForDeputyAfterDate(deputy.officialId, deputy.currentMandateStartDate)
 				.then(function(worksDates) {
 					return Promise.filter(missingBallots, function(missingBallot) {
-
 						return !worksDates.includes(DateHelper.formatSimpleDate(missingBallot.date));
 					})
 					.then(function(definitelyMissing) {

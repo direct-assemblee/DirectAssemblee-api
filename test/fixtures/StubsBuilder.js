@@ -1,6 +1,22 @@
 let proxyquire = require('proxyquire');
 let moment = require('moment')
 
+let buildDeputy = function(isValid, hasCurrentMandate) {
+    let deputy;
+    if (isValid) {
+        let birthDate = moment().subtract(20, 'year');
+        deputy = { officialId: 14, departmentId: 1, district: 1, seatNumber: 44, birthDate: birthDate, firstname: 'JM', lastname: 'Député' };
+        if (hasCurrentMandate) {
+            deputy.currentMandateStartDate = '18/06/2016';
+            deputy.mandateEndDate = null;
+        } else {
+            deputy.mandateEndDate = '18/06/2016';
+            deputy.currentMandateStartDate = null;
+        }
+    }
+    return deputy;
+}
+
 module.exports = {
     buildDateHelperStub: function() {
         let dateHelperStub = function(){};
@@ -10,16 +26,16 @@ module.exports = {
         return dateHelperStub;
     },
 
-    buildDeputyServiceStub: function(returnValid) {
+    buildDeputyServiceStub: function(isValid, hasCurrentMandate) {
         let deputyServiceStub = function(){};
         deputyServiceStub.findMostRecentDeputyAtDate = function(departmentId, district, formattedNow) {
             return new Promise(function(resolve) {
-                if (returnValid) {
-                    var birthDate = moment().subtract(20, 'year');
-                    resolve({ officialId: 14, departmentId: 1, district: 1, currentMandateStartDate: '18/06/2016', seatNumber: 44, birthDate: birthDate });
-                } else {
-                    resolve(undefined);
-                }
+                resolve(buildDeputy(isValid, hasCurrentMandate));
+            });
+        }
+        deputyServiceStub.findDeputyWithId = function(deputyId) {
+            return new Promise(function(resolve) {
+                resolve(buildDeputy(isValid, hasCurrentMandate));
             });
         }
         return deputyServiceStub;
@@ -96,6 +112,40 @@ module.exports = {
             });
         }
         return declarationServiceStub;
+    },
+
+    buildTimelineServiceStub: function() {
+        let timelineServiceStub = function(){};
+        timelineServiceStub.getTimeline = function(deputy, page) {
+            return new Promise(function(resolve) {
+                resolve([
+                    {
+                        'themeId': {
+                            'id': 29,
+                            'name': 'Travail',
+                            'typeName': 'TRAVAIL'
+                        },
+                        'id': 34,
+                        'officialId': '105',
+                        'title': 'scrutin description',
+                        'date': moment('2017-08-01'),
+                        'dateDetailed': 'Première séance du 01/08/2017',
+                        'type': 'SOR',
+                        'totalVotes': '302',
+                        'yesVotes': '36',
+                        'noVotes': '256',
+                        'isAdopted': false,
+                        'analysisUrl': 'http://www2.assemblee-nationale.fr//scrutins/detail/(legislature)/15/(num)/105',
+                        'fileUrl': 'http://www.assemblee-nationale.fr/15/dossiers/habilitation_ordonnances_dialogue_social.asp',
+                        'createdAt': '2017-10-10T19:14:28.000Z',
+                        'updatedAt': '2017-10-10T22:00:18.000Z',
+                        'nonVoting': 1,
+                        'deputyVote': 'missing'
+                    }
+                ])
+            });
+        }
+        return timelineServiceStub;
     },
 
     buildClassWithStubs: function(classPathFromApi, stubs) {
