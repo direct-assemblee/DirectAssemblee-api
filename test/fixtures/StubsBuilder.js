@@ -1,11 +1,20 @@
 let proxyquire = require('proxyquire');
 let moment = require('moment')
 
-let buildDeputy = function(isValid, hasCurrentMandate) {
+let buildDeputy = function(isValid, hasCurrentMandate, departmentId, district, officialId) {
     let deputy;
     if (isValid) {
         let birthDate = moment().subtract(20, 'year');
-        deputy = { officialId: 14, departmentId: 1, district: 1, seatNumber: 44, birthDate: birthDate, firstname: 'JM', lastname: 'Député' };
+        deputy = {
+            officialId: officialId ? officialId : '14',
+            departmentId: departmentId ? departmentId : 1,
+            district: district ? district : 1,
+            seatNumber: 44,
+            birthDate: birthDate,
+            firstname: 'JM',
+            lastname: 'Député',
+            parliamentGroup: 'FI'
+        };
         if (hasCurrentMandate) {
             deputy.currentMandateStartDate = '18/06/2016';
             deputy.mandateEndDate = null;
@@ -26,6 +35,23 @@ module.exports = {
         return dateHelperStub;
     },
 
+    buildGeolocServiceStub: function(number) {
+        let geolocServiceStub = function(){};
+        geolocServiceStub.getDistricts = function() {
+            return new Promise(function(resolve) {
+                let districts = [];
+                if (number > 0) {
+                    districts.push({ department: 34, district: 6 });
+                }
+                if (number > 1) {
+                    districts.push({ department: 32, district: 5 });
+                }
+                resolve(districts);
+            })
+        }
+        return geolocServiceStub;
+    },
+
     buildDeputyServiceStub: function(isValid, hasCurrentMandate) {
         let deputyServiceStub = function(){};
         deputyServiceStub.findMostRecentDeputyAtDate = function(departmentId, district, formattedNow) {
@@ -38,6 +64,11 @@ module.exports = {
                 resolve(buildDeputy(isValid, hasCurrentMandate));
             });
         }
+        deputyServiceStub.getDeputyForGeoDistrict = function(departementId, district) {
+            return new Promise(function(resolve) {
+                resolve(buildDeputy(isValid, hasCurrentMandate, departementId, district));
+            });
+        }
         return deputyServiceStub;
     },
 
@@ -46,6 +77,11 @@ module.exports = {
         departmentServiceStub.findDepartmentWithId = function(departmentId) {
             return new Promise(function(resolve) {
                 resolve({ id: departmentId, code: 15, name: 'fakeDepartment' });
+            });
+        }
+        departmentServiceStub.findDepartmentWithCode = function(departmentCode) {
+            return new Promise(function(resolve) {
+                resolve({ id: 12, code: departmentCode, name: 'fakeDepartment' });
             });
         }
         return departmentServiceStub;

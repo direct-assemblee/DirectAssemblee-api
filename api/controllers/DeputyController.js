@@ -1,8 +1,8 @@
-
 let Promise = require('bluebird');
 let DateHelper = require('../services/helpers/DateHelper.js');
 let ResponseHelper = require('../services/helpers/ResponseHelper.js');
 let DepartmentService = require('../services/DepartmentService.js');
+let GeolocService = require('../services/GeolocService.js');
 let DeclarationService = require('../services/DeclarationService.js');
 let MandateService = require('../services/MandateService.js');
 let BallotService = require('../services/BallotService.js');
@@ -12,28 +12,41 @@ let DeputyService = require('../services/DeputyService.js');
 let ExtraPositionService = require('../services/ExtraPositionService.js');
 
 let self = module.exports = {
-	getDeputies: function(req, res) {
-		if (req.param('latitude') || req.param('longitude')) {
-			return getDeputiesWithCoordinates(req, res);
-		} else {
-			return res.json(400, 'Must provide latitude and longitude arguments')
-		}
-	},
-
-	getDeputy: function(req, res) {
-		let departmentId = req.param('departmentId');
-		let district = req.param('district');
-		return self.getDeputyWithDistrict(departmentId, district)
-		.then(function(deputyResponse) {
-			if (deputyResponse.code === 200) {
-				return res.json(deputyResponse.response);
+	getDeputiesResponse: function(req, res) {
+		return self.getDeputies(req.param('latitude'), req.param('longitude'))
+		.then(function(response) {
+			if (response.code === 200) {
+				return res.json(response.content);
 			} else {
-				return res.json(deputyResponse.code, deputyResponse.message);
+				return res.json(response.code, response.message);
 			}
 		})
 	},
 
-	getDeputyWithDistrict(departmentId, district) {
+	getDeputies: function(lat, long) {
+		if (lat && long) {
+			return getDeputiesWithCoordinates(lat, long);
+		} else {
+			return new Promise(function(resolve) {
+				resolve({ code: 400, message: 'Must provide latitude and longitude arguments' });
+			})
+		}
+	},
+
+	getDeputyResponse: function(req, res) {
+		let departmentId = req.param('departmentId');
+		let district = req.param('district');
+		return self.getDeputy(departmentId, district)
+		.then(function(response) {
+			if (response.code === 200) {
+				return res.json(response.content);
+			} else {
+				return res.json(response.code, response.message);
+			}
+		})
+	},
+
+	getDeputy(departmentId, district) {
 		if (departmentId && district) {
 			let formattedNow = DateHelper.getFormattedNow();
 			return DeputyService.findMostRecentDeputyAtDate(departmentId, district, formattedNow)
@@ -44,7 +57,7 @@ let self = module.exports = {
 					} else {
 						return formatDeputyResponse(deputy)
 						.then(function(formattedDeputy) {
-							return { code: 200, response: formattedDeputy }
+							return { code: 200, content: formattedDeputy };
 						});
 					}
 				} else {
@@ -52,31 +65,44 @@ let self = module.exports = {
 				}
 			})
 		} else {
-			return { code: 400, message: 'Must provide departmentId and district arguments' };
+			return new Promise(function(resolve) {
+				resolve({ code: 400, message: 'Must provide departmentId and district arguments' });
+			})
 		}
 	}
 }
 
-let getDeputiesWithCoordinates = function(req, res) {
-	return GeolocService.getAddress(req.param('latitude'), req.param('longitude'))
+let getDeputiesWithCoordinates = function(lat, long) {
+	return GeolocService.getDistricts(lat, long)
 	.then(function(districts) {
 		if (districts && districts.length > 0) {
 			let deputies = []
 			for (let i in districts) {
-				deputies.push(DeputyService.getDeputyForGeoDistrict(districts[i]));
+				deputies.push(retrieveDeputyForGeoDistrict(districts[i].department, districts[i].district));
 			}
 			return Promise.all(deputies)
-			.then(function(deputies) {
-				let deputiesArray = [];
-				for (let i in deputies) {
-					for (let j in deputies[i]) {
-						deputiesArray.push(deputies[i][j]);
-					}
-				}
-				return res.json(deputiesArray);
+			.then(function(response) {
+				return { code: 200, content: response };
 			})
 		} else {
-			return res.json(404, 'Sorry, no district found');
+			return { code: 404, message: 'Sorry, no district found' };
+		}
+	})
+}
+
+let retrieveDeputyForGeoDistrict = function(departmentCode, district) {
+	return DepartmentService.findDepartmentWithCode(departmentCode)
+	.then(function(department) {
+		if (department) {
+			return DeputyService.getDeputyForGeoDistrict(department.id, district)
+			.then(function(deputy) {
+				let formattedDeputy = deputy;
+				if (deputy) {
+					deputy.department = department;
+					formattedDeputy = ResponseHelper.prepareSimpleDeputyResponse(deputy);
+				}
+				return formattedDeputy;
+			})
 		}
 	})
 }

@@ -10,7 +10,7 @@ const REVERSE_GEOCODING_URL = 'http://api-adresse.data.gouv.fr/reverse/?lon=' + 
 const GMAP_REVERSE_GEOCODING_URL = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + PARAM_LATITUDE + ',' + PARAM_LONGITUDE + '&key=' + GMAP_API_KEY
 
 module.exports = {
-    getAddress: function(latitude, longitude) {
+    getDistricts: function(latitude, longitude) {
         return findDistricts(REVERSE_GEOCODING_URL, parseFloat(latitude), parseFloat(longitude))
         .then(function(districts) {
             if (!districts) {

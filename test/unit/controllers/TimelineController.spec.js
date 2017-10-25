@@ -41,7 +41,7 @@ describe('The DeputyController has a valid deputy', function () {
     describe('Valid deputy', function () {
         it('should return empty timeline', function(done) {
             let stubs = {
-                '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),
+                '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true)
             }
             let TimelineController = StubsBuilder.buildClassWithStubs('controllers/TimelineController', stubs);
 
