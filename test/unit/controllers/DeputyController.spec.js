@@ -88,9 +88,9 @@ describe('The DeputyController ', function() {
                     '../services/DepartmentService.js': StubsBuilder.buildDepartmentServiceStub(),
                     '../services/DeclarationService.js': StubsBuilder.buildDeclarationServiceStub(),
                     '../services/MandateService.js': StubsBuilder.buildMandateServiceStub(),
-                    '../services/BallotService.js': StubsBuilder.buildBallotServiceStub(),
+                    '../services/BallotService.js': StubsBuilder.buildBallotServiceStub(4),
                     '../services/VoteService.js': StubsBuilder.buildVoteServiceStub(),
-                    '../services/WorkService.js': StubsBuilder.buildWorkServiceStub(),
+                    '../services/WorkService.js': StubsBuilder.buildWorkServiceStub(2),
                     '../services/helpers/DateHelper.js': StubsBuilder.buildDateHelperStub(),
                     '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),
                     '../services/ExtraPositionService.js': StubsBuilder.buildExtraPositionServiceStub()

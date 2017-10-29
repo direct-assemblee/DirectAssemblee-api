@@ -1,0 +1,63 @@
+let moment = require('moment')
+
+let self = module.exports = {
+    buildDeputy: function(isValid, hasCurrentMandate, departmentId, district, officialId) {
+        let deputy;
+        if (isValid) {
+            let birthDate = moment().subtract(20, 'year');
+            deputy = {
+                officialId: officialId ? officialId : '14',
+                departmentId: departmentId ? departmentId : 1,
+                district: district ? district : 1,
+                seatNumber: 44,
+                birthDate: birthDate,
+                firstname: 'JM',
+                lastname: 'Député',
+                parliamentGroup: 'FI'
+            };
+            if (hasCurrentMandate) {
+                deputy.currentMandateStartDate = '18/06/2016';
+                deputy.mandateEndDate = null;
+            } else {
+                deputy.mandateEndDate = '18/06/2016';
+                deputy.currentMandateStartDate = null;
+            }
+        }
+        return deputy;
+    },
+
+    buildBallot: function(id, officialId, title, date) {
+        return { id: id, officialId: officialId, title: title, date: date };
+    },
+
+    buildBallots: function(count, date) {
+        let items = [];
+        for (let i = 0 ; i < count ; i++) {
+            let id = 33+i;
+            items.push(self.buildBallot(id, id, 'ballot title ' + id, date));
+        }
+        return items;
+    },
+
+    buildWork: function(id, title, themeId, officialId, date, type, deputyId) {
+        return { id: id, title: title, themeId: themeId, officialId: officialId, date: date, type: type, deputyId: deputyId }
+    },
+
+    buildWorks: function(count, deputyId) {
+        let items = [];
+        if (count > 0) {
+            items.push(self.buildWork(88, 'work 88', 12, 88, '2016-12-14', 'question', deputyId));
+        }
+        if (count > 1) {
+            items.push(self.buildWork(108, 'work 108', 22, 108, '2016-09-12', 'report', deputyId));
+        }
+        if (count > 2) {
+            items.push(self.buildWork(11, 'work 11', 1, 11, '2016-01-14', 'question', deputyId));
+        }
+        if (count > 3) {
+            items.push(self.buildWork(54, 'work 54', 1, 54, '2016-12-14', 'commission', deputyId));
+        }
+        return items;
+    },
+
+}

@@ -1,4 +1,6 @@
 let DateHelper = require('./helpers/DateHelper.js');
+let BallotService = require('./BallotService.js');
+let WorkService = require('./WorkService.js');
 let Promise = require('bluebird');
 
 const TIMELINE_PAGE_ITEMS_COUNT = 20;

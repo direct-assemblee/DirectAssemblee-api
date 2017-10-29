@@ -1,30 +1,6 @@
 let proxyquire = require('proxyquire');
 let moment = require('moment')
-
-let buildDeputy = function(isValid, hasCurrentMandate, departmentId, district, officialId) {
-    let deputy;
-    if (isValid) {
-        let birthDate = moment().subtract(20, 'year');
-        deputy = {
-            officialId: officialId ? officialId : '14',
-            departmentId: departmentId ? departmentId : 1,
-            district: district ? district : 1,
-            seatNumber: 44,
-            birthDate: birthDate,
-            firstname: 'JM',
-            lastname: 'Député',
-            parliamentGroup: 'FI'
-        };
-        if (hasCurrentMandate) {
-            deputy.currentMandateStartDate = '18/06/2016';
-            deputy.mandateEndDate = null;
-        } else {
-            deputy.mandateEndDate = '18/06/2016';
-            deputy.currentMandateStartDate = null;
-        }
-    }
-    return deputy;
-}
+let MocksBuilder = require('./MocksBuilder')
 
 module.exports = {
     buildDateHelperStub: function() {
@@ -54,19 +30,14 @@ module.exports = {
 
     buildDeputyServiceStub: function(isValid, hasCurrentMandate) {
         let deputyServiceStub = function(){};
-        deputyServiceStub.findMostRecentDeputyAtDate = function(departmentId, district, formattedNow) {
+        deputyServiceStub.findMostRecentDeputyAtDate = function(departmentId, district, date) {
             return new Promise(function(resolve) {
-                resolve(buildDeputy(isValid, hasCurrentMandate));
+                resolve(MocksBuilder.buildDeputy(isValid, hasCurrentMandate, departmentId, district));
             });
         }
         deputyServiceStub.findDeputyWithId = function(deputyId) {
             return new Promise(function(resolve) {
-                resolve(buildDeputy(isValid, hasCurrentMandate));
-            });
-        }
-        deputyServiceStub.getDeputyForGeoDistrict = function(departementId, district) {
-            return new Promise(function(resolve) {
-                resolve(buildDeputy(isValid, hasCurrentMandate, departementId, district));
+                resolve(MocksBuilder.buildDeputy(isValid, hasCurrentMandate));
             });
         }
         return deputyServiceStub;
@@ -117,25 +88,45 @@ module.exports = {
         return voteServiceStub;
     },
 
-    buildBallotServiceStub: function() {
+    buildBallotServiceStub: function(wantedCount) {
         let ballotServiceStub = function(){};
         ballotServiceStub.findBallotsFromDate = function(currentMandateStartDate, solemnBallotsOnly) {
             return new Promise(function(resolve) {
-                resolve([{ id: 33, officialId: 33, title: 'ballot title 33', date: '2016-12-13' }, { id: 64, officialId: 64, title: 'ballot title 64', date: '2016-12-14' }, { id: 35, officialId: 35, title: 'ballot title 35', date: '2016-12-12' }, { id: 301, officialId: 301, title: 'ballot title 301', date: '2016-12-01' }]);
+                // if (wantedCount > 0)
+                    resolve([{ id: 33, officialId: 33, title: 'ballot title 33', date: '2016-12-13' }, { id: 64, officialId: 64, title: 'ballot title 64', date: '2016-12-14' }, { id: 35, officialId: 35, title: 'ballot title 35', date: '2016-12-12' }, { id: 301, officialId: 301, title: 'ballot title 301', date: '2016-12-01' }]);
+
+                // resolve(MocksBuilder.buildBallots(wantedCount));
+            });
+        }
+        ballotServiceStub.findBallotsBetweenDates = function(beforeDate, afterDate) {
+            return new Promise(function(resolve) {
+                resolve(MocksBuilder.buildBallots(wantedCount));
             });
         }
         return ballotServiceStub;
     },
 
-    buildWorkServiceStub: function() {
+    buildWorkServiceStub: function(wantedCount) {
         let workServiceStub = function(){};
         workServiceStub.findWorksDatesForDeputyAfterDate = function(deputyId, currentMandateStartDate) {
             return new Promise(function(resolve) {
-                resolve(['2016-12-14', '2016-09-12']);
+                let result = [];
+                if (wantedCount > 0) {
+                    result.push('2016-12-14');
+                }
+                if (wantedCount > 1) {
+                    result.push('2016-09-12');
+                }
+                if (wantedCount > 2) {
+                    result.push('2016-12-14');
+                }
+                resolve(result);
             });
-            // return new Promise(function(resolve) {
-            //     resolve([{ id: 88, title: 'work 88', themeId: 12, officialId: 88, date: '2016-12-14', type: 'question', deputyId: deputyId }, { id: 108, title: 'work 108', themeId: 22, officialId: 108, date: '2016-09-12', type: 'report', deputyId: deputyId }]);
-            // });
+        }
+        workServiceStub.findWorksForDeputyBetweenDates = function(deputyId, afterDate, beforeDate) {
+            return new Promise(function(resolve) {
+                resolve(MocksBuilder.buildWorks(wantedCount));
+            });
         }
         return workServiceStub;
     },
@@ -150,35 +141,39 @@ module.exports = {
         return declarationServiceStub;
     },
 
-    buildTimelineServiceStub: function() {
+    buildTimelineServiceStub: function(isEmpty) {
         let timelineServiceStub = function(){};
         timelineServiceStub.getTimeline = function(deputy, page) {
             return new Promise(function(resolve) {
-                resolve([
-                    {
-                        'themeId': {
-                            'id': 29,
-                            'name': 'Travail',
-                            'typeName': 'TRAVAIL'
-                        },
-                        'id': 34,
-                        'officialId': '105',
-                        'title': 'scrutin description',
-                        'date': moment('2017-08-01'),
-                        'dateDetailed': 'Première séance du 01/08/2017',
-                        'type': 'SOR',
-                        'totalVotes': '302',
-                        'yesVotes': '36',
-                        'noVotes': '256',
-                        'isAdopted': false,
-                        'analysisUrl': 'http://www2.assemblee-nationale.fr//scrutins/detail/(legislature)/15/(num)/105',
-                        'fileUrl': 'http://www.assemblee-nationale.fr/15/dossiers/habilitation_ordonnances_dialogue_social.asp',
-                        'createdAt': '2017-10-10T19:14:28.000Z',
-                        'updatedAt': '2017-10-10T22:00:18.000Z',
-                        'nonVoting': 1,
-                        'deputyVote': 'missing'
-                    }
-                ])
+                if (isEmpty) {
+                    resolve([]);
+                } else {
+                    resolve([
+                        {
+                            'themeId': {
+                                'id': 29,
+                                'name': 'Travail',
+                                'typeName': 'TRAVAIL'
+                            },
+                            'id': 34,
+                            'officialId': '105',
+                            'title': 'scrutin description',
+                            'date': moment('2017-08-01'),
+                            'dateDetailed': 'Première séance du 01/08/2017',
+                            'type': 'SOR',
+                            'totalVotes': '302',
+                            'yesVotes': '36',
+                            'noVotes': '256',
+                            'isAdopted': false,
+                            'analysisUrl': 'http://www2.assemblee-nationale.fr//scrutins/detail/(legislature)/15/(num)/105',
+                            'fileUrl': 'http://www.assemblee-nationale.fr/15/dossiers/habilitation_ordonnances_dialogue_social.asp',
+                            'createdAt': '2017-10-10T19:14:28.000Z',
+                            'updatedAt': '2017-10-10T22:00:18.000Z',
+                            'nonVoting': 1,
+                            'deputyVote': 'missing'
+                        }
+                    ])
+                }
             });
         }
         return timelineServiceStub;

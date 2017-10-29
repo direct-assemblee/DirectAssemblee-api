@@ -94,7 +94,8 @@ let retrieveDeputyForGeoDistrict = function(departmentCode, district) {
 	return DepartmentService.findDepartmentWithCode(departmentCode)
 	.then(function(department) {
 		if (department) {
-			return DeputyService.getDeputyForGeoDistrict(department.id, district)
+			let formattedNow = DateHelper.getFormattedNow();
+			return DeputyService.findMostRecentDeputyAtDate(department.id, district, formattedNow)
 			.then(function(deputy) {
 				let formattedDeputy = deputy;
 				if (deputy) {

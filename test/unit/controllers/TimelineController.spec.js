@@ -2,9 +2,8 @@ require('../../bootstrap');
 
 let StubsBuilder = require('../../fixtures/StubsBuilder');
 
-describe('The DeputyController has a valid deputy', function () {
-
-    describe('Invalid deputy', function () {
+describe('The TimelineController ', function() {
+    describe('has an invalid deputy', function() {
         it('should return error message with 404 - no deputy', function(done) {
             let stubs = {
                 '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(false, false),
@@ -38,10 +37,11 @@ describe('The DeputyController has a valid deputy', function () {
         })
     })
 
-    describe('Valid deputy', function () {
+    describe('has a valid deputy', function() {
         it('should return empty timeline', function(done) {
             let stubs = {
-                '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true)
+                '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),
+                '../services/TimelineService.js': StubsBuilder.buildTimelineServiceStub(true)
             }
             let TimelineController = StubsBuilder.buildClassWithStubs('controllers/TimelineController', stubs);
 
@@ -58,7 +58,7 @@ describe('The DeputyController has a valid deputy', function () {
         it('should return correct timeline', function(done) {
             let stubs = {
                 '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),
-                '../services/TimelineService.js': StubsBuilder.buildTimelineServiceStub()
+                '../services/TimelineService.js': StubsBuilder.buildTimelineServiceStub(false)
             }
             let TimelineController = StubsBuilder.buildClassWithStubs('controllers/TimelineController', stubs);
 

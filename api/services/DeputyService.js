@@ -7,13 +7,6 @@ module.exports = {
 		})
 	},
 
-	getDeputyForGeoDistrict: function(departmentId, district) {
-		return findDeputiesForDistrict(departmentId, district, true)
-		.then(function(deputies) {
-			return getMostRecentDeputy(deputies);
-		})
-	},
-
 	findMostRecentDeputyAtDate: function(departmentId, district, date) {
 		let options = { departmentId: departmentId, district: district, currentMandateStartDate: { '<=': date } };
 		return Deputy.find()
@@ -38,14 +31,4 @@ let getMostRecentDeputy = function(deputies) {
 		});
 		return deputies[0];
 	}
-}
-
-let findDeputiesForDistrict = function(departmentId, district,
-	onlyMandateInProgress) {
-	let options = { departmentId: departmentId, district: district };
-	if (onlyMandateInProgress) {
-		options.currentMandateStartDate = {'!': null};
-	}
-	return Deputy.find()
-	.where(options)
 }
