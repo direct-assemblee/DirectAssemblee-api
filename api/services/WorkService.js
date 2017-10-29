@@ -10,8 +10,10 @@ let self = module.exports = {
 
     findLastCreatedWorksWithThemeForDeputyAfterDate: function(deputyId, date) {
         return self.findWorksWithThemeForDeputyAfterDate(deputyId, date)
-        .filter(function(work) {
-            return DateHelper.isLaterOrSame(work.createdAt, work.date);
+        .then(function(works) {
+            return Promise.filter(works, function(work) {
+                return DateHelper.isLaterOrSame(work.createdAt, work.date);
+            })
         })
     },
 
