@@ -4,7 +4,7 @@ let self = module.exports = {
     buildDeputy: function(isValid, hasCurrentMandate, departmentId, district, officialId) {
         let deputy;
         if (isValid) {
-            let birthDate = moment().subtract(20, 'year');
+            let birthDate = moment().subtract(20, 'year').format('YYYY-MM-DD');
             deputy = {
                 officialId: officialId ? officialId : '14',
                 departmentId: departmentId ? departmentId : 1,
@@ -16,11 +16,11 @@ let self = module.exports = {
                 parliamentGroup: 'FI'
             };
             if (hasCurrentMandate) {
-                deputy.currentMandateStartDate = '18/06/2016';
-                deputy.mandateEndDate = null;
+                deputy.currentMandateStartDate = '2016-06-18';
+                deputy.mandateEndDate = '';
             } else {
-                deputy.mandateEndDate = '18/06/2016';
-                deputy.currentMandateStartDate = null;
+                deputy.mandateEndDate = '2016-06-18';
+                deputy.currentMandateStartDate = '';
             }
         }
         return deputy;

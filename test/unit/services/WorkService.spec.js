@@ -1,4 +1,4 @@
-require('../../bootstrap');
+require('../../bootstrap.test');
 let moment = require('moment');
 
 let Promise = require('bluebird');
@@ -17,14 +17,14 @@ let createTheme = function() {
 
 let createWorks = function(createdThemeId) {
     let promises = [];
-    promises.push(Work.create({ title: 'another title before', themeId: createdThemeId, officialId: 27, date: '2014-08-13', url: 'http://titi', description: 'another description', type: 'commission', deputyId: 33 }));
-    promises.push(Work.create({ title: 'another title', themeId: createdThemeId, officialId: 28, date: '2014-08-14', url: 'http://toto', description: 'another description', type: 'question', deputyId: 33 }));
-    promises.push(Work.create({ title: 'another title after', themeId: createdThemeId, officialId: 29, date: '2014-08-15', url: 'http://toto', description: 'another description', type: 'commission', deputyId: 33 }));
+    promises.push(Work.create({ title: 'another title before', themeId: createdThemeId, date: '2014-08-13', url: 'http://titi', description: 'another description', type: 'commission', deputyId: 33 }));
+    promises.push(Work.create({ title: 'another title', themeId: createdThemeId, date: '2014-08-14', url: 'http://toto', description: 'another description', type: 'question', deputyId: 33 }));
+    promises.push(Work.create({ title: 'another title after', themeId: createdThemeId, date: '2014-08-15', url: 'http://toto', description: 'another description', type: 'commission', deputyId: 33 }));
 
-    promises.push(Work.create({ title: 'very old title', themeId: createdThemeId, officialId: 2, date: '2004-08-14', url: 'http://toto', description: 'very old description', type: 'commission', deputyId: 33 }));
+    promises.push(Work.create({ title: 'very old title', themeId: createdThemeId, date: '2004-08-14', url: 'http://toto', description: 'very old description', type: 'commission', deputyId: 33 }));
     return Promise.all(promises)
     .then(function() {
-        return Work.findOne({ officialId: 27 });
+        return Work.findOne({ url: 'http://titi' });
     })
 }
 
@@ -33,8 +33,8 @@ describe('The WorkService', function () {
         createTheme()
         .then(function(createdThemeId) {
             return createWorks(createdThemeId)
-            .then(function(firstCreatedWorkId) {
-                return ExtraInfo.create({ info: 'an info', value: 'a value', workId: firstCreatedWorkId });
+            .then(function(firstCreatedWork) {
+                return ExtraInfo.create({ info: 'an info', value: 'a value', workId: firstCreatedWork.id });
             })
             .then(function() {
                 done();
@@ -44,7 +44,7 @@ describe('The WorkService', function () {
 
     after(function(done) {
         let promises = [];
-        promises.push(Work.destroy())
+        promises.push(Work.destroy({}))
         Promise.all(promises)
         .then(function() {
             done();

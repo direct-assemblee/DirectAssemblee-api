@@ -1,4 +1,4 @@
-require('../../../bootstrap');
+require('../../../bootstrap.test');
 let ResponseHelper = require('../../../../api/services/helpers/ResponseHelper.js')
 
 describe('The ResponseHelper', function () {
@@ -15,7 +15,7 @@ describe('The ResponseHelper', function () {
 
         after(function(done) {
             let promises = [];
-            promises.push(Declaration.destroy())
+            promises.push(Declaration.destroy({}))
             Promise.all(promises)
             .then(function() {
                 done();

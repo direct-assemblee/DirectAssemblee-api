@@ -19,7 +19,7 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.connections.html
  */
 
-module.exports.connections = {
+module.exports.datastores = {
 
   /***************************************************************************
   *                                                                          *
@@ -49,6 +49,16 @@ module.exports.connections = {
     database: process.env.DATABASE_NAME || 'directassemblee',
     charset:'utf8'
   },
+  //
+  // testAssNatMysqlServer: {
+  //   adapter: 'sails-mysql',
+  //   host: process.env.DATABASE_HOST || 'localhost',
+  //   port: process.env.DATABASE_PORT || 3306,
+  //   user: process.env.DATABASE_USER || 'root',
+  //   password: process.env.DATABASE_PASSWORD || '',
+  //   database: process.env.DATABASE_NAME || 'testdirectassemblee',
+  //   charset:'utf8'
+  // },
 
   /***************************************************************************
   *                                                                          *

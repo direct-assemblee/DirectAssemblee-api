@@ -1,4 +1,4 @@
-require('../../bootstrap');
+require('../../bootstrap.test');
 
 let StubsBuilder = require('../../fixtures/StubsBuilder');
 let MocksBuilder = require('../../fixtures/MocksBuilder');

@@ -1,10 +1,9 @@
 module.exports = {
-    autoCreatedAt: true,
-    autoUpdatedAt: true,
+    primaryKey: 'officialId',
     attributes: {
         officialId: {
-            type: 'int',
-            primaryKey: true,
+            type: 'number',
+            required: true,
             unique: true
         },
         gender: {
@@ -17,16 +16,16 @@ module.exports = {
             type: 'string'
         },
         birthDate: {
-            type: 'date',
+            type: 'string'
         },
         parliamentGroup: {
             type: 'string'
         },
         departmentId: {
-            type: 'int'
+            type: 'number'
         },
         district: {
-            type: 'int'
+            type: 'number'
         },
         commission: {
             type: 'string'
@@ -41,16 +40,16 @@ module.exports = {
             type: 'string'
         },
         currentMandateStartDate: {
-            type: 'date'
+            type: 'string'
         },
         mandateEndDate: {
-            type: 'date'
+            type: 'string'
         },
         mandateEndReason: {
             type: 'string'
         },
         seatNumber: {
-            type: 'int'
+            type: 'number'
         },
         subscribers: {
             collection: 'subscriber',

@@ -1,4 +1,4 @@
-require('../../bootstrap');
+require('../../bootstrap.test');
 
 describe('The DeclarationService', function () {
     beforeEach(function(done) {
@@ -13,7 +13,7 @@ describe('The DeclarationService', function () {
 
     after(function(done) {
         let promises = [];
-        promises.push(Declaration.destroy())
+        promises.push(Declaration.destroy({}))
         Promise.all(promises)
         .then(function() {
             done();

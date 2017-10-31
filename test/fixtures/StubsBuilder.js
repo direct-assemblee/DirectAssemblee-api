@@ -135,7 +135,7 @@ module.exports = {
         let declarationServiceStub = function(){};
         declarationServiceStub.findDeclarationsForDeputy = function(deputyId) {
             return new Promise(function(resolve) {
-                resolve([{ id: 11, title: 'Jolie decla', url: 'http://jolieurl', deputyId: '14', date: '22/12/2016' }, { id: 12, title: 'Jolie decla 2', url: 'http://jolieurl2', deputyId: '14', date: '13/01/2016' }]);
+                resolve([{ id: 11, title: 'Jolie decla', url: 'http://jolieurl', deputyId: '14', date: '2016-12-22' }, { id: 12, title: 'Jolie decla 2', url: 'http://jolieurl2', deputyId: '14', date: '2016-01-13' }]);
             });
         }
         return declarationServiceStub;

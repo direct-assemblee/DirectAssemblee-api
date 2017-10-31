@@ -1,4 +1,4 @@
-require('../../bootstrap');
+require('../../bootstrap.test');
 let moment = require('moment');
 
 let fifthBallotCreatedId;
@@ -29,7 +29,8 @@ describe('The BallotService', function () {
 
         after(function(done) {
             let promises = [];
-            promises.push(Ballot.destroy());
+            promises.push(Ballot.destroy({}));
+            promises.push(Theme.destroy({}));
             Promise.all(promises)
             .then(function() {
                 done();
@@ -86,7 +87,7 @@ describe('The BallotService', function () {
             BallotService.getBallotWithId(fifthBallotCreatedId)
             .then(function(ballot) {
                 ballot.id.should.equal(fifthBallotCreatedId);
-                ballot.officialId.should.equal('5');
+                ballot.officialId.should.equal(5);
                 ballot.themeId.name.should.equal('Education');
                 ballot.themeId.typeName.should.equal('EDUCATION');
                 done();

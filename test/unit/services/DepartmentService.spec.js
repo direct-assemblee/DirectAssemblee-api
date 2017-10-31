@@ -1,9 +1,9 @@
-require('../../bootstrap');
+require('../../bootstrap.test');
 
 var createdId;
 
 describe('The DepartmentService', function () {
-    beforeEach(function(done) {
+    before(function(done) {
         Department.create({ code: '3' })
         .then(function() {
             DepartmentService.findDepartmentWithCode('3')
@@ -16,7 +16,7 @@ describe('The DepartmentService', function () {
 
     after(function(done) {
         let promises = [];
-        promises.push(Department.destroy())
+        promises.push(Department.destroy({}))
         Promise.all(promises)
         .then(function() {
             done();

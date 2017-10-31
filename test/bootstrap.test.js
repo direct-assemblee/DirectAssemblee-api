@@ -17,12 +17,18 @@ before(function (done) {
             grunt: false
         },
         models: {
-            connection: 'unitTestConnection',
+            datastore: 'testAssNatMysqlServer',
             migrate: 'drop'
         },
-        connections: {
-            unitTestConnection: {
-                adapter: 'sails-disk'
+        datastores: {
+            testAssNatMysqlServer: {
+                adapter: 'sails-mysql',
+                host: process.env.DATABASE_HOST || 'localhost',
+                port: process.env.DATABASE_PORT || 3306,
+                user: process.env.DATABASE_USER || 'root',
+                password: process.env.DATABASE_PASSWORD || '',
+                database: process.env.DATABASE_NAME || 'testdirectassemblee',
+                charset:'utf8'
             }
         }
     }, function (err, server) {

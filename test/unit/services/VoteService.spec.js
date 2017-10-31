@@ -1,4 +1,4 @@
-require('../../bootstrap');
+require('../../bootstrap.test');
 
 let Promise = require('bluebird');
 
@@ -36,9 +36,9 @@ let createDeputiesAndBallots = function() {
         return Theme.findOne({ name: 'themeName' })
         .then(function(themeId) {
             let otherPromises = [];
-            otherPromises.push(Ballot.create({ 'title': 'a title', 'officialId': 14, 'date': '2017-06-18', 'type': 'SSO', themeId: themeId }));
-            otherPromises.push(Ballot.create({ 'title': 'another title', 'officialId': 12, 'date': '2017-06-15', 'type': 'SOR', themeId: themeId }));
-            otherPromises.push(Ballot.create({ 'title': 'a third title', 'officialId': 1222, 'date': '2017-06-15', 'type': 'SOR', themeId: themeId }));
+            otherPromises.push(Ballot.create({ 'title': 'a title', 'officialId': 14, 'date': '2017-06-18', 'type': 'SSO', themeId: themeId.id }));
+            otherPromises.push(Ballot.create({ 'title': 'another title', 'officialId': 12, 'date': '2017-06-15', 'type': 'SOR', themeId: themeId.id }));
+            otherPromises.push(Ballot.create({ 'title': 'a third title', 'officialId': 1222, 'date': '2017-06-15', 'type': 'SOR', themeId: themeId.id }));
             return Promise.all(otherPromises);
         })
     });
@@ -60,10 +60,10 @@ describe('The VoteService', function () {
 
     after(function(done) {
         let promises = [];
-        promises.push(Ballot.destroy())
-        promises.push(Deputy.destroy())
-        promises.push(Vote.destroy())
-        promises.push(Theme.destroy())
+        promises.push(Ballot.destroy({}))
+        promises.push(Deputy.destroy({}))
+        promises.push(Vote.destroy({}))
+        promises.push(Theme.destroy({}))
         Promise.all(promises)
         .then(function() {
             done();
@@ -98,8 +98,8 @@ describe('The VoteService', function () {
             should.exist(votes);
             votes.length.should.equal(2);
             should.exist(votes[0].deputyId);
-            votes[0].deputyId.should.equal('23');
-            votes[1].deputyId.should.equal('22');
+            votes[0].deputyId.should.equal(23);
+            votes[1].deputyId.should.equal(22);
             done();
         })
         .catch(done);

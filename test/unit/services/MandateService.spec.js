@@ -1,9 +1,9 @@
-require('../../bootstrap');
+require('../../bootstrap.test');
 
 let moment = require('moment');
 let Promise = require('bluebird');
 
-let today = moment().format('DD/MM/YYYY');
+let today = moment().format('YYYY-MM-DD');
 
 describe('The MandateService', function () {
     before(function(done) {
@@ -21,7 +21,7 @@ describe('The MandateService', function () {
 
     after(function(done) {
         let promises = [];
-        promises.push(Mandate.destroy())
+        promises.push(Mandate.destroy({}))
         Promise.all(promises)
         .then(function() {
             done();
@@ -47,7 +47,7 @@ describe('The MandateService', function () {
     });
 
     it('should return political age for unexperienced deputy and current mandate well started', function(done) {
-        let currentMandateStartDate = moment().subtract(3, 'years').format('DD/MM/YYYY');
+        let currentMandateStartDate = moment().subtract(3, 'years').format('YYYY-MM-DD');
         MandateService.getPoliticalAgeOfDeputy('3', currentMandateStartDate)
         .then(function(age) {
             age.should.equal(38);
@@ -66,7 +66,7 @@ describe('The MandateService', function () {
     });
 
     it('should return political age for deputy with only one experience and current mandate well started', function(done) {
-        let currentMandateStartDate = moment().subtract(3, 'years').format('DD/MM/YYYY');
+        let currentMandateStartDate = moment().subtract(3, 'years').format('YYYY-MM-DD');
         MandateService.getPoliticalAgeOfDeputy('4', currentMandateStartDate)
         .then(function(age) {
             age.should.equal(62);
@@ -85,7 +85,7 @@ describe('The MandateService', function () {
     });
 
     it('should return political age deputy with much experience and current mandate well started', function(done) {
-        let currentMandateStartDate = moment().subtract(3, 'years').add(2, 'days').format('DD/MM/YYYY');
+        let currentMandateStartDate = moment().subtract(3, 'years').add(2, 'days').format('YYYY-MM-DD');
         MandateService.getPoliticalAgeOfDeputy('5', currentMandateStartDate)
         .then(function(age) {
             age.should.equal(107);

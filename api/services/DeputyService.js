@@ -17,7 +17,7 @@ module.exports = {
 	},
 
 	findCurrentDeputies: function() {
-		var options = { currentMandateStartDate:  {'!': null}, mandateEndDate: null };
+		var options = { currentMandateStartDate:  {'!=': ''}, mandateEndDate: '' };
 		return Deputy.find()
 		.where(options);
 	}

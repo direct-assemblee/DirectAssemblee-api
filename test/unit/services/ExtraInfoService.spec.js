@@ -1,4 +1,4 @@
-require('../../bootstrap');
+require('../../bootstrap.test');
 
 let Promise = require('bluebird');
 
@@ -15,7 +15,7 @@ describe('The ExtraInfoService', function () {
 
     after(function(done) {
         let promises = [];
-        promises.push(ExtraInfo.destroy())
+        promises.push(ExtraInfo.destroy({}))
         Promise.all(promises)
         .then(function() {
             done();

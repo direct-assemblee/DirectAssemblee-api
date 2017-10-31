@@ -1,4 +1,4 @@
-require('../../../bootstrap');
+require('../../../bootstrap.test');
 let DateHelper = require('../../../../api/services/helpers/DateHelper.js')
 let moment = require('moment');
 
@@ -10,7 +10,7 @@ describe('The DateHelper', function () {
     });
 
     it('should format date for WS', function(done) {
-        let formattedDate = DateHelper.formatDateForWS('13/01/2012')
+        let formattedDate = DateHelper.formatDateForWS('2012-01-13')
         formattedDate.should.equal('13/01/2012')
         done();
     });

@@ -1,4 +1,4 @@
-require('../../bootstrap');
+require('../../bootstrap.test');
 
 let Promise = require('bluebird');
 let moment = require('moment');
@@ -7,13 +7,13 @@ let getCreateDeputiesPromises = function() {
     let promises = [];
     promises.push(Department.create({ id: 1 }))
     promises.push(Department.create({ id: 2 }))
-    promises.push(Deputy.create({ officialId: 12, departmentId: 1, district: 1, currentMandateStartDate: '2016-06-18', mandateEndDate: null }))
-    promises.push(Deputy.create({ officialId: 13, departmentId: 1, district: 2, currentMandateStartDate: '2017-08-18', mandateEndDate: null }))
-    promises.push(Deputy.create({ officialId: 14, departmentId: 1, district: 1, currentMandateStartDate: '2017-06-18', mandateEndDate: null }))
-    promises.push(Deputy.create({ officialId: 14, departmentId: 30, district: 1, currentMandateStartDate: null, mandateEndDate: '2017-06-18' }))
+    promises.push(Deputy.create({ officialId: 12, departmentId: 1, district: 1, currentMandateStartDate: '2016-06-18', mandateEndDate: '' }))
+    promises.push(Deputy.create({ officialId: 13, departmentId: 1, district: 2, currentMandateStartDate: '2017-08-18', mandateEndDate: '' }))
+    promises.push(Deputy.create({ officialId: 14, departmentId: 1, district: 1, currentMandateStartDate: '2017-06-18', mandateEndDate: '' }))
+    promises.push(Deputy.create({ officialId: 16, departmentId: 30, district: 1, currentMandateStartDate: '', mandateEndDate: '2017-06-18' }))
 
     let startDate = moment().subtract(5, 'months').format('YYYY-MM-DD');
-    promises.push(Deputy.create({ officialId: 15, departmentId: 1, district: 1, currentMandateStartDate: startDate, mandateEndDate: null }))
+    promises.push(Deputy.create({ officialId: 15, departmentId: 1, district: 1, currentMandateStartDate: startDate, mandateEndDate: '' }))
     return promises;
 }
 
@@ -38,8 +38,8 @@ describe('The DeputyService', function () {
 
     after(function(done) {
         let promises = [];
-        promises.push(Deputy.destroy())
-        promises.push(Declaration.destroy())
+        promises.push(Deputy.destroy({}))
+        promises.push(Declaration.destroy({}))
         Promise.all(promises)
         .then(function() {
             done();
@@ -50,7 +50,7 @@ describe('The DeputyService', function () {
         DeputyService.findDeputyWithId(12)
         .then(function(deputy) {
             should.exist(deputy);
-            deputy.officialId.should.equal('12')
+            deputy.officialId.should.equal(12)
             done();
         })
         .catch(done);
@@ -66,20 +66,20 @@ describe('The DeputyService', function () {
     });
 
     it('should return most recent deputy', function(done) {
-        DeputyService.findMostRecentDeputyAtDate(1, 1, '12/12/2017')
+        DeputyService.findMostRecentDeputyAtDate(1, 1, '2017-12-12')
         .then(function(deputy) {
             should.exist(deputy);
-            deputy.officialId.should.equal('14')
+            deputy.officialId.should.equal(14)
             done();
         })
         .catch(done);
     });
 
     it('should return most recent deputy one year ago', function(done) {
-        DeputyService.findMostRecentDeputyAtDate(1, 1, '12/12/2016')
+        DeputyService.findMostRecentDeputyAtDate(1, 1, '2016-12-12')
         .then(function(deputy) {
             should.exist(deputy);
-            deputy.officialId.should.equal('12')
+            deputy.officialId.should.equal(12)
             done();
         })
         .catch(done);

@@ -1,8 +1,9 @@
 let moment = require('moment');
+moment.locale('fr');
 
 let self = module.exports = {
     findAge: function(birthdate) {
-        let date = self.formatDateWithTemplate(birthdate, 'YYYY-MM-DD' ,'DD/MM/YYYY');
+        let date = self.formatDateWithTemplate(birthdate, 'YYYY-MM-DD', 'YYYY-MM-DD');
         return Math.floor(self.getDaysFromNow(date) / 365)
     },
 
@@ -11,7 +12,7 @@ let self = module.exports = {
     },
 
     formatDateForWS: function(dateString) {
-        return self.formatDateWithTemplate(dateString, 'DD/MM/YYYY', 'DD/MM/YYYY');
+        return self.formatDateWithTemplate(dateString, 'YYYY-MM-DD', 'DD/MM/YYYY');
     },
 
     formatWrittenDate: function(dateString) {
@@ -19,9 +20,7 @@ let self = module.exports = {
     },
 
     formatDateWithTemplate: function(dateString, parseTemplate, formatTemplate) {
-        moment.locale('fr')
-        var parsedDate = moment(dateString, parseTemplate);
-        return moment(parsedDate).format(formatTemplate);
+        return moment(dateString, parseTemplate).format(formatTemplate);
     },
 
     getDaysFromNow: function(start) {
@@ -31,7 +30,7 @@ let self = module.exports = {
     getDiffInDays: function(date1, date2) {
         var diff = 0;
         if (date1 && date2) {
-            diff = moment(date2, 'DD/MM/YYYY').diff(moment(date1, 'DD/MM/YYYY'), 'days');
+            diff = moment(date2, 'YYYY-MM-DD').diff(moment(date1, 'YYYY-MM-DD'), 'days');
         }
         return diff;
     },

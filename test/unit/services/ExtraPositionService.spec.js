@@ -1,4 +1,4 @@
-require('../../bootstrap');
+require('../../bootstrap.test');
 
 let Promise = require('bluebird');
 
@@ -28,7 +28,7 @@ describe('The ExtraPositionService', function () {
 
     after(function(done) {
         let promises = [];
-        promises.push(ExtraPosition.destroy())
+        promises.push(ExtraPosition.destroy({}))
         Promise.all(promises)
         .then(function() {
             done();
@@ -39,7 +39,7 @@ describe('The ExtraPositionService', function () {
         ExtraPositionService.findExtraPositionsForDeputy(3)
         .then(function(extraPositions) {
             extraPositions.length.should.equal(1)
-            extraPositions[0].deputyId.should.equal('3')
+            extraPositions[0].deputyId.should.equal(3)
             done();
         })
         .catch(done);
