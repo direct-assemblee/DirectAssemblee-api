@@ -45,6 +45,8 @@ let formatTimelineResponse = function(items, deputy) {
 		if (item.totalVotes > 0) {
 			let voteValue = ResponseHelper.createVoteValueForWS(item.type, item.deputyVote);
 			item = ResponseHelper.createBallotDetailsResponse(item, deputy, voteValue);
+		} else {
+			item = ResponseHelper.createWorkForTimeline(item, item.extraInfos);
 		}
 		results.push(item);
 	}

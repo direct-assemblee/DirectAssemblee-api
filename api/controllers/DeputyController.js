@@ -15,11 +15,7 @@ let self = module.exports = {
 	getDeputiesResponse: function(req, res) {
 		return self.getDeputies(req.param('latitude'), req.param('longitude'))
 		.then(function(response) {
-			if (response.code === 200) {
-				return res.json(response.content);
-			} else {
-				return res.json(response.code, response.message);
-			}
+			return res.status(response.code).json(response.content);
 		})
 	},
 
@@ -28,7 +24,7 @@ let self = module.exports = {
 			return getDeputiesWithCoordinates(lat, long);
 		} else {
 			return new Promise(function(resolve) {
-				resolve({ code: 400, message: 'Must provide latitude and longitude arguments' });
+				resolve({ code: 400, content: 'Must provide latitude and longitude arguments' });
 			})
 		}
 	},
@@ -38,11 +34,7 @@ let self = module.exports = {
 		let district = req.param('district');
 		return self.getDeputy(departmentId, district)
 		.then(function(response) {
-			if (response.code === 200) {
-				return res.json(response.content);
-			} else {
-				return res.json(response.code, response.message);
-			}
+			return res.status(response.code).json(response.content);
 		})
 	},
 
@@ -53,7 +45,7 @@ let self = module.exports = {
 			.then(function(deputy) {
 				if (deputy) {
 					if (deputy.mandateEndDate) {
-						return { code: 404, message: 'Found deputy, but mandate has ended.' };
+						return { code: 404, content: 'Found deputy, but mandate has ended.' };
 					} else {
 						return formatDeputyResponse(deputy)
 						.then(function(formattedDeputy) {
@@ -61,12 +53,12 @@ let self = module.exports = {
 						});
 					}
 				} else {
-					return { code: 404, message: 'Could not find deputy, sorry.' };
+					return { code: 404, content: 'Could not find deputy, sorry.' };
 				}
 			})
 		} else {
 			return new Promise(function(resolve) {
-				resolve({ code: 400, message: 'Must provide departmentId and district arguments' });
+				resolve({ code: 400, content: 'Must provide departmentId and district arguments' });
 			})
 		}
 	}
@@ -85,7 +77,7 @@ let getDeputiesWithCoordinates = function(lat, long) {
 				return { code: 200, content: response };
 			})
 		} else {
-			return { code: 404, message: 'Sorry, no district found' };
+			return { code: 404, content: 'Sorry, no district found' };
 		}
 	})
 }

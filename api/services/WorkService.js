@@ -34,7 +34,8 @@ let self = module.exports = {
             return Promise.map(works, function(work) {
                 return ExtraInfoService.findExtraInfosForWork(work.id)
                 .then(function(extraInfos) {
-                    return ResponseHelper.createWorkForTimeline(work, extraInfos)
+                    work.extraInfos = extraInfos;
+                    return work;
                 })
             })
         })

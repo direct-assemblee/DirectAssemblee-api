@@ -129,11 +129,11 @@ describe('The WorkService', function () {
             should.exist(works);
             works.length.should.equal(2);
 
-            works[0].date.should.equal('13/08/2014');
+            works[0].date.should.equal('2014-08-13');
             works[0].title.should.equal('another title before');
             should.not.exist(works[0].theme);
             works[0].type.should.equal('commission');
-            works[0].fileUrl.should.equal('http://titi');
+            works[0].url.should.equal('http://titi');
             works[0].description.should.equal('another description');
 
             should.exist(works[0].extraInfos);
@@ -141,17 +141,18 @@ describe('The WorkService', function () {
             works[0].extraInfos[0].info.should.equal('an info');
             works[0].extraInfos[0].value.should.equal('a value');
 
-            works[1].date.should.equal('14/08/2014');
+            works[1].date.should.equal('2014-08-14');
             works[1].title.should.equal('another title');
-            should.exist(works[1].theme);
-            should.not.exist(works[1].theme.typeName);
-            works[1].theme.name.should.equal('themeName');
-            works[1].theme.id.should.be.above(0);
+            should.exist(works[1].themeId);
+            works[1].themeId.typeName.should.equal('themeTypeName');
+            works[1].themeId.name.should.equal('themeName');
+            works[1].themeId.id.should.be.above(0);
             works[1].type.should.equal('question');
-            works[1].fileUrl.should.equal('http://toto');
+            works[1].url.should.equal('http://toto');
             works[1].description.should.equal('another description');
 
-            should.not.exist(works[1].extraInfos);
+            should.exist(works[1].extraInfos);
+            works[1].extraInfos.length.should.equal(0);
             done();
         })
         .catch(done);

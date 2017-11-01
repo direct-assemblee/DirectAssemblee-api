@@ -18,7 +18,6 @@ module.exports = {
         .then(function(lastScanTime) {
             return DeputyService.findCurrentDeputies()
             .then(function(deputies) {
-                console.log(deputies)
                 return VoteService.findLastVotesByDeputy(lastScanTime, deputies)
             })
         })

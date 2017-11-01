@@ -15,7 +15,7 @@ describe('The DeputyController ', function() {
                 .then(function(response) {
                     should.exist(response);
                     response.code.should.equal(400);
-                    response.message.should.equal('Must provide latitude and longitude arguments');
+                    response.content.should.equal('Must provide latitude and longitude arguments');
                     done();
                 })
                 .catch(done);
@@ -26,7 +26,7 @@ describe('The DeputyController ', function() {
                 .then(function(response) {
                     should.exist(response);
                     response.code.should.equal(400);
-                    response.message.should.equal('Must provide latitude and longitude arguments');
+                    response.content.should.equal('Must provide latitude and longitude arguments');
                     done();
                 })
                 .catch(done);
@@ -46,7 +46,7 @@ describe('The DeputyController ', function() {
                 .then(function(response) {
                     should.exist(response);
                     response.code.should.equal(404);
-                    response.message.should.equal('Sorry, no district found');
+                    response.content.should.equal('Sorry, no district found');
                     done();
                 })
                 .catch(done);
@@ -126,7 +126,7 @@ describe('The DeputyController ', function() {
                 .then(function(deputyResponse) {
                     should.exist(deputyResponse);
                     deputyResponse.code.should.equal(404);
-                    deputyResponse.message.should.equal('Could not find deputy, sorry.');
+                    deputyResponse.content.should.equal('Could not find deputy, sorry.');
                     done();
                 })
                 .catch(done);
@@ -147,7 +147,7 @@ describe('The DeputyController ', function() {
                 .then(function(deputyResponse) {
                     should.exist(deputyResponse);
                     deputyResponse.code.should.equal(404);
-                    deputyResponse.message.should.equal('Found deputy, but mandate has ended.');
+                    deputyResponse.content.should.equal('Found deputy, but mandate has ended.');
                     done();
                 })
                 .catch(done);
@@ -164,7 +164,7 @@ describe('The DeputyController ', function() {
                 .then(function(deputyResponse) {
                     should.exist(deputyResponse);
                     deputyResponse.code.should.equal(400);
-                    deputyResponse.message.should.equal('Must provide departmentId and district arguments');
+                    deputyResponse.content.should.equal('Must provide departmentId and district arguments');
                     done();
                 })
                 .catch(done);
@@ -175,7 +175,7 @@ describe('The DeputyController ', function() {
                 .then(function(deputyResponse) {
                     should.exist(deputyResponse);
                     deputyResponse.code.should.equal(400);
-                    deputyResponse.message.should.equal('Must provide departmentId and district arguments');
+                    deputyResponse.content.should.equal('Must provide departmentId and district arguments');
                     done();
                 })
                 .catch(done);
