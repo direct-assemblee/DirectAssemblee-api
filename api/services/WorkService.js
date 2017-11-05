@@ -8,12 +8,14 @@ let self = module.exports = {
     },
 
     findLastCreatedWorksWithThemeForDeputyAfterDate: function(deputyId, date) {
-        return self.findWorksWithThemeForDeputyAfterDate(deputyId, date)
+        return Work.find()
+        .where({ deputyId: deputyId, createdAt: { '>=': date } })
+        .populate('themeId')
         .then(function(works) {
             return Promise.filter(works, function(work) {
-                return DateHelper.isLaterOrSame(work.createdAt, work.date);
+                return DateHelper.isLaterOrSame(work.date, work.createdAt);
             })
-        })
+        });
     },
 
     findWorksDatesForDeputyAfterDate: function(deputyId, date) {
