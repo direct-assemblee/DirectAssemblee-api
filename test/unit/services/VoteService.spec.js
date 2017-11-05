@@ -92,39 +92,6 @@ describe('The VoteService', function () {
         .catch(done);
     });
 
-    it('should return votes with value for ballot', function(done) {
-        VoteService.findVotesWithValueForBallot(secondBallotId, 'against')
-        .then(function(votes) {
-            should.exist(votes);
-            votes.length.should.equal(2);
-            should.exist(votes[0].deputyId);
-            votes[0].deputyId.should.equal(23);
-            votes[1].deputyId.should.equal(22);
-            done();
-        })
-        .catch(done);
-    });
-
-    it('should return no votes with value for ballot - wrong value', function(done) {
-        VoteService.findVotesWithValueForBallot(secondBallotId, 'for')
-        .then(function(votes) {
-            should.exist(votes);
-            votes.length.should.equal(0);
-            done();
-        })
-        .catch(done);
-    });
-
-    it('should return no votes with value for ballot - wrong ballot', function(done) {
-        VoteService.findVotesWithValueForBallot(15, 'against')
-        .then(function(votes) {
-            should.exist(votes);
-            votes.length.should.equal(0);
-            done();
-        })
-        .catch(done);
-    });
-
     it('should return vote value for deputy and ballot', function(done) {
         VoteService.findVoteForDeputyAndBallot(23, secondBallotId)
         .then(function(vote) {

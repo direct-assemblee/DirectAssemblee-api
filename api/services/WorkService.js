@@ -1,5 +1,4 @@
 let Promise = require('bluebird');
-let ResponseHelper = require('./helpers/ResponseHelper.js');
 let DateHelper = require('./helpers/DateHelper.js');
 
 let self = module.exports = {

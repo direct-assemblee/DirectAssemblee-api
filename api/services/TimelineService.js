@@ -4,7 +4,7 @@ let WorkService = require('./WorkService.js');
 let Promise = require('bluebird');
 
 const TIMELINE_PAGE_ITEMS_COUNT = 20;
-const TIMELINE_MONTHS_INCREMENT_STEP = 4;
+const TIMELINE_MONTHS_INCREMENT_STEP = 1;
 
 module.exports = {
     getTimeline: function(deputy, offset) {
@@ -40,7 +40,7 @@ let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate
         } else {
             return nextDeputyTimeline(deputy, mandateStartDate, beforeDate, afterDate, newOffset, timelineItems);
         }
-    })
+    });
 }
 
 let sortItemsWithDateAndOfficialId = function(items) {
@@ -66,7 +66,7 @@ let findTimelineItems = function(deputy, afterDate, beforeDate) {
             .then(function(works) {
                 return results.concat(works)
             })
-        })
+        });
     })
 }
 
@@ -85,14 +85,10 @@ let nextDeputyTimeline = function(deputy, mandateStartDate, beforeDate, afterDat
 
 let retrieveVoteExtra = function(ballot, deputy) {
     if (deputy) {
-        return VoteService.findVotesWithValueForBallot(ballot.id, 'non-voting')
-        .then(function(nonVoting) {
-            ballot.nonVoting = nonVoting.length;
-            return VoteService.findVoteForDeputyAndBallot(deputy.officialId, ballot.id)
-            .then(function(vote) {
-                ballot.deputyVote = vote ? vote.value : 'missing';
-                return ballot;
-            })
+        return VoteService.findVoteForDeputyAndBallot(deputy.officialId, ballot.id)
+        .then(function(vote) {
+            ballot.deputyVote = vote ? vote.value : 'missing';
+            return ballot;
         })
     } else {
         return ballot;
