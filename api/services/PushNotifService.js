@@ -77,20 +77,24 @@ module.exports = {
 }
 
 let pushDeputyActivitiesByRange = function(deputyId, activities, start) {
-    let end = start + RANGE_STEP;
-    if (end > activities.length) {
-        end = start + activities.length;
-    }
-    let activitiesRange = activities.slice(start, end);
-    return pushDeputyActivities(deputyId, activitiesRange)
-    .then(function() {
-        let newStart = start + RANGE_STEP
-        if (newStart < activities.length) {
-            return pushDeputyActivitiesByRange(deputyId, activities, newStart)
-        } else {
-            return;
+    if (activities) {
+        let end = start + RANGE_STEP;
+        if (end > activities.length) {
+            end = start + activities.length;
         }
-    })
+        let activitiesRange = activities.slice(start, end);
+        return pushDeputyActivities(deputyId, activitiesRange)
+        .then(function() {
+            let newStart = start + RANGE_STEP
+            if (newStart < activities.length) {
+                return pushDeputyActivitiesByRange(deputyId, activities, newStart)
+            } else {
+                return;
+            }
+        })
+    } else {
+        return;
+    }
 }
 
 let pushDeputyActivities = function(deputyId, activities) {

@@ -20,12 +20,12 @@ module.exports = {
 
 	findLastVotesByDeputy: function(afterDate, currentDeputies) {
 		return Ballot.find()
-		.where({ date: { '>=': afterDate }})
+		.where({ createdAt: { '>=': afterDate }})
 		.populate('themeId')
 		.then(function(lastBallots) {
 			if (lastBallots.length > 0) {
 				return Promise.filter(lastBallots, function(ballot) {
-					return DateHelper.isLaterOrSame(ballot.createdAt, ballot.date);
+					return DateHelper.isLaterOrSame(ballot.date, ballot.createdAt);
 				})
 				.map(function(ballot) {
 					return findVotesForBallot(ballot, currentDeputies)
@@ -74,20 +74,22 @@ let getVoteForDeputy = function(deputyId, votes) {
 }
 
 let mapVotesByDeputy = function(allVotes) {
-	allVotes.sort(function(a, b) {
-		return a.deputyId - b.deputyId;
-	});
-
 	let votesByDeputy = [];
-	for (let i in allVotes) {
-		let vote = allVotes[i];
-		let picked = votesByDeputy.find(o => o.deputyId === vote.deputyId);
-		if (!picked) {
-			picked = { 'deputyId': vote.deputyId, 'activities': [] };
-			votesByDeputy.push(picked);
+	if (allVotes) {
+		allVotes.sort(function(a, b) {
+			return a.deputyId - b.deputyId;
+		});
+
+		for (let i in allVotes) {
+			let vote = allVotes[i];
+			let picked = votesByDeputy.find(o => o.deputyId === vote.deputyId);
+			if (!picked) {
+				picked = { 'deputyId': vote.deputyId, 'activities': [] };
+				votesByDeputy.push(picked);
+			}
+			delete vote.deputyId;
+			picked['activities'].push(vote);
 		}
-		delete vote.deputyId;
-		picked['activities'].push(vote);
 	}
 	return votesByDeputy;
 }

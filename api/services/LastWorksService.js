@@ -1,4 +1,6 @@
 let storage = require('node-persist');
+let moment = require('moment');
+let DateHelper = require('./helpers/DateHelper.js');
 
 const LAST_SCAN_TIME_KEY = 'LAST_SCAN_TIME_KEY';
 let lastScanTime;
@@ -8,7 +10,8 @@ module.exports = {
         return getLastScanTime()
         .then(function(lastScanTime) {
             if (lastScanTime) {
-                return WorkService.findLastCreatedWorksWithThemeForDeputyAfterDate(deputyId, lastScanTime);
+                let time = DateHelper.formatMomentWithTemplate(lastScanTime, DateHelper.DATE_AND_HOUR_TEMPLATE);
+                return WorkService.findLastCreatedWorksWithThemeForDeputyAfterDate(deputyId, time);
             }
         })
     },
@@ -18,13 +21,14 @@ module.exports = {
         .then(function(lastScanTime) {
             return DeputyService.findCurrentDeputies()
             .then(function(deputies) {
-                return VoteService.findLastVotesByDeputy(lastScanTime, deputies)
+                let time = DateHelper.formatMomentWithTemplate(lastScanTime, DateHelper.DATE_AND_HOUR_TEMPLATE);
+                return VoteService.findLastVotesByDeputy(time, deputies)
             })
         })
     },
 
     updateLastScanTime: function() {
-        lastScanTime = new Date();
+        lastScanTime = moment();
         return storage.init()
         .then(function() {
             return storage.setItem(LAST_SCAN_TIME_KEY, lastScanTime)
@@ -52,7 +56,7 @@ let getLastScanTime = function() {
             if (time) {
                 return time;
             } else {
-                return storage.setItem(LAST_SCAN_TIME_KEY, new Date())
+                return storage.setItem(LAST_SCAN_TIME_KEY, moment())
             }
         })
     }

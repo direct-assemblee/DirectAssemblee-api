@@ -1,7 +1,11 @@
 let moment = require('moment');
 moment.locale('fr');
 
+const DATE_AND_HOUR_TEMPLATE = 'YYYY-MM-DDTHH:MM:SS';
+
 let self = module.exports = {
+    DATE_AND_HOUR_TEMPLATE:DATE_AND_HOUR_TEMPLATE,
+
     findAge: function(birthdate) {
         let date = self.formatDateWithTemplate(birthdate, 'YYYY-MM-DD', 'YYYY-MM-DD');
         return Math.floor(self.getDaysFromNow(date) / 365)
@@ -17,6 +21,10 @@ let self = module.exports = {
 
     formatWrittenDate: function(dateString) {
         return self.formatDateWithTemplate(dateString, 'DD MMMM YYYY', 'YYYY-MM-DD');
+    },
+
+    formatMomentWithTemplate: function(date, formatTemplate) {
+        return date.format(formatTemplate);
     },
 
     formatDateWithTemplate: function(dateString, parseTemplate, formatTemplate) {

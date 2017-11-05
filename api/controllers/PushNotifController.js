@@ -1,3 +1,5 @@
+let Promise = require('bluebird');
+
 module.exports = {
 	deputyUpdated: function(req, res) {
 		let deputyId = req.param('deputyId');
@@ -22,12 +24,10 @@ module.exports = {
 		.then(function(newVotesByDeputy) {
 			LastWorksService.updateLastScanTime();
 			if (newVotesByDeputy) {
-				if (newVotesByDeputy) {
-					return Promise.map(newVotesByDeputy, function(deputyVotes) {
-						console.log('- deputy ' + deputyVotes.deputyId + ' voted for ' + deputyVotes.activities.length + ' ballots to be pushed')
-						return PushNotifService.pushDeputyActivities(deputyVotes);
-					}, {concurrency: 10})
-				}
+				return Promise.map(newVotesByDeputy, function(deputyVotes) {
+					console.log('- deputy ' + deputyVotes.deputyId + ' voted for ' + deputyVotes.activities.length + ' ballots to be pushed')
+					return PushNotifService.pushDeputyActivities(deputyVotes.deputyId, deputyVotes.activities);
+				}, {concurrency: 10})
 			} else {
 				console.log('- no new votes to be pushed')
 			}
