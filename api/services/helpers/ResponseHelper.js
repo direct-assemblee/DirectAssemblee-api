@@ -89,9 +89,9 @@ let self = module.exports = {
             title: work.title,
             fileUrl: work.url
         }
-        if (work.type !== WORK_TYPE_COMMISSIONS && work.type !== WORK_TYPE_PUBLIC_SESSIONS) {
-            response.theme = createThemeResponse(work.themeId);
-        }
+
+        response.theme = createThemeResponse(work.themeId);
+
         let description = work.description;
         if (work.type === WORK_TYPE_QUESTIONS) {
             description = QuestionHelper.formatQuestionWithLineBreaks(description);
