@@ -1,7 +1,7 @@
 let Promise = require('bluebird');
 let DateHelper = require('./helpers/DateHelper.js');
 
-let self = module.exports = {
+module.exports = {
     findWorksWithThemeForDeputyAfterDate: function(deputyId, date) {
         return findWorksForDeputyAfterDate(deputyId, date)
         .populate('themeId');

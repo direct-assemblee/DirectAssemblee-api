@@ -8,7 +8,7 @@ describe('The TimelineController ', function() {
             let stubs = {
                 '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(false, false),
             }
-            let TimelineController = StubsBuilder.buildClassWithStubs('controllers/TimelineController', stubs);
+            let TimelineController = StubsBuilder.buildStub('controllers/TimelineController', stubs);
 
             TimelineController.getTimelineForDeputy(14)
             .then(function(response) {
@@ -24,7 +24,7 @@ describe('The TimelineController ', function() {
             let stubs = {
                 '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, false),
             }
-            let TimelineController = StubsBuilder.buildClassWithStubs('controllers/TimelineController', stubs);
+            let TimelineController = StubsBuilder.buildStub('controllers/TimelineController', stubs);
 
             TimelineController.getTimelineForDeputy(14)
             .then(function(response) {
@@ -43,7 +43,7 @@ describe('The TimelineController ', function() {
                 '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),
                 '../services/TimelineService.js': StubsBuilder.buildTimelineServiceStub(true)
             }
-            let TimelineController = StubsBuilder.buildClassWithStubs('controllers/TimelineController', stubs);
+            let TimelineController = StubsBuilder.buildStub('controllers/TimelineController', stubs);
 
             TimelineController.getTimelineForDeputy(14)
             .then(function(result) {
@@ -60,7 +60,7 @@ describe('The TimelineController ', function() {
                 '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),
                 '../services/TimelineService.js': StubsBuilder.buildTimelineServiceStub(false)
             }
-            let TimelineController = StubsBuilder.buildClassWithStubs('controllers/TimelineController', stubs);
+            let TimelineController = StubsBuilder.buildStub('controllers/TimelineController', stubs);
 
             TimelineController.getTimelineForDeputy(14)
             .then(function(result) {

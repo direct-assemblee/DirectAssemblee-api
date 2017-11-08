@@ -7,7 +7,7 @@ describe('The DeputyController ', function() {
     describe('getDeputies function', function() {
         describe('called with wrong input', function () {
             before(function() {
-                DeputyController = StubsBuilder.buildClassWithStubs('controllers/DeputyController', []);
+                DeputyController = StubsBuilder.buildStub('controllers/DeputyController', []);
             })
 
             it('should return 400 error with bad param - when latitude is undefined', function(done) {
@@ -38,7 +38,7 @@ describe('The DeputyController ', function() {
                 let stubs = {
                     '../services/GeolocService.js': StubsBuilder.buildGeolocServiceStub(0)
                 }
-                DeputyController = StubsBuilder.buildClassWithStubs('controllers/DeputyController', stubs);
+                DeputyController = StubsBuilder.buildStub('controllers/DeputyController', stubs);
             })
 
             it('should return 404 error - no deputies found', function(done) {
@@ -60,7 +60,7 @@ describe('The DeputyController ', function() {
                     '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),
                     '../services/DepartmentService.js': StubsBuilder.buildDepartmentServiceStub(true, true)
                 }
-                DeputyController = StubsBuilder.buildClassWithStubs('controllers/DeputyController', stubs);
+                DeputyController = StubsBuilder.buildStub('controllers/DeputyController', stubs);
             })
 
             it('should return deputies', function(done) {
@@ -95,7 +95,7 @@ describe('The DeputyController ', function() {
                     '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),
                     '../services/ExtraPositionService.js': StubsBuilder.buildExtraPositionServiceStub()
                 }
-                DeputyController = StubsBuilder.buildClassWithStubs('controllers/DeputyController', stubs);
+                DeputyController = StubsBuilder.buildStub('controllers/DeputyController', stubs);
             }),
 
             it('should return deputy with given departmentId and district', function(done) {
@@ -118,7 +118,7 @@ describe('The DeputyController ', function() {
                     '../services/helpers/DateHelper.js': StubsBuilder.buildDateHelperStub(),
                     '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(false, false)
                 }
-                DeputyController = StubsBuilder.buildClassWithStubs('controllers/DeputyController', stubs);
+                DeputyController = StubsBuilder.buildStub('controllers/DeputyController', stubs);
             }),
 
             it('should return no deputy with given departmentId and district', function(done) {
@@ -139,7 +139,7 @@ describe('The DeputyController ', function() {
                     '../services/helpers/DateHelper.js': StubsBuilder.buildDateHelperStub(),
                     '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, false)
                 }
-                DeputyController = StubsBuilder.buildClassWithStubs('controllers/DeputyController', stubs);
+                DeputyController = StubsBuilder.buildStub('controllers/DeputyController', stubs);
             }),
 
             it('should return no deputy with given departmentId and district', function(done) {
@@ -156,7 +156,7 @@ describe('The DeputyController ', function() {
 
         describe('called with wrong input', function() {
             before(function() {
-                DeputyController = StubsBuilder.buildClassWithStubs('controllers/DeputyController', {});
+                DeputyController = StubsBuilder.buildStub('controllers/DeputyController', {});
             }),
 
             it('should return 400 bad param error - no department param', function(done) {

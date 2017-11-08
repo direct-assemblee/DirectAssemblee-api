@@ -1,0 +1,31 @@
+{
+    "limit": 1,
+    "features": [{
+        "geometry": {
+            "coordinates": [3.876459, 43.610411],
+            "type": "Point"
+        },
+        "type": "Feature",
+        "properties": {
+            "city": "Montpellier",
+            "postcode": "34000",
+            "distance": 5,
+            "score": 0.9999999879737084,
+            "label": "2 Rue Saint-Guilhem 34000 Montpellier",
+            "context": "34, H\u00e9rault, Occitanie (Languedoc-Roussillon)",
+            "type": "housenumber",
+            "street": "Rue Saint-Guilhem",
+            "housenumber": "2",
+            "id": "34172_XXXX_223fb8",
+            "importance": 0.3697,
+            "x": 770644.5,
+            "name": "2 Rue Saint-Guilhem",
+            "y": 6279317.2,
+            "citycode": "34172"
+        }
+    }],
+    "attribution": "BAN",
+    "type": "FeatureCollection",
+    "version": "draft",
+    "licence": "ODbL 1.0"
+}

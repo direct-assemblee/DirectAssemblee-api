@@ -36,9 +36,9 @@ let createDeputiesAndBallots = function() {
         return Theme.findOne({ name: 'themeName' })
         .then(function(themeId) {
             let otherPromises = [];
-            otherPromises.push(Ballot.create({ 'title': 'a title', 'officialId': 14, 'date': '2017-06-18', 'type': 'SSO', themeId: themeId.id }));
-            otherPromises.push(Ballot.create({ 'title': 'another title', 'officialId': 12, 'date': '2017-06-15', 'type': 'SOR', themeId: themeId.id }));
-            otherPromises.push(Ballot.create({ 'title': 'a third title', 'officialId': 1222, 'date': '2017-06-15', 'type': 'SOR', themeId: themeId.id }));
+            otherPromises.push(Ballot.create({ 'title': 'a title', 'officialId': 14, 'date': '2017-06-18', 'createdAt': '2017-06-18', 'type': 'SSO', themeId: themeId.id }));
+            otherPromises.push(Ballot.create({ 'title': 'another title', 'officialId': 12, 'date': '2017-06-15', 'createdAt': '2017-06-15', 'type': 'SOR', themeId: themeId.id }));
+            otherPromises.push(Ballot.create({ 'title': 'a third title', 'officialId': 1222, 'date': '2017-06-15', 'createdAt': '2017-06-15', 'type': 'SOR', themeId: themeId.id }));
             return Promise.all(otherPromises);
         })
     });

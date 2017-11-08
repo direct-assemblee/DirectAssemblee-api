@@ -179,7 +179,7 @@ module.exports = {
         return timelineServiceStub;
     },
 
-    buildClassWithStubs: function(classPathFromApi, stubs) {
+    buildStub: function(classPathFromApi, stubs) {
         return proxyquire('../../api/' + classPathFromApi, stubs);
     }
 }

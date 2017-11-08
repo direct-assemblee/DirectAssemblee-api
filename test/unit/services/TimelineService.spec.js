@@ -12,7 +12,7 @@ describe('The TimelineService', function() {
                 './BallotService.js': StubsBuilder.buildBallotServiceStub(0),
                 './WorkService.js': StubsBuilder.buildWorkServiceStub(0),
             }
-            TimelineService = StubsBuilder.buildClassWithStubs('services/TimelineService', stubs);
+            TimelineService = StubsBuilder.buildStub('services/TimelineService', stubs);
         })
 
         it('should return empty timeline', function(done) {

@@ -1,28 +1,23 @@
 let Promise = require('bluebird');
-let request = require('request');
+let RequestService = require('./RequestService');
 let fs = require('fs');
 let Turf = require('@turf/turf');
 
-const PARAM_LATITUDE = '{latitude}'
-const PARAM_LONGITUDE = '{longitude}'
-const GMAP_API_KEY = 'AIzaSyCwHl1AXUzENiz_VsABqZ8QIAHO5C-K8Js'
-const REVERSE_GEOCODING_URL = 'http://api-adresse.data.gouv.fr/reverse/?lon=' + PARAM_LONGITUDE + '&lat=' + PARAM_LATITUDE
-const GMAP_REVERSE_GEOCODING_URL = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + PARAM_LATITUDE + ',' + PARAM_LONGITUDE + '&key=' + GMAP_API_KEY
 
 module.exports = {
     getDistricts: function(latitude, longitude) {
-        return findDistricts(REVERSE_GEOCODING_URL, parseFloat(latitude), parseFloat(longitude))
+        return findDistricts(RequestService.PROVIDER_GOUV, parseFloat(latitude), parseFloat(longitude))
         .then(function(districts) {
             if (!districts) {
-                return findDistricts(GMAP_REVERSE_GEOCODING_URL, parseFloat(latitude), parseFloat(longitude))
+                return findDistricts(RequestService.PROVIDER_GMAP, parseFloat(latitude), parseFloat(longitude));
             }
             return districts;
         })
     }
 }
 
-let findDistricts = function(geocodingUrl, latitude, longitude) {
-    return reverseGeocode(geocodingUrl, latitude, longitude)
+let findDistricts = function(provider, latitude, longitude) {
+    return reverseGeocode(provider, latitude, longitude)
     .then(function(targetCityAndCode) {
         if (targetCityAndCode) {
             let targetDepartment = parseInt(targetCityAndCode.postalCode / 100);
@@ -36,7 +31,7 @@ let findDistricts = function(geocodingUrl, latitude, longitude) {
 
             let promises = []
             for (let i in extraCoords) {
-                promises.push(reverseGeocode(geocodingUrl, extraCoords[i][0], extraCoords[i][1]))
+                promises.push(reverseGeocode(provider, extraCoords[i][0], extraCoords[i][1]))
             }
             return Promise.all(promises)
             .then(function(citiesAndCodes) {
@@ -46,25 +41,23 @@ let findDistricts = function(geocodingUrl, latitude, longitude) {
     })
 }
 
-let reverseGeocode = function(geocodingUrl, latitude, longitude) {
-    return new Promise(function(resolve, reject) {
-        let url = geocodingUrl.replace(PARAM_LATITUDE, latitude).replace(PARAM_LONGITUDE, longitude)
-        request(url, function(error, response, body) {
+let reverseGeocode = function(provider, latitude, longitude) {
+    return RequestService.callGeocoding(provider, latitude, longitude)
+    .then(function(response) {
+        if (response) {
             let cityAndCode;
-            if (!error && response.statusCode == 200) {
-                let json = JSON.parse(body);
-                if (json.features) {
-                    if (json.features.length > 0) {
-                        let properties = json.features[0].properties
-                        cityAndCode = findCityAndCode(properties);
-                    }
-                } else if (json.results && json.results.length > 0) {
-                    let addressComponents = json.results[0].address_components;
-                    cityAndCode = findCityAndCode(addressComponents);
+            let json = JSON.parse(response);
+            if (json.features) {
+                if (json.features.length > 0) {
+                    let properties = json.features[0].properties
+                    cityAndCode = findCityAndCode(properties);
                 }
+            } else if (json.results && json.results.length > 0) {
+                let addressComponents = json.results[0].address_components;
+                cityAndCode = findCityAndCode(addressComponents);
             }
-            resolve(cityAndCode);
-        })
+            return cityAndCode;
+        }
     })
 }
 

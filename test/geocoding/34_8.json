@@ -1,0 +1,30 @@
+{
+    "attribution": "BAN",
+    "type": "FeatureCollection",
+    "version": "draft",
+    "licence": "ODbL 1.0",
+    "limit": 1,
+    "features": [{
+        "type": "Feature",
+        "geometry": {
+            "type": "Point",
+            "coordinates": [3.873495, 43.61458]
+        },
+        "properties": {
+            "name": "3 Boulevard Henri IV",
+            "y": 6279893.4,
+            "type": "housenumber", "x": 770532.1,
+            "context": "34, H\u00e9rault, Occitanie (Languedoc-Roussillon)",
+            "id": "34172_XXXX_a0c831",
+            "importance": 0.3314,
+            "score": 0.9999996469987974,
+            "label": "3 Boulevard Henri IV 34000 Montpellier",
+            "citycode": "34172",
+            "street": "Boulevard Henri IV", "distance": 29,
+            "postcode": "34000",
+            "housenumber": "3",
+            "city": "Montpellier"
+        }
+    }
+]
+}
