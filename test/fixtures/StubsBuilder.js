@@ -155,7 +155,6 @@ module.exports = {
                                 'name': 'Travail',
                                 'typeName': 'TRAVAIL'
                             },
-                            'id': 34,
                             'officialId': '105',
                             'title': 'scrutin description',
                             'date': moment('2017-08-01'),

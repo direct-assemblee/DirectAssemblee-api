@@ -43,7 +43,7 @@ module.exports = {
 
 let findVotesForBallot = function(ballot, currentDeputies) {
 	return Vote.find()
-	.where({ ballotId: ballot.id })
+	.where({ ballotId: ballot.officialId })
 	.populate('deputyId')
 	.then(function(votes) {
 		let votesIncludingMissing = [];

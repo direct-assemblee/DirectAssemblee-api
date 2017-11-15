@@ -78,7 +78,7 @@ describe('The TimelineController ', function() {
                 ballot.theme.name.should.equal('Travail');
                 ballot.fileUrl.should.equal('http://www.assemblee-nationale.fr/15/dossiers/habilitation_ordonnances_dialogue_social.asp');
                 should.exist(ballot.extraBallotInfo);
-                ballot.extraBallotInfo.id.should.equal(34);
+                ballot.extraBallotInfo.id.should.equal(105);
                 ballot.extraBallotInfo.totalVotes.should.equal(302);
                 ballot.extraBallotInfo.yesVotes.should.equal(36);
                 ballot.extraBallotInfo.noVotes.should.equal(256);

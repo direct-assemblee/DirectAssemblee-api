@@ -118,7 +118,7 @@ let self = module.exports = {
 
     prepareSimplifiedBallotResponse: function(ballot) {
         return {
-            id: ballot.id,
+            id: ballot.officialId,
             date: DateHelper.formatDateForWS(ballot.date),
             title: self.getBallotTypeDisplayName(ballot.type),
             theme: createThemeResponse(ballot.themeId),
@@ -137,7 +137,7 @@ let self = module.exports = {
             theme: createThemeResponse(ballot.themeId),
             fileUrl: ballot.fileUrl,
             extraBallotInfo: {
-                id: parseInt(ballot.id),
+                id: parseInt(ballot.officialId),
                 totalVotes: parseInt(ballot.totalVotes),
                 yesVotes: parseInt(ballot.yesVotes),
                 noVotes: parseInt(ballot.noVotes),
@@ -169,7 +169,7 @@ let self = module.exports = {
         return {
             title: ballot.title,
             theme: ballot.themeId.name,
-            ballotId : ballot.id,
+            ballotId : ballot.officialId,
             deputyId : vote.deputyId.officialId,
             value : self.createVoteValueForWS(ballot.type, vote.value)
         }
@@ -179,7 +179,7 @@ let self = module.exports = {
         return {
             title: ballot.title,
             theme: ballot.themeId.name,
-            ballotId : ballot.id,
+            ballotId : ballot.officialId,
             deputyId : deputy.officialId,
             value : 'missing'
         }

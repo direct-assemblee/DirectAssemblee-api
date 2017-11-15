@@ -2,25 +2,22 @@ require('../../bootstrap.test');
 
 let Promise = require('bluebird');
 
-let firstBallotId;
-let secondBallotId;
-
 let createVotes = function() {
     let promises = [];
-    promises.push(Vote.create({ value: 'for', ballotId: firstBallotId, deputyId: 23 }))
-    promises.push(Vote.create({ value: 'against', ballotId: secondBallotId, deputyId: 23 }))
-    promises.push(Vote.create({ value: 'against', ballotId: secondBallotId, deputyId: 22 }))
+    promises.push(Vote.create({ value: 'for', ballotId: 12, deputyId: 23 }))
+    promises.push(Vote.create({ value: 'against', ballotId: 14, deputyId: 23 }))
+    promises.push(Vote.create({ value: 'against', ballotId: 14, deputyId: 22 }))
     return Promise.all(promises)
 }
 
 let rememberBallotIds = function() {
     return Ballot.findOne({ officialId: 12 })
     .then(function(firstBallot) {
-        firstBallotId = firstBallot.id;
+        // firstBallotId = firstBallot.officialId;
 
         return Ballot.findOne({ officialId: 14 })
         .then(function(secondBallot) {
-            secondBallotId = secondBallot.id;
+            // secondBallotId = secondBallot.officialId;
         })
     })
 }
@@ -75,8 +72,8 @@ describe('The VoteService', function () {
         .then(function(ballotsIds) {
             should.exist(ballotsIds);
             ballotsIds.length.should.equal(2);
-            parseInt(ballotsIds[0]).should.equal(firstBallotId);
-            parseInt(ballotsIds[1]).should.equal(secondBallotId);
+            parseInt(ballotsIds[0]).should.equal(12);
+            parseInt(ballotsIds[1]).should.equal(14);
             done();
         })
         .catch(done);
@@ -93,7 +90,7 @@ describe('The VoteService', function () {
     });
 
     it('should return vote value for deputy and ballot', function(done) {
-        VoteService.findVoteForDeputyAndBallot(23, secondBallotId)
+        VoteService.findVoteForDeputyAndBallot(23, 14)
         .then(function(vote) {
             should.exist(vote);
             should.exist(vote.value);
@@ -104,7 +101,7 @@ describe('The VoteService', function () {
     });
 
     it('should return no vote value for deputy and ballot - wrong deputy', function(done) {
-        VoteService.findVoteForDeputyAndBallot(1, secondBallotId)
+        VoteService.findVoteForDeputyAndBallot(1, 14)
         .then(function(vote) {
             should.not.exist(vote);
             done();
@@ -158,17 +155,17 @@ describe('The VoteService', function () {
 let checkFirstDeputyActivities = function(activities) {
     activities.length.should.equal(3);
 
-    activities[0].title.should.equal('a title');
-    activities[0].theme.should.equal('themeName');
-    activities[0].ballotId.should.equal(secondBallotId);
-    should.not.exist(activities[0].deputyId);
-    activities[0].value.should.equal('against');
-
-    activities[1].title.should.equal('another title');
+    activities[1].title.should.equal('a title');
     activities[1].theme.should.equal('themeName');
-    activities[1].ballotId.should.equal(firstBallotId);
+    activities[1].ballotId.should.equal(14);
     should.not.exist(activities[1].deputyId);
-    activities[1].value.should.equal('for');
+    activities[1].value.should.equal('against');
+
+    activities[0].title.should.equal('another title');
+    activities[0].theme.should.equal('themeName');
+    activities[0].ballotId.should.equal(12);
+    should.not.exist(activities[0].deputyId);
+    activities[0].value.should.equal('for');
 
     activities[2].title.should.equal('a third title');
     activities[2].theme.should.equal('themeName');
@@ -178,19 +175,19 @@ let checkFirstDeputyActivities = function(activities) {
 }
 
 let checkSecondDeputyActivities = function(activities) {
-    activities.length.should.equal(3);
+        activities.length.should.equal(3);
 
-    activities[0].title.should.equal('a title');
-    activities[0].theme.should.equal('themeName');
-    activities[0].ballotId.should.equal(secondBallotId);
-    should.not.exist(activities[0].deputyId);
-    activities[0].value.should.equal('against');
-
-    activities[1].title.should.equal('another title');
+    activities[1].title.should.equal('a title');
     activities[1].theme.should.equal('themeName');
-    activities[1].ballotId.should.equal(firstBallotId);
+    activities[1].ballotId.should.equal(14);
     should.not.exist(activities[1].deputyId);
-    activities[1].value.should.equal('missing');
+    activities[1].value.should.equal('against');
+
+    activities[0].title.should.equal('another title');
+    activities[0].theme.should.equal('themeName');
+    activities[0].ballotId.should.equal(12);
+    should.not.exist(activities[0].deputyId);
+    activities[0].value.should.equal('missing');
 
     activities[2].title.should.equal('a third title');
     activities[2].theme.should.equal('themeName');

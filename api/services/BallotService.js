@@ -19,7 +19,7 @@ module.exports = {
     },
 
     getBallotWithId: function(id) {
-        return Ballot.findOne({ id: id })
+        return Ballot.findOne({ officialId: id })
         .populate('themeId')
     },
 

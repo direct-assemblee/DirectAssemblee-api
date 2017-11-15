@@ -1,7 +1,6 @@
 require('../../bootstrap.test');
 let moment = require('moment');
 
-let fifthBallotCreatedId;
 let themeCreatedId;
 
 describe('The BallotService', function () {
@@ -84,9 +83,8 @@ describe('The BallotService', function () {
         });
 
         it('should return ballot with id', function(done) {
-            BallotService.getBallotWithId(fifthBallotCreatedId)
+            BallotService.getBallotWithId(5)
             .then(function(ballot) {
-                ballot.id.should.equal(fifthBallotCreatedId);
                 ballot.officialId.should.equal(5);
                 ballot.themeId.name.should.equal('Education');
                 ballot.themeId.typeName.should.equal('EDUCATION');
@@ -100,7 +98,7 @@ let createOneBallotADay = function(size, type, startingId) {
     let promises = [];
     let startingDate = moment('22/02/2017', 'DD/MM/YYYY');
     for (let i = 0 ; i < size ; i++) {
-        let date = moment(startingDate).subtract(startingId + i, 'days').format('YYYY-MM-DD');
+        let date = moment(startingDate).subtract(startingId + i - 1, 'days').format('YYYY-MM-DD');
         // console.log('push : ' + (i+startingId) + " -- date " + date + ' -- type ' + type)
         promises.push(Ballot.create({ 'officialId': startingId + i, 'date': date, 'type': type, themeId: themeCreatedId }));
     }
@@ -109,15 +107,14 @@ let createOneBallotADay = function(size, type, startingId) {
 
 let createBallotsForFirstTests = function(done) {
     let promises = [];
-    promises = promises.concat(createOneBallotADay(10, 'SSO', 0));
-    promises = promises.concat(createOneBallotADay(20, 'SOR', 10));
-    promises = promises.concat(createOneBallotADay(7, 'SSO', 30));
+    promises = promises.concat(createOneBallotADay(10, 'SSO', 1));
+    promises = promises.concat(createOneBallotADay(20, 'SOR', 15));
+    promises = promises.concat(createOneBallotADay(7, 'SSO', 40));
     Promise.all(promises)
     .then(function() {
-        Ballot.findOne({ 'officialId': 5 })
-        .then(function(ballot) {
-            fifthBallotCreatedId = ballot.id;
+        // Ballot.findOne({ 'officialId': 5 })
+        // .then(function(ballot) {
             done();
-        })
+        // })
     });
 }

@@ -166,7 +166,7 @@ let findActivityRate = function(deputy, solemnBallotsOnly) {
 			return VoteService.findVotesBallotIds(deputy.officialId)
 			.then(function(votesBallotsIds) {
 				return Promise.filter(allBallots, function(ballot) {
-					return !votesBallotsIds.includes(ballot.id);
+					return !votesBallotsIds.includes(ballot.officialId);
 				})
 			})
 			.then(function(missingBallots) {

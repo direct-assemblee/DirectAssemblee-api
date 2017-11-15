@@ -85,7 +85,7 @@ let nextDeputyTimeline = function(deputy, mandateStartDate, beforeDate, afterDat
 
 let retrieveVoteExtra = function(ballot, deputy) {
     if (deputy) {
-        return VoteService.findVoteForDeputyAndBallot(deputy.officialId, ballot.id)
+        return VoteService.findVoteForDeputyAndBallot(deputy.officialId, ballot.officialId)
         .then(function(vote) {
             ballot.deputyVote = vote ? vote.value : 'missing';
             return ballot;
