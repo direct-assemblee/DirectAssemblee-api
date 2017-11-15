@@ -5,4 +5,4 @@ apps:
     exec_mode : 'cluster'
     env :
       PORT      : 1328
-      NODE_ENV  : 'development'
+      NODE_ENV  : 'production'
