@@ -18,7 +18,6 @@ module.exports = {
 
 let callGeocoding = function(geocodingUrl, latitude, longitude) {
     let url = geocodingUrl.replace(PARAM_LATITUDE, latitude).replace(PARAM_LONGITUDE, longitude);
-    console.log(url)
     return Request(url)
     .then(function(response) {
         return response;
