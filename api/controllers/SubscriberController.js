@@ -1,46 +1,17 @@
+let DeputyService = require('../services/DeputyService.js');
+let SubscriberService = require('../services/SubscriberService.js');
+
 module.exports = {
 	subscribeToDeputy: function(req, res) {
 		let token = req.param('token');
 		let deputyId = req.param('deputyId');
 		if (token && deputyId) {
-			return Deputy.findOne({ officialId: deputyId })
-			.populate('subscribers')
-			.then(function(deputy) {
-				if (!deputy) {
-					return res.json(404, 'could not find deputy, sorry.');
-				} else {
-					return Subscriber.findOne()
-					.where({ token: token })
-					.then(function(subscriber) {
-						if (subscriber) {
-							console.log('existing subscriber in db');
-							if (deputyHasSubcriber(deputy, subscriber)) {
-								console.log('already included in deputy subscribers');
-							} else {
-								console.log('added to deputy subscribers');
-								deputy.subscribers.add(subscriber.id);
-							}
-						} else {
-							console.log('adding new subscriber to db');
-							deputy.subscribers.add({ token : token });
-						}
-						deputy.save()
-						return addSubscriptionToFirebase(token, deputyId)
-						.then(function(err) {
-							if (err) {
-								console.log('error on Firebase subcription : removing subscriber from deputy');
-								deputy.subscribers.remove(subscriber.id)
-								deputy.save();
-								return res.json(400, err);
-							} else {
-								return res.json(200);
-							}
-						});
-					})
-				}
-			})
+			return subscribe(token, deputyId)
+			.then(function(response) {
+				return res.status(response.code).json(response.content);
+			});
 		} else {
-			return res.json(400, 'Must provide deputyId and token arguments')
+			return res.status(400).json('Must provide deputyId and token arguments');
 		}
 	},
 
@@ -48,58 +19,96 @@ module.exports = {
 		let token = req.param('token');
 		var deputyId = req.param('deputyId');
 		if (token && deputyId) {
-			return Subscriber.findOne()
-			.where({ token: token })
-			.then(function(subscriber) {
-				if (subscriber) {
-					return Deputy.findOne({ officialId: deputyId })
-					.then(function(deputy) {
-						if (!deputy) {
-							return res.json(404, 'could not find deputy with id ' + deputyId);
-						} else {
-							console.log('existing subscriber - remove from db if exists with deputy collection')
-							deputy.subscribers.remove(subscriber.id)
-							return removeSubscriptionFromFirebase(token, deputyId)
-							.then(function(err) {
-								if (err) {
-									return res.json(400, err);
-								} else {
-									return res.json(200);
-								}
-							});
-						}
-					})
-				} else {
-					console.log('subscriber doesn\'t exist in DB')
-					return res.json(200);
-				}
-			})
+			return unsubscribe(token, deputyId)
+			.then(function(response) {
+				return res.status(response.code).json(response.content);
+			});
 		} else {
 			return res.json(400, 'Must provide deputyId and token arguments')
 		}
 	}
 };
 
+let subscribe = function(token, deputyId) {
+	return DeputyService.findDeputyAndSubscribers(deputyId)
+	.then(function(deputy) {
+		if (!deputy) {
+			return { code: 404, content: 'could not find deputy, sorry.' };
+		} else {
+			return SubscriberService.findSubscriber(token)
+			.then(function(subscriber) {
+				if (!subscriber) {
+					console.log('creating subscriber in DB with token ' + token);
+					return SubscriberService.createSubscriber(token)
+				} else {
+					console.log('existing subscriber in db');
+					return subscriber;
+				}
+			})
+			.then(function(subscriber) {
+				if (deputyHasSubcriber(deputy, subscriber)) {
+					console.log('subscriber with id ' + subscriber.id + ' already included in deputy ' + deputy.officialId + ' subscribers');
+					return subscriber;
+				} else {
+					console.log('adding subscriber with id ' + subscriber.id + ' to deputy ' + deputy.officialId);
+					return DeputyService.addSubscriber(deputy.officialId, subscriber);
+				}
+			})
+			.then(function(subscriber) {
+				return addSubscriptionToFirebase(token, deputyId)
+				.then(function(err) {
+					if (err) {
+						console.log('error on Firebase subcription with token ' + token + ' and deputy ' + deputyId + ' ==> removing subscriber with id ' + subscriber.id + ' from deputy');
+						return removeSubscriber(deputyId, subscriber, token)
+						.then(function() {
+							return { code: 400, content: err };
+						})
+					} else {
+						return { code: 200, content: '' };
+					}
+				});
+			})
+		}
+	})
+}
+
+let unsubscribe = function(token, deputyId) {
+	return SubscriberService.findSubscriber(token)
+	.then(function(subscriber) {
+		if (subscriber) {
+			return DeputyService.findDeputyWithId(deputyId)
+			.then(function(deputy) {
+				if (!deputy) {
+					return { code: 404, content: 'could not find deputy with id ' + deputyId };
+				} else {
+					console.log('existing subscriber with token ' + token + ' ==> removing subscriber from deputy ' + deputyId);
+					return removeSubscriber(deputyId, subscriber, token)
+					.then(function() {
+						return { code: 200, content: '' };
+					})
+				}
+			})
+		} else {
+			console.log('subscriber with token ' + token + ' doesn\'t exist in DB')
+			return { code: 200, content: '' };
+		}
+	})
+}
+
+let removeSubscriber = function(deputyId, subscriber, token) {
+	return DeputyService.removeSubscriber(deputyId, subscriber)
+	.then(function() {
+		return SubscriberService.deleteSubscriber(token)
+	})
+}
+
 let addSubscriptionToFirebase = function(token, deputyId) {
 	return PushNotifService.addSubscriberToDeputy(token, deputyId)
 	.then(function(result) {
-		console.log('added subscription to firebase : ' + result)
+		console.log('added Firebase subscription with token ' + token + ' and deputy ' + deputyId + ' ==> result : ' +  result)
 		return;
 	})
 	.catch(function(err) {
-		sails.log.error(err);
-		return err;
-	});
-}
-
-let removeSubscriptionFromFirebase = function(token, deputyId) {
-	return PushNotifService.removeSubscriberFromDeputy(token, deputyId)
-	.then(function(result) {
-		console.log('removed firebase subscription : ' + result.toString())
-		return;
-	})
-	.catch(function(err) {
-		sails.log.error(err);
 		return err;
 	});
 }

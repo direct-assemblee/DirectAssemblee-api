@@ -7,6 +7,24 @@ module.exports = {
 		})
 	},
 
+	addSubscriber: function(deputyId, subscriber) {
+		return Deputy.addToCollection(deputyId, 'subscribers')
+		.members(parseInt(subscriber.id))
+		.then(function() {
+			return subscriber;
+		})
+	},
+
+	removeSubscriber: function(deputyId, subscriber) {
+		return Deputy.removeFromCollection(deputyId, 'subscribers')
+		.members(subscriber.id)
+	},
+
+	findDeputyAndSubscribers: function(deputyId) {
+		return Deputy.findOne({ officialId: deputyId })
+		.populate('subscribers')
+	},
+
 	findMostRecentDeputyAtDate: function(departmentId, district, date) {
 		let options = { departmentId: departmentId, district: district, currentMandateStartDate: { '<=': date } };
 		return Deputy.find()
