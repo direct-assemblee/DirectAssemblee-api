@@ -217,7 +217,7 @@ let createPayloadForVote = function(deputyId, vote) {
         },
         data: {
             deputyId:  '' + deputyId,
-            ballotId:  '' + vote.ballotId
+            workId:  '' + vote.ballotId
         }
     }
     return payload;
@@ -233,7 +233,8 @@ let createPayloadForWork = function(deputyId, work) {
             body: body.substring(0, 197) + '...'
         },
         data: {
-            deputyId:  '' + deputyId
+            deputyId:  '' + deputyId,
+            workId:  '' + work.id
         }
     }
     return payload;
