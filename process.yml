@@ -1,5 +1,5 @@
 apps:
-  - script : ./api/app.js
+  - script : ./app.js
     name   : 'directass_api'
     instances : 0
     exec_mode : 'cluster'
