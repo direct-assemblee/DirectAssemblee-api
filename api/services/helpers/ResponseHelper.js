@@ -131,6 +131,7 @@ let self = module.exports = {
 
     prepareBallotResponse: function(ballot) {
         return {
+            id: parseInt(ballot.officialId),
             date: DateHelper.formatDateForWS(ballot.date),
             description: ballot.title,
             title: self.getBallotTypeDisplayName(ballot.type),
@@ -138,7 +139,6 @@ let self = module.exports = {
             theme: createThemeResponse(ballot.themeId, ballot.originalThemeName),
             fileUrl: ballot.fileUrl,
             extraBallotInfo: {
-                id: parseInt(ballot.officialId),
                 totalVotes: parseInt(ballot.totalVotes),
                 yesVotes: parseInt(ballot.yesVotes),
                 noVotes: parseInt(ballot.noVotes),
