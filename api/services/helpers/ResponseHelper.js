@@ -91,7 +91,7 @@ let self = module.exports = {
             fileUrl: work.url
         }
 
-        response.theme = createThemeResponse(work.themeId);
+        response.theme = createThemeResponse(work.themeId, work.originalThemeName);
 
         let description = work.description;
         if (work.type === WORK_TYPE_QUESTIONS) {
@@ -113,7 +113,7 @@ let self = module.exports = {
         response.date = DateHelper.formatDateForWS(ballot.date);
         response.description = ballot.title;
         response.title = self.getBallotTypeDisplayName(ballot.type);
-        response.theme = createThemeResponse(ballot.themeId);
+        response.theme = createThemeResponse(ballot.themeId, ballot.originalThemeName);
         return response;
     },
 
@@ -122,7 +122,7 @@ let self = module.exports = {
             id: ballot.officialId,
             date: DateHelper.formatDateForWS(ballot.date),
             title: self.getBallotTypeDisplayName(ballot.type),
-            theme: createThemeResponse(ballot.themeId),
+            theme: createThemeResponse(ballot.themeId, ballot.originalThemeName),
             description: ballot.title,
             type: self.getBallotTypeName(ballot.type),
             isAdopted: ballot.isAdopted ? true : false
@@ -135,7 +135,7 @@ let self = module.exports = {
             description: ballot.title,
             title: self.getBallotTypeDisplayName(ballot.type),
             type: self.getBallotTypeName(ballot.type),
-            theme: createThemeResponse(ballot.themeId),
+            theme: createThemeResponse(ballot.themeId, ballot.originalThemeName),
             fileUrl: ballot.fileUrl,
             extraBallotInfo: {
                 id: parseInt(ballot.officialId),
@@ -293,7 +293,7 @@ let createWorkTitleForPush = function(work) {
     return title;
 }
 
-let createThemeResponse = function(theme) {
+let createThemeResponse = function(theme, originalName) {
     if (theme) {
         delete theme.typeName;
     } else {
@@ -302,5 +302,22 @@ let createThemeResponse = function(theme) {
             name: 'Catégorisation à venir'
         }
     }
+    if (shouldShowThemeSubName(theme.name, originalName)) {
+        theme.subname = originalName;
+    }
     return theme;
+}
+
+let shouldShowThemeSubName = function(themeName, originalThemeName) {
+    let shouldShow = true;
+    if (!originalThemeName || originalThemeName.length === 0) {
+        shouldShow = false;
+    } else if (themeName == originalThemeName) {
+        shouldShow = false;
+    } else {
+        if (themeName.toLowerCase().includes(originalThemeName.toLowerCase()) && (100 * originalThemeName.length / themeName.length >= 50)) {
+            shouldShow = false;
+        }
+    }
+    return shouldShow;
 }
