@@ -1,19 +1,13 @@
 let Promise = require('bluebird');
 
 module.exports = {
-	deputyUpdated: function(req, res) {
-		let deputyId = req.param('deputyId');
-		if (deputyId) {
-			return LastWorksService.findNewWorks(deputyId)
-			.then(function(newWorks) {
-				if (newWorks && newWorks.length > 0) {
-                    console.log('- deputy ' + deputyId + ' has ' + newWorks.length + ' new works to be pushed')
-                    return PushNotifService.pushDeputyActivities(deputyId, newWorks);
-                } else {
-					// console.log('- deputy ' + deputyId + ' has no new works to be pushed')
-				}
-				return res.json(200);
+	deputiesUpdated: function(req, res) {
+		let deputiesIds = req.param('deputiesIds');
+		if (deputiesIds) {
+			Promise.each(deputiesIds, function(deputyId) {
+				findWorksForUpdatedDeputy(deputyId);
 			})
+			return res.json(200);
 		} else {
 			return res.json(400, 'Must provide deputyId argument')
 		}
@@ -46,3 +40,16 @@ module.exports = {
 		}
 	}
 };
+
+let findWorksForUpdatedDeputy = function(deputyId) {
+	return LastWorksService.findNewWorks(deputyId)
+	.then(function(newWorks) {
+		if (newWorks && newWorks.length > 0) {
+			console.log('- deputy ' + deputyId + ' has ' + newWorks.length + ' new works to be pushed')
+			return PushNotifService.pushDeputyActivities(deputyId, newWorks);
+		} else {
+			// console.log('- deputy ' + deputyId + ' has no new works to be pushed')
+			return;
+		}
+	})
+}

@@ -52,7 +52,7 @@ module.exports.routes = {
 'POST /api/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
 'POST /api/unsubscribe' : 'SubscriberController.unsubscribeToDeputy', // ?deputyId=13
 // TODO disable for PROD
-'POST /api/deputyUpdated' : 'PushNotifController.deputyUpdated', // ?deputyId=13
+'POST /api/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
 'POST /api/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
 'GET /api/testPushNotif' : 'PushNotifController.sendTestPushNotif', // ?deputyId=13&type={question/ballot/...}
 };
