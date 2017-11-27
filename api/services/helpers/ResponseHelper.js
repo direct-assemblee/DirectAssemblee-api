@@ -84,6 +84,7 @@ let self = module.exports = {
 
     createWorkForTimeline: function(work, extraInfos) {
         let response = {
+            id: work.id,
             type: work.type,
             date: DateHelper.formatDateForWS(work.date),
             title: work.title,
