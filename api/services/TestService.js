@@ -1,16 +1,17 @@
 let Constants = require('./Constants.js');
 
 module.exports = {
-	sendPush: function(deputyId, type) {
-		let activity = mockActivityOfType(type);
+	sendPush: function(deputyId, type, workId) {
+		let activity = mockActivityOfType(type, workId);
 		PushNotifService.pushDeputyActivities(deputyId, [activity]);
     }
 };
 
-let mockActivityOfType = function(type) {
+let mockActivityOfType = function(type, workId) {
 	let activity = {};
 	activity.type = type;
 	activity.date = '2017-08-31';
+	activity.id = workId; // all types but ballots
 	switch(type) {
         case Constants.WORK_TYPE_QUESTIONS:
 		activity.title = 'Question écrite';
@@ -41,7 +42,7 @@ let mockActivityOfType = function(type) {
 		activity.description = '1. Renforcement du dialogue social - 2. Ordre du jour de la prochaine séance';
         break;
 		default:
-		activity.ballotId = 1222;
+		activity.ballotId = workId;
 		activity.theme = 'MOCK - Travail';
 		activity.title = 'Scrutin public sur l\'amendement n° 330 de M. Dharréville après l\'article 3 du projet de loi d\'habilitation à prendre par ordonnances les mesures pour le renforcement du dialogue social (première lecture).';
 		activity.value = 'for';

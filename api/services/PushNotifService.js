@@ -110,7 +110,7 @@ let pushDeputyActivity = function(deputyId, deputyActivity) {
     console.log('title : ' + payload.notification.title)
     console.log('body : ' + payload.notification.body)
     console.log('deputyId : ' + payload.data.deputyId)
-    console.log('workId : ' + payload.data.ballotId)
+    console.log('workId : ' + payload.data.workId)
     let options = {
         collapseKey: COLLAPSE_KEY,
     };

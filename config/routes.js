@@ -54,5 +54,5 @@ module.exports.routes = {
 // TODO disable for PROD
 'POST /api/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
 'POST /api/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
-'GET /api/testPushNotif' : 'PushNotifController.sendTestPushNotif', // ?deputyId=13&type={question/ballot/...}
+'GET /api/testPushNotif' : 'PushNotifController.sendTestPushNotif', // ?deputyId=13&type={question/ballot/...}&workId=1212
 };

@@ -32,8 +32,9 @@ module.exports = {
 	sendTestPushNotif: function(req, res) {
 		let deputyId = req.param('deputyId');
 		let type = req.param('type');
-		if (deputyId && Constants.WORK_TYPES.includes(type)) {
-			TestService.sendPush(deputyId, type);
+		let workId = req.param('workId');
+		if (deputyId && workId && Constants.WORK_TYPES.includes(type)) {
+			TestService.sendPush(deputyId, type, workId);
 			return res.json(200);
 		} else {
 			return res.json(400, 'Must provide deputyId and valid type arguments')
