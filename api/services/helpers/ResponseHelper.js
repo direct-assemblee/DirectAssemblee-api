@@ -1,5 +1,6 @@
 let DateHelper = require('./DateHelper.js');
 let QuestionHelper = require('./QuestionHelper.js')
+let ThemeHelper = require('./ThemeHelper.js')
 
 const WORK_TYPE_VOTE_SOLEMN = 'vote_solemn';
 const WORK_TYPE_VOTE_ORDINARY = 'vote_ordinary';
@@ -302,8 +303,10 @@ let createThemeResponse = function(theme, originalName) {
             name: 'Catégorisation à venir'
         }
     }
+
     if (shouldShowThemeSubName(theme.name, originalName)) {
-        theme.subname = originalName;
+        theme.fullName = originalName;
+        theme.shortName = ThemeHelper.findShorterName(originalName);
     }
     return theme;
 }
