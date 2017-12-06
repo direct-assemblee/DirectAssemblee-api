@@ -1,7 +1,7 @@
 let moment = require('moment');
 moment.locale('fr');
 
-const DATE_AND_HOUR_TEMPLATE = 'yyyy-MM-ddTHH:mm:ss';
+const DATE_AND_HOUR_TEMPLATE = 'YYYY-MM-DDTHH:mm:ss';
 
 let self = module.exports = {
     DATE_AND_HOUR_TEMPLATE:DATE_AND_HOUR_TEMPLATE,

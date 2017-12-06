@@ -168,23 +168,29 @@ let self = module.exports = {
     },
 
     createVoteForPush: function(ballot, vote) {
-        return {
+        let push = {
             title: ballot.title,
-            theme: ballot.themeId.name,
             ballotId : ballot.officialId,
             deputyId : vote.deputyId.officialId,
             value : self.createVoteValueForWS(ballot.type, vote.value)
         }
+        if (ballot.themeId) {
+            push.theme = ballot.themeId.name
+        }
+        return push;
     },
 
     createMissingVoteForPush: function(ballot, deputy) {
-        return {
+        let push = {
             title: ballot.title,
-            theme: ballot.themeId.name,
             ballotId : ballot.officialId,
             deputyId : deputy.officialId,
             value : 'missing'
         }
+        if (ballot.themeId) {
+            push.theme = ballot.themeId.name
+        }
+        return push;
     },
 
     createPayloadForActivity: function(deputyId, activity) {
@@ -210,7 +216,7 @@ let getBallotType = function(ballotType) {
 }
 
 let createPayloadForVote = function(deputyId, vote) {
-    let body = vote.themeId ? vote.themeId.name + ' : ' : '';
+    let body = vote.theme ? vote.theme + ' : ' : '';
     body += vote.title;
     let payload = {
         notification: {

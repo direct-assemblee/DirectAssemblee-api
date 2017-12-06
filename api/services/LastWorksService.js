@@ -59,5 +59,8 @@ let getLastScanTime = function() {
                 return storage.setItem(LAST_SCAN_TIME_KEY, moment())
             }
         })
+        .then(function(date) {
+            return moment(date).utc();
+        })
     }
 }
