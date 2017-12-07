@@ -3,7 +3,7 @@ let request = require('request-promise')
 let serviceAccount = require('../../assets/firebase_service_account.json');
 let ResponseHelper = require('./helpers/ResponseHelper.js');
 
-const serverKey = 'AAAATv-4Kqk:APA91bGXc-kCx6EsfzWRqNDZ9OBzqHs30MzRv1QNz00FbtrufnAfjr3eZOKmaw0DVHKGITkbjAxypt9Q138LboGArpMFhsuzcR02U1m3R7eqHyT0pibcDi7cCul-WD5ITGx6cZrmheXt';
+const serverKey = sails.config.firebase.serverKey;
 
 const COLLAPSE_KEY = 'NOTIF_VOTE';
 const FIREBASE_INSTANCE_ID_SERVICE_URL = 'https://iid.googleapis.com/iid/';

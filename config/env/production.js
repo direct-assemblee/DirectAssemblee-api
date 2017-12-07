@@ -10,29 +10,9 @@
  *
  */
 
-module.exports = {
+ module.exports = {
 
-  /***************************************************************************
-   * Set the default database connection for models in the production        *
-   * environment (see config/connections.js and config/models.js )           *
-   ***************************************************************************/
-
-  // models: {
-  //   connection: 'someMysqlServer'
-  // },
-
-  /***************************************************************************
-   * Set the port in the production environment to 80                        *
-   ***************************************************************************/
-
-  // port: 80,
-
-  /***************************************************************************
-   * Set the log level in production environment to "silent"                 *
-   ***************************************************************************/
-
-  // log: {
-  //   level: "silent"
-  // }
-
-};
+    firebase: {
+        serverKey: 'AAAATv-4Kqk:APA91bFhVjDJ9ifMHXdYQekFF7Cn1qIyoUxFau3LglPDSPepTVfF1E0sNeV7AE1-vO3iyMULbA7MVk4YNb83QpQu-fiU8J87lGIOQEuQPPIDejIjfKBRRt1A1PbQWC2aK8vw1d-6lr1g'
+    }
+ };
