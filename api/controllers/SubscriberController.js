@@ -3,55 +3,47 @@ let SubscriberService = require('../services/SubscriberService.js');
 
 module.exports = {
 	subscribeToDeputy: function(req, res) {
+		let instanceId = req.param('instanceId');
 		let token = req.param('token');
 		let deputyId = req.param('deputyId');
-		if (token && deputyId) {
-			return subscribe(token, deputyId)
+		if (instanceId && token && deputyId) {
+			return subscribe(instanceId, token, deputyId)
 			.then(function(response) {
 				return res.status(response.code).json(response.content);
 			});
 		} else {
-			return res.status(400).json('Must provide deputyId and token arguments');
+			return res.status(400).json('Must provide deputyId and instanceId and token arguments');
 		}
 	},
 
 	unsubscribeToDeputy: function(req, res) {
-		let token = req.param('token');
-		var deputyId = req.param('deputyId');
-		if (token && deputyId) {
-			return unsubscribe(token, deputyId)
+		let instanceId = req.param('instanceId');
+		let deputyId = req.param('deputyId');
+		if (instanceId && deputyId) {
+			return unsubscribe(instanceId, deputyId)
 			.then(function(response) {
 				return res.status(response.code).json(response.content);
 			});
 		} else {
-			return res.json(400, 'Must provide deputyId and token arguments')
+			return res.status(400).json('Must provide deputyId and instanceId arguments');
 		}
 	}
 };
 
-let subscribe = function(token, deputyId) {
+let subscribe = function(instanceId, token, deputyId) {
 	return DeputyService.findDeputyAndSubscribers(deputyId)
 	.then(function(deputy) {
 		if (!deputy) {
 			return { code: 404, content: 'could not find deputy, sorry.' };
 		} else {
-			return SubscriberService.findSubscriber(token)
-			.then(function(subscriber) {
-				if (!subscriber) {
-					console.log('creating subscriber in DB with token ' + token);
-					return SubscriberService.createSubscriber(token)
-				} else {
-					console.log('existing subscriber in db');
-					return subscriber;
-				}
-			})
+			return SubscriberService.createOrUpdateSubscriber(instanceId, token)
 			.then(function(subscriber) {
 				if (deputyHasSubcriber(deputy, subscriber)) {
-					console.log('subscriber with id ' + subscriber.id + ' already included in deputy ' + deputy.officialId + ' subscribers');
+					console.log('subscriber with instanceId ' + subscriber.instanceId + ' already included in deputy ' + deputy.officialId + ' subscribers');
 					return subscriber;
 				} else {
-					console.log('adding subscriber with id ' + subscriber.id + ' to deputy ' + deputy.officialId);
-					return DeputyService.addSubscriber(deputy.officialId, subscriber);
+					console.log('adding subscriber with instanceId ' + instanceId + ' to deputy ' + deputy.officialId);
+					return DeputyService.addSubscriber(deputy.officialId, instanceId);
 				}
 			})
 			.then(function(subscriber) {
@@ -59,10 +51,7 @@ let subscribe = function(token, deputyId) {
 				.then(function(err) {
 					if (err) {
 						console.log('error on Firebase subcription with token ' + token + ' and deputy ' + deputyId + ' ==> removing subscriber with id ' + subscriber.id + ' from deputy');
-						return removeSubscriber(deputyId, subscriber, token)
-						.then(function() {
-							return { code: 400, content: err };
-						})
+						return { code: 400, content: err };
 					} else {
 						return { code: 200, content: '' };
 					}
@@ -72,8 +61,8 @@ let subscribe = function(token, deputyId) {
 	})
 }
 
-let unsubscribe = function(token, deputyId) {
-	return SubscriberService.findSubscriber(token)
+let unsubscribe = function(instanceId, deputyId) {
+	return SubscriberService.findSubscriber(instanceId)
 	.then(function(subscriber) {
 		if (subscriber) {
 			return DeputyService.findDeputyWithId(deputyId)
@@ -81,24 +70,32 @@ let unsubscribe = function(token, deputyId) {
 				if (!deputy) {
 					return { code: 404, content: 'could not find deputy with id ' + deputyId };
 				} else {
-					console.log('existing subscriber with token ' + token + ' ==> removing subscriber from deputy ' + deputyId);
-					return removeSubscriber(deputyId, subscriber, token)
-					.then(function() {
-						return { code: 200, content: '' };
-					})
+					console.log('existing subscriber with instanceId ' + instanceId + ' ==> removing subscriber from deputy ' + deputyId);
+					return removeSubscriptionFromFirebase(subscriber.token, deputyId)
+					.then(function(err) {
+						if (err) {
+							console.log('error on Firebase subcription with token ' + subscriber.token + ' and deputy ' + deputyId + ' ==> removing subscriber with id ' + subscriber.id + ' from deputy');
+							return { code: 400, content: err };
+						} else {
+							return removeSubscriber(deputyId, subscriber.instanceId)
+							.then(function() {
+								return { code: 200, content: '' };
+							})
+						}
+					});
 				}
 			})
 		} else {
-			console.log('subscriber with token ' + token + ' doesn\'t exist in DB')
+			console.log('subscriber with instanceId ' + instanceId + ' doesn\'t exist in DB')
 			return { code: 200, content: '' };
 		}
 	})
 }
 
-let removeSubscriber = function(deputyId, subscriber, token) {
-	return DeputyService.removeSubscriber(deputyId, subscriber)
+let removeSubscriber = function(deputyId, instanceId) {
+	return DeputyService.removeSubscriber(deputyId, instanceId)
 	.then(function() {
-		return SubscriberService.deleteSubscriber(token)
+		return SubscriberService.deleteSubscriber(instanceId)
 	})
 }
 
@@ -113,10 +110,21 @@ let addSubscriptionToFirebase = function(token, deputyId) {
 	});
 }
 
+let removeSubscriptionFromFirebase = function(token, deputyId) {
+	return PushNotifService.removeSubscriberFromDeputy(token, deputyId)
+	.then(function(result) {
+		console.log('removed Firebase subscription for token ' + token + ' and deputy ' + deputyId + ' ==> result : ' +  result)
+		return;
+	})
+	.catch(function(err) {
+		return err;
+	});
+}
+
 let deputyHasSubcriber = function(deputy, subscriber) {
 	let result = false;
 	for (let i in deputy.subscribers) {
-		if (deputy.subscribers[i].id === subscriber.id) {
+		if (deputy.subscribers[i].instanceId === subscriber.instanceId) {
 			result = true;
 			break;
 		}

@@ -1,7 +1,7 @@
 let admin = require('firebase-admin');
 let request = require('request-promise')
-let serviceAccount = require('../../assets/firebase_service_account.json');
 let ResponseHelper = require('./helpers/ResponseHelper.js');
+let serviceAccount = require('../../assets/firebase/' + sails.config.firebase.configFile);
 
 const serverKey = sails.config.firebase.serverKey;
 
@@ -107,17 +107,17 @@ let pushDeputyActivities = function(deputyId, activities) {
 
 let pushDeputyActivity = function(deputyId, deputyActivity) {
     let payload = ResponseHelper.createPayloadForActivity(deputyId, deputyActivity)
-    console.log('title : ' + payload.notification.title)
-    console.log('body : ' + payload.notification.body)
-    console.log('deputyId : ' + payload.data.deputyId)
-    console.log('workId : ' + payload.data.workId)
+    // console.log('title : ' + payload.notification.title)
+    // console.log('body : ' + payload.notification.body)
+    // console.log('deputyId : ' + payload.data.deputyId)
+    // console.log('workId : ' + payload.data.workId)
     let options = {
         collapseKey: COLLAPSE_KEY,
     };
 
     return admin.messaging().sendToTopic(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload, options)
     .then(function(response) {
-        console.log('Successfully sent message - received id: ', response);
+        // console.log('Successfully sent message - received id: ', response);
         return;
     })
     .catch(function(error) {

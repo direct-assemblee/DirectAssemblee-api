@@ -13,6 +13,7 @@
  module.exports = {
 
     firebase: {
-        serverKey: 'AAAATv-4Kqk:APA91bFhVjDJ9ifMHXdYQekFF7Cn1qIyoUxFau3LglPDSPepTVfF1E0sNeV7AE1-vO3iyMULbA7MVk4YNb83QpQu-fiU8J87lGIOQEuQPPIDejIjfKBRRt1A1PbQWC2aK8vw1d-6lr1g'
+        configFile: 'firebase_service_account_prod.json',
+        serverKey: 'AAAA3fPNV4Q:APA91bHHYVFDBV2WnSDf2SpqElpTXusvxxPgzkqw6Lsvw7qoVdAlpi0-TH8ZzKo4OocQaTDizXW3CqZFWWutBbgAoxdcaE30B13Z27G3wfL9TcvBcJjKdtWv-qAycVTsltozlETuXoeK'
     }
  };

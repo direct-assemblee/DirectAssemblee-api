@@ -7,17 +7,14 @@ module.exports = {
 		})
 	},
 
-	addSubscriber: function(deputyId, subscriber) {
+	addSubscriber: function(deputyId, instanceId) {
 		return Deputy.addToCollection(deputyId, 'subscribers')
-		.members(parseInt(subscriber.id))
-		.then(function() {
-			return subscriber;
-		})
+		.members(instanceId)
 	},
 
-	removeSubscriber: function(deputyId, subscriber) {
+	removeSubscriber: function(deputyId, instanceId) {
 		return Deputy.removeFromCollection(deputyId, 'subscribers')
-		.members(subscriber.id)
+		.members(instanceId)
 	},
 
 	findDeputyAndSubscribers: function(deputyId) {
