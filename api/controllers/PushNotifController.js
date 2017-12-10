@@ -19,7 +19,6 @@ module.exports = {
 			LastWorksService.updateLastScanTime();
 			if (newVotesByDeputy) {
 				return Promise.map(newVotesByDeputy, function(deputyVotes) {
-					console.log('- deputy ' + deputyVotes.deputyId + ' voted for ' + deputyVotes.activities.length + ' ballots to be pushed')
 					return PushNotifService.pushDeputyActivities(deputyVotes.deputyId, deputyVotes.activities);
 				}, {concurrency: 10})
 			} else {

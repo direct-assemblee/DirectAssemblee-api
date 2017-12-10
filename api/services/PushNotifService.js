@@ -83,7 +83,7 @@ let pushDeputyActivitiesByRange = function(deputyId, activities, start) {
             end = start + activities.length;
         }
         let activitiesRange = activities.slice(start, end);
-        return pushDeputyActivities(deputyId, activitiesRange)
+        return pushDeputyActivitiesIfSubscribers(deputyId, activitiesRange)
         .then(function() {
             let newStart = start + RANGE_STEP
             if (newStart < activities.length) {
@@ -95,6 +95,16 @@ let pushDeputyActivitiesByRange = function(deputyId, activities, start) {
     } else {
         return;
     }
+}
+
+let pushDeputyActivitiesIfSubscribers = function(deputyId, activities) {
+    return DeputyService.findDeputyAndSubscribers(deputyId)
+    .then(function(deputy) {
+        if (deputy && deputy.subscribers && deputy.subscribers.length > 0) {
+			console.log('- deputy ' + deputyId + ' has ' + activities.length + ' activities to be pushed')
+            pushDeputyActivities(deputyId, activities)
+        }
+    })
 }
 
 let pushDeputyActivities = function(deputyId, activities) {
