@@ -30,6 +30,8 @@ module.exports = {
        'ExtraInfo': true,
        'Mandate': true,
        'Subscriber': true,
+       'ShortTheme': true,
+       'Subtheme': true,
        'Vote': true,
        'Work': true,
 
@@ -42,15 +44,18 @@ module.exports = {
        'ExtraPositionService': true,
        'DeputyService': true,
        'GeolocService': true,
+       'InitService': true,
        'LastWorksService': true,
        'MandateService': true,
        'PushNotifService': true,
+       'ShortThemeService': true,
        'TestService': true,
        'TimelineService': true,
        'VoteService': true,
        'WorkService': true,
 
-       'ResponseHelper': true
+       'ResponseHelper': true,
+       'ThemeHelper': true
    },
     'rules': {
         'no-console':0,
