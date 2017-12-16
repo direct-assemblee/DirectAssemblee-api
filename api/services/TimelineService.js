@@ -8,12 +8,11 @@ const TIMELINE_MONTHS_INCREMENT_STEP = 1;
 
 module.exports = {
     getTimeline: function(deputy, offset) {
-        let mandateStartDate = DateHelper.formatDate(deputy.currentMandateStartDate)
         let beforeDate = DateHelper.getFormattedNow();
         let afterDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
         let itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
         console.time('getTimeline for ' + deputy.officialId + ' - offset ' + offset);
-        return getDeputyTimeline(deputy, mandateStartDate, afterDate, beforeDate, itemsOffset, [])
+        return getDeputyTimeline(deputy, deputy.currentMandateStartDate, afterDate, beforeDate, itemsOffset, [])
         .then(function(timeline) {
             console.timeEnd('getTimeline for ' + deputy.officialId + ' - offset ' + offset);
             return timeline
