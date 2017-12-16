@@ -31,15 +31,6 @@ module.exports = {
         return Work.find()
         .where({ deputyId: deputyId, date: { '>': afterDate, '<=': beforeDate } })
         .populate('themeId')
-        .then(function(works) {
-            return Promise.map(works, function(work) {
-                return ExtraInfoService.findExtraInfosForWork(work.id)
-                .then(function(extraInfos) {
-                    work.extraInfos = extraInfos;
-                    return work;
-                })
-            })
-        })
     }
 }
 

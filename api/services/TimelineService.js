@@ -48,7 +48,11 @@ let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate
                 if (timelineItem.totalVotes) {
                     return retrieveVoteExtra(timelineItem, deputy);
                 } else {
-                    return timelineItem;
+                    return ExtraInfoService.findExtraInfosForWork(timelineItem.id)
+                    .then(function(extraInfos) {
+                        timelineItem.extraInfos = extraInfos;
+                        return timelineItem;
+                    })
                 }
             }, {concurrency: 10})
         } else {
