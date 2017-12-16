@@ -12,11 +12,17 @@ module.exports = {
         let beforeDate = DateHelper.getFormattedNow();
         let afterDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
         let itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
-        return getDeputyTimeline(deputy, mandateStartDate, afterDate, beforeDate, itemsOffset, []);
+        console.time('getTimeline for ' + deputy.officialId + ' - offset ' + offset);
+        return getDeputyTimeline(deputy, mandateStartDate, afterDate, beforeDate, itemsOffset, [])
+        .then(function(timeline) {
+            console.timeEnd('getTimeline for ' + deputy.officialId + ' - offset ' + offset);
+            return timeline
+        })
     }
 }
 
 let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate, itemsOffset, timelineItems) {
+    console.time('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
     return findTimelineItems(deputy, afterDate, beforeDate)
     .then(function(foundItems) {
         if (foundItems.length == 0 && afterDate < mandateStartDate) {
@@ -24,6 +30,7 @@ let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate
         }
         let offset = itemsOffset - foundItems.length;
         if (offset > 0) {
+            console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
             return nextDeputyTimeline(deputy, mandateStartDate, beforeDate, afterDate, offset, timelineItems);
         }
 
@@ -36,8 +43,10 @@ let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate
             newOffset = 0;
         }
         if (timelineItems.length == TIMELINE_PAGE_ITEMS_COUNT) {
+            console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
             return timelineItems;
         } else {
+            console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
             return nextDeputyTimeline(deputy, mandateStartDate, beforeDate, afterDate, newOffset, timelineItems);
         }
     });
@@ -56,14 +65,18 @@ let sortItemsWithDateAndOfficialId = function(items) {
 }
 
 let findTimelineItems = function(deputy, afterDate, beforeDate) {
+    console.time('    findBallotsBetweenDates for ' + deputy.officialId + ' - afterDate ' + afterDate);
     return BallotService.findBallotsBetweenDates(beforeDate, afterDate)
     .then(function(ballots) {
+        console.timeEnd('    findBallotsBetweenDates for ' + deputy.officialId + ' - afterDate ' + afterDate);
         return Promise.map(ballots, function(ballot) {
             return retrieveVoteExtra(ballot, deputy);
         }, {concurrency: 10})
         .then(function(results) {
+            console.time('    findWorksForDeputy ' + deputy.officialId + ' - afterDate ' + afterDate);
             return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
             .then(function(works) {
+                console.timeEnd('    findWorksForDeputy ' + deputy.officialId + ' - afterDate ' + afterDate);
                 return results.concat(works)
             })
         });
@@ -85,8 +98,10 @@ let nextDeputyTimeline = function(deputy, mandateStartDate, beforeDate, afterDat
 
 let retrieveVoteExtra = function(ballot, deputy) {
     if (deputy) {
+        console.time('      retrieveVoteExtra for ' + deputy.officialId + ' - ballot ' + ballot.officialId);
         return VoteService.findVoteForDeputyAndBallot(deputy.officialId, ballot.officialId)
         .then(function(vote) {
+            console.timeEnd('      retrieveVoteExtra for ' + deputy.officialId + ' - ballot ' + ballot.officialId);
             ballot.deputyVote = vote ? vote.value : 'missing';
             return ballot;
         })
