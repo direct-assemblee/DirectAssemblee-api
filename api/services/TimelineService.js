@@ -44,7 +44,13 @@ let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate
         }
         if (timelineItems.length == TIMELINE_PAGE_ITEMS_COUNT) {
             console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
-            return timelineItems;
+            return Promise.map(timelineItems, function(timelineItem) {
+                if (timelineItem.totalVotes) {
+                    return retrieveVoteExtra(timelineItem, deputy);
+                } else {
+                    return timelineItem;
+                }
+            }, {concurrency: 10})
         } else {
             console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
             return nextDeputyTimeline(deputy, mandateStartDate, beforeDate, afterDate, newOffset, timelineItems);
@@ -67,19 +73,14 @@ let sortItemsWithDateAndOfficialId = function(items) {
 let findTimelineItems = function(deputy, afterDate, beforeDate) {
     console.time('    findBallotsBetweenDates for ' + deputy.officialId + ' - afterDate ' + afterDate);
     return BallotService.findBallotsBetweenDates(beforeDate, afterDate)
-    .then(function(ballots) {
+    .then(function(results) {
         console.timeEnd('    findBallotsBetweenDates for ' + deputy.officialId + ' - afterDate ' + afterDate);
-        return Promise.map(ballots, function(ballot) {
-            return retrieveVoteExtra(ballot, deputy);
-        }, {concurrency: 10})
-        .then(function(results) {
-            console.time('    findWorksForDeputy ' + deputy.officialId + ' - afterDate ' + afterDate);
-            return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
-            .then(function(works) {
-                console.timeEnd('    findWorksForDeputy ' + deputy.officialId + ' - afterDate ' + afterDate);
-                return results.concat(works)
-            })
-        });
+        console.time('    findWorksForDeputy ' + deputy.officialId + ' - afterDate ' + afterDate);
+        return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
+        .then(function(works) {
+            console.timeEnd('    findWorksForDeputy ' + deputy.officialId + ' - afterDate ' + afterDate);
+            return results.concat(works)
+        })
     })
 }
 
