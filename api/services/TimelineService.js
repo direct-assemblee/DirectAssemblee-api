@@ -47,8 +47,10 @@ let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate
         if (timelineItems.length == TIMELINE_PAGE_ITEMS_COUNT) {
             return Promise.map(timelineItems, function(timelineItem) {
                 if (timelineItem.totalVotes) {
+                    console.log('      retrieveVoteExtra ' + timelineItem.officialId)
                     return retrieveVoteExtra(timelineItem, deputy);
                 } else {
+                    console.log('      findExtraInfosForWork ' + timelineItem.id)
                     return ExtraInfoService.findExtraInfosForWork(timelineItem.id)
                     .then(function(extraInfos) {
                         timelineItem.extraInfos = extraInfos;
