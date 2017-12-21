@@ -55,7 +55,7 @@ let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate
                         return timelineItem;
                     })
                 }
-            }, {concurrency: 10})
+            })
             .then(function(items) {
                 console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
                 return items;
