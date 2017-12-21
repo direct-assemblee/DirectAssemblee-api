@@ -73,8 +73,17 @@ let getDeputiesWithCoordinates = function(lat, long) {
 				deputies.push(retrieveDeputyForGeoDistrict(districts[i].department, districts[i].district));
 			}
 			return Promise.all(deputies)
-			.then(function(response) {
-				return { code: 200, content: response };
+			.then(function(deputies) {
+				return Promise.filter(deputies, function(deputy) {
+					return deputy != null;
+				})
+			})
+			.then(function(deputies) {
+				if (deputies && deputies.length > 0) {
+					return { code: 200, content: deputies };
+				} else {
+					return { code: 404, content: 'No deputy found'}
+				}
 			})
 		} else {
 			return { code: 404, content: 'Sorry, no district found' };

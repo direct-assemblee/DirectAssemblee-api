@@ -27,7 +27,9 @@ module.exports = {
 		return Deputy.find()
 		.where(options)
 		.then(function(deputies) {
-			return getMostRecentDeputy(deputies);
+			if (deputies && deputies.length > 0) {
+				return getMostRecentDeputy(deputies);
+			}
 		})
 	},
 
