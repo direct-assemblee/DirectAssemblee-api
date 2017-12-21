@@ -29,8 +29,11 @@ let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate
         }
         let offset = itemsOffset - foundItems.length;
         if (offset > 0) {
-            console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
-            return nextDeputyTimeline(deputy, mandateStartDate, beforeDate, afterDate, offset, timelineItems);
+            return nextDeputyTimeline(deputy, mandateStartDate, beforeDate, afterDate, offset, timelineItems)
+            .then(function(items) {
+                console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
+                return items
+            })
         }
 
         let sortedItems = sortItemsWithDateAndOfficialId(foundItems);
@@ -42,7 +45,6 @@ let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate
             newOffset = 0;
         }
         if (timelineItems.length == TIMELINE_PAGE_ITEMS_COUNT) {
-            console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
             return Promise.map(timelineItems, function(timelineItem) {
                 if (timelineItem.totalVotes) {
                     return retrieveVoteExtra(timelineItem, deputy);
@@ -54,9 +56,16 @@ let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate
                     })
                 }
             }, {concurrency: 10})
+            .then(function(items) {
+                console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
+                return items;
+            })
         } else {
-            console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
-            return nextDeputyTimeline(deputy, mandateStartDate, beforeDate, afterDate, newOffset, timelineItems);
+            return nextDeputyTimeline(deputy, mandateStartDate, beforeDate, afterDate, newOffset, timelineItems)
+            .then(function(items) {
+                console.timeEnd('  findTimelineItems for ' + deputy.officialId + ' - afterDate ' + afterDate);
+                return items;
+            })
         }
     });
 }
