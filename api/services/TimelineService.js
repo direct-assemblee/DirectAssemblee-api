@@ -65,7 +65,7 @@ let sortItemsWithDateAndOfficialId = function(items) {
     items.sort(function(a, b) {
         var diff = DateHelper.getDiffInDays(a.date, b.date);
         var result = diff == 0 ? 0 : diff > 0 ? 1 : -1;
-        if (result === 0 && a.deputyVote && b.deputyVote) {
+        if (result === 0 && a.officialId && b.officialId) {
             result = parseInt(a.officialId) < parseInt(b.officialId) ? 1 : -1;
         }
         return result
