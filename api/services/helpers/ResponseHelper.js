@@ -201,6 +201,23 @@ let self = module.exports = {
             payload = createPayloadForWork(deputyId, activity);
         }
         return payload;
+    },
+
+    createPayloadForDailyVotes: function(deputyId, ballotsCount, theme, sameValue, counts) {
+        let body = theme ? theme + '\n' : ''
+        body += 'Votre député ';
+        body += sameValue ? voteValuePrefixedWording(sameValue) + '\n' : ':\n' + multipleVoteValuesWording(counts);
+
+        let payload = {
+            notification: {
+                title: ballotsCount + ' scrutins ont eu lieu aujourd\'hui',
+                body: body
+            },
+            data: {
+                deputyId:  '' + deputyId
+            }
+        }
+        return payload
     }
 }
 
@@ -254,25 +271,79 @@ let createVoteTitleForPush = function(vote) {
         title += vote.value === 'for' ? 'a' : 'n\'a pas';
         title += ' signé la motion de censure';
     } else {
-        switch (vote.value) {
-            case 'for':
-            title += 'a voté POUR';
-            break;
-            case 'against':
-            title += 'a voté CONTRE';
-            break;
-            case 'blank':
-            title += 'a voté BLANC';
-            break;
-            case 'missing':
-            title += 'était ABSENT au vote';
-            break;
-            case 'non-voting':
-            title += 'était NON-VOTANT';
-            break;
-        }
+        title += voteValuePrefixedWording(vote.value);
     }
     return title;
+}
+
+let multipleVoteValuesWording = function(counts) {
+    let wording = '';
+    if (counts.for > 0) {
+        wording += 'POUR : ' + counts.for //'\n';
+    }
+    if (counts.against > 0) {
+        if (wording) {
+            wording += ', '
+        }
+        wording += 'CONTRE : ' + counts.against //'\n';
+    }
+    if (counts.blank > 0) {
+        if (wording) {
+            wording += ', '
+        }
+        wording += 'BLANC : ' + counts.blank //'\n';
+    }
+    if (counts.missing > 0) {
+        if (wording) {
+            wording += ', '
+        }
+        wording += 'ABSENT : ' + counts.missing  //'\n';
+    }
+    if (counts.nonVoting > 0) {
+        if (wording) {
+            wording += ', '
+        }
+        wording += 'NON-VOTANT : ' + counts.nonVoting + '\n';
+    }
+    return wording;
+}
+
+let voteValuePrefixedWording = function(voteValue) {
+    let wording;
+    switch (voteValue) {
+        case 'for':
+        case 'against':
+        case 'blank':
+        wording = 'a voté ';
+        break;
+        case 'missing':
+        case 'non-voting':
+        wording = 'était ';
+        break;
+    }
+    return wording + voteValueWording(voteValue);
+}
+
+let voteValueWording = function(voteValue) {
+    let wording
+    switch (voteValue) {
+        case 'for':
+        wording = 'POUR';
+        break;
+        case 'against':
+        wording = 'CONTRE';
+        break;
+        case 'blank':
+        wording = 'BLANC';
+        break;
+        case 'missing':
+        wording = 'ABSENT';
+        break;
+        case 'non-voting':
+        wording = 'NON-VOTANT';
+        break;
+    }
+    return wording
 }
 
 let createWorkTitleForPush = function(work) {

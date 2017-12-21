@@ -15,14 +15,14 @@ module.exports = {
         })
     },
 
+    find24hVotes: function() {
+        return findVotesAfterDate(DateHelper.getYesterdaySameTime());
+    },
+
     findNewVotes: function() {
         return getLastScanTime()
         .then(function(lastScanTime) {
-            return DeputyService.findCurrentDeputies()
-            .then(function(deputies) {
-                let time = DateHelper.formatMomentWithTemplate(lastScanTime, DateHelper.DATE_AND_HOUR_TEMPLATE);
-                return VoteService.findLastVotesByDeputy(time, deputies)
-            })
+            return findVotesAfterDate(lastScanTime);
         })
     },
 
@@ -39,6 +39,14 @@ module.exports = {
             })
         });
     }
+}
+
+let findVotesAfterDate = function(date) {
+    let time = DateHelper.formatMomentWithTemplate(date, DateHelper.DATE_AND_HOUR_TEMPLATE);
+    return DeputyService.findCurrentDeputies()
+    .then(function(deputies) {
+        return VoteService.findLastVotesByDeputy(time, deputies)
+    })
 }
 
 let getLastScanTime = function() {

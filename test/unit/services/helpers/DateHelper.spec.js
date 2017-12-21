@@ -60,7 +60,7 @@ describe('The DateHelper', function () {
     it('should return formated date after subtraction', function(done) {
         let givenDate = moment('22/02/2017', 'DD/MM/YYYY');
         let expected = '2015-02-22';
-        let date = DateHelper.substractAndFormat(givenDate, 2, 'years');
+        let date = DateHelper.subtractAndFormat(givenDate, 2, 'years');
         date.should.equal(expected);
         done();
     });

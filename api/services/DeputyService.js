@@ -35,6 +35,13 @@ module.exports = {
 		var options = { currentMandateStartDate:  {'!=': ''}, mandateEndDate: '' };
 		return Deputy.find()
 		.where(options);
+	},
+
+	hasSubscribers: function(deputyId) {
+		return DeputyService.findDeputyAndSubscribers(deputyId)
+		.then(function(deputy) {
+			return deputy && deputy.subscribers && deputy.subscribers.length > 0;
+		})
 	}
 };
 

@@ -88,8 +88,8 @@ let findTimelineItems = function(deputy, afterDate, beforeDate) {
 }
 
 let nextDeputyTimeline = function(deputy, mandateStartDate, beforeDate, afterDate, itemsOffset, timelineItems) {
-    let newBeforeDate = DateHelper.substractAndFormat(beforeDate, TIMELINE_MONTHS_INCREMENT_STEP, 'months');
-    let newAfterDate = DateHelper.substractAndFormat(afterDate, TIMELINE_MONTHS_INCREMENT_STEP, 'months');
+    let newBeforeDate = DateHelper.subtractAndFormat(beforeDate, TIMELINE_MONTHS_INCREMENT_STEP, 'months');
+    let newAfterDate = DateHelper.subtractAndFormat(afterDate, TIMELINE_MONTHS_INCREMENT_STEP, 'months');
     return getDeputyTimeline(deputy, mandateStartDate, newAfterDate, newBeforeDate, itemsOffset, timelineItems);
 }
 

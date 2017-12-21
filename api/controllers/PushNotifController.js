@@ -14,18 +14,7 @@ module.exports = {
 	},
 
 	ballotsUpdated: function(req, res) {
-		return LastWorksService.findNewVotes()
-		.then(function(newVotesByDeputy) {
-			LastWorksService.updateLastScanTime();
-			if (newVotesByDeputy) {
-				return Promise.map(newVotesByDeputy, function(deputyVotes) {
-					return PushNotifService.pushDeputyActivities(deputyVotes.deputyId, deputyVotes.activities);
-				}, {concurrency: 10})
-			} else {
-				console.log('- no new votes to be pushed')
-			}
-			return res.json(200);
-		})
+		return res.json(200);
 	},
 
 	sendTestPushNotif: function(req, res) {

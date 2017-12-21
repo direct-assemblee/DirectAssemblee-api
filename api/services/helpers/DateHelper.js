@@ -48,10 +48,10 @@ let self = module.exports = {
     },
 
     getDateForMonthsBack: function(numberOfMonths) {
-        return self.substractAndFormat(moment(), numberOfMonths, 'months');
+        return self.subtractAndFormat(moment(), numberOfMonths, 'months');
     },
 
-    substractAndFormat: function(date, quantity, timeUnit) {
+    subtractAndFormat: function(date, quantity, timeUnit) {
         var newDate = moment(date).subtract(quantity, timeUnit);
         return newDate.format('YYYY-MM-DD');
     },
@@ -66,5 +66,10 @@ let self = module.exports = {
 
     getFormattedNow: function() {
         return self.formatSimpleDate(moment());
+    },
+
+    getYesterdaySameTime: function() {
+        // TODO make sure this is right
+        return moment().subtract(1, 'day');
     }
 }
