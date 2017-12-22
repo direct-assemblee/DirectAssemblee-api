@@ -204,17 +204,21 @@ let self = module.exports = {
     },
 
     createPayloadForDailyVotes: function(deputyId, ballotsCount, theme, sameValue, counts) {
+        let title = ballotsCount + ' ';
+        title += ballotsCount > 1 ? ' nouveaux scrutins' : ' nouveau scrutin'
+        title += ' depuis hier';
+
         let body = theme ? theme + '\n' : ''
         body += 'Votre député ';
         body += sameValue ? voteValuePrefixedWording(sameValue) + '\n' : ':\n' + multipleVoteValuesWording(counts);
 
         let payload = {
             notification: {
-                title: ballotsCount + ' scrutins ont eu lieu aujourd\'hui',
+                title: title,
                 body: body
             },
             data: {
-                deputyId:  '' + deputyId
+                deputyId: '' + deputyId
             }
         }
         return payload
@@ -241,8 +245,8 @@ let createPayloadForVote = function(deputyId, vote) {
             body: body.substring(0, 197) + '...'
         },
         data: {
-            deputyId:  '' + deputyId,
-            workId:  '' + vote.ballotId
+            deputyId: '' + deputyId,
+            workId: '' + vote.ballotId
         }
     }
     return payload;
@@ -258,8 +262,8 @@ let createPayloadForWork = function(deputyId, work) {
             body: body.substring(0, 197) + '...'
         },
         data: {
-            deputyId:  '' + deputyId,
-            workId:  '' + work.id
+            deputyId: '' + deputyId,
+            workId: '' + work.id
         }
     }
     return payload;
