@@ -51,11 +51,15 @@ let getDeputyTimeline = function(deputy, mandateStartDate, afterDate, beforeDate
                     return retrieveVoteExtra(timelineItem, deputy);
                 } else {
                     console.log('      findExtraInfosForWork ' + timelineItem.id)
-                    return ExtraInfoService.findExtraInfosForWork(timelineItem.id)
-                    .then(function(extraInfos) {
-                        timelineItem.extraInfos = extraInfos;
+                    if (timelineItem.type === Constants.WORK_TYPE_PROPOSITIONS || timelineItem.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || timelineItem.type === Constants.WORK_TYPE_COMMISSION) {
+                        return ExtraInfoService.findExtraInfosForWork(timelineItem.id)
+                        .then(function(extraInfos) {
+                            timelineItem.extraInfos = extraInfos;
+                            return timelineItem;
+                        })
+                    } else {
                         return timelineItem;
-                    })
+                    }
                 }
             })
             .then(function(items) {
