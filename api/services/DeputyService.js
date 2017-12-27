@@ -1,3 +1,4 @@
+let Promise = require('bluebird');
 let DateHelper = require('./helpers/DateHelper.js');
 
 module.exports = {
@@ -28,7 +29,12 @@ module.exports = {
 		.where(options)
 		.then(function(deputies) {
 			if (deputies && deputies.length > 0) {
-				return getMostRecentDeputy(deputies);
+				return Promise.filter(deputies, function(deputy) {
+					return deputies.length > 1 ? deputy.currentMandateStartDate && deputy.currentMandateStartDate.length > 0 : true;
+				})
+				.then(function(deputies) {
+					return getMostRecentDeputy(deputies);
+				})
 			}
 		})
 	},
