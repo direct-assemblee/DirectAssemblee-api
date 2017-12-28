@@ -21,7 +21,7 @@ let findDistricts = function(provider, latitude, longitude) {
     .then(function(targetCityAndCode) {
         if (targetCityAndCode) {
             let targetDepartment = parseInt(targetCityAndCode.postalCode / 100);
-            let multiple = 1;
+            let multiple = 0.5; // 1 = 100m
             let extraCoords = [
                 [ latitude, longitude - (multiple * (0.1 / 111.11 * Math.cos(latitude))) ], // 100m est
                 [ latitude, longitude + (multiple * (0.1 / 111.11 * Math.cos(latitude))) ], // 100m ouest
