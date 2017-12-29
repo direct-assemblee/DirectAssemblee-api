@@ -34,14 +34,14 @@ describe('The GeolocService', function () {
             GeolocService = StubsBuilder.buildStub('services/GeolocService', stubs);
         });
 
-        it('should return single district', function(done) {
-            GeolocService.getDistricts(43.614704, 3.872328)
+        it('should return 2 districts', function(done) {
+            GeolocService.getDistricts(43.613494, 3.874250)
             .then(function(districts) {
                 districts.length.should.equal(2);
                 districts[0].department.should.equal(34);
                 districts[0].district.should.equal(8);
                 districts[1].department.should.equal(34);
-                districts[1].district.should.equal(3);
+                districts[1].district.should.equal(2);
                 done();
             })
             .catch(done);

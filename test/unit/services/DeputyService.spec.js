@@ -11,8 +11,9 @@ let getCreateDeputiesPromises = function() {
     promises.push(Deputy.create({ officialId: 13, departmentId: 1, district: 2, currentMandateStartDate: '2017-08-18', mandateEndDate: '' }))
     promises.push(Deputy.create({ officialId: 14, departmentId: 1, district: 1, currentMandateStartDate: '2017-06-18', mandateEndDate: '' }))
     promises.push(Deputy.create({ officialId: 16, departmentId: 30, district: 1, currentMandateStartDate: '', mandateEndDate: '2017-06-18' }))
+    promises.push(Deputy.create({ officialId: 17, departmentId: 30, district: 1, currentMandateStartDate: '2017-06-18', mandateEndDate: '' }))
 
-    let startDate = moment().subtract(5, 'months').format('YYYY-MM-DD');
+    let startDate = moment().subtract(2, 'months').format('YYYY-MM-DD');
     promises.push(Deputy.create({ officialId: 15, departmentId: 1, district: 1, currentMandateStartDate: startDate, mandateEndDate: '' }))
     return promises;
 }
@@ -69,7 +70,7 @@ describe('The DeputyService', function () {
         DeputyService.findMostRecentDeputyAtDate(1, 1, '2017-12-12')
         .then(function(deputy) {
             should.exist(deputy);
-            deputy.officialId.should.equal(14)
+            deputy.officialId.should.equal(15)
             done();
         })
         .catch(done);
@@ -80,6 +81,16 @@ describe('The DeputyService', function () {
         .then(function(deputy) {
             should.exist(deputy);
             deputy.officialId.should.equal(12)
+            done();
+        })
+        .catch(done);
+    });
+
+    it('should return new deputy', function(done) {
+        DeputyService.findMostRecentDeputyAtDate(30, 1, '2017-12-12')
+        .then(function(deputy) {
+            should.exist(deputy);
+            deputy.officialId.should.equal(17)
             done();
         })
         .catch(done);
@@ -107,7 +118,7 @@ describe('The DeputyService', function () {
         DeputyService.findCurrentDeputies()
         .then(function(deputies) {
             should.exist(deputies);
-            deputies.length.should.equal(4);
+            deputies.length.should.equal(5);
             done();
         })
         .catch(done);

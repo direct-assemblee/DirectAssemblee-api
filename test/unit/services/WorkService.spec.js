@@ -32,6 +32,7 @@ describe('The WorkService', function () {
     before(function(done) {
         createTheme()
         .then(function(createdThemeId) {
+            console.log('createdThemeId ' + createdThemeId)
             return createWorks(createdThemeId)
             .then(function(firstCreatedWork) {
                 return ExtraInfo.create({ info: 'an info', value: 'a value', workId: firstCreatedWork.id });
@@ -57,15 +58,13 @@ describe('The WorkService', function () {
             should.exist(works);
             works.length.should.equal(2);
 
-            should.exist(works[0].date);
-            moment(works[0].date).format('YYYY-MM-DD').should.equal('2014-08-14');
-            works[0].title.should.equal('another title');
-            works[0].themeId.name.should.equal('themeName');
-
-            should.exist(works[1].date);
-            moment(works[1].date).format('YYYY-MM-DD').should.equal('2014-08-15');
-            works[1].title.should.equal('another title after');
-            works[1].themeId.name.should.equal('themeName');
+            if (works[0].title === 'another title') {
+                checkWork(works[0], '2014-08-14', 'another title', 'themeName')
+                checkWork(works[1], '2014-08-15', 'another title after', 'themeName')
+            } else {
+                checkWork(works[1], '2014-08-14', 'another title', 'themeName')
+                checkWork(works[0], '2014-08-15', 'another title after', 'themeName')
+            }
             done();
         })
         .catch(done);
@@ -136,11 +135,6 @@ describe('The WorkService', function () {
             works[0].url.should.equal('http://titi');
             works[0].description.should.equal('another description');
 
-            should.exist(works[0].extraInfos);
-            works[0].extraInfos.length.should.equal(1);
-            works[0].extraInfos[0].info.should.equal('an info');
-            works[0].extraInfos[0].value.should.equal('a value');
-
             works[1].date.should.equal('2014-08-14');
             works[1].title.should.equal('another title');
             should.exist(works[1].themeId);
@@ -151,8 +145,6 @@ describe('The WorkService', function () {
             works[1].url.should.equal('http://toto');
             works[1].description.should.equal('another description');
 
-            should.exist(works[1].extraInfos);
-            works[1].extraInfos.length.should.equal(0);
             done();
         })
         .catch(done);
@@ -178,3 +170,10 @@ describe('The WorkService', function () {
         .catch(done);
     });
 });
+
+let checkWork = function(work, date, title, themeName) {
+    should.exist(work.date);
+    moment(work.date).format('YYYY-MM-DD').should.equal(date);
+    work.title.should.equal(title);
+    work.themeId.name.should.equal(themeName);
+}
