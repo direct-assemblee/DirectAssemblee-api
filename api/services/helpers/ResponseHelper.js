@@ -193,12 +193,19 @@ let self = module.exports = {
         return push;
     },
 
-    createPayloadForActivity: function(deputyId, activity) {
-        var payload;
-        if (activity.ballotId) {
-            payload = createPayloadForVote(deputyId, activity);
-        } else {
-            payload = createPayloadForWork(deputyId, activity);
+    createPayloadForActivity: function(deputyId, work) {
+        let title = createWorkTitleForPush(work)
+        let body = work.themeId ? work.themeId.name + ' : ' : '';
+        body += work.description;
+        let payload = {
+            notification: {
+                title: title,
+                body: body.substring(0, 197) + '...'
+            },
+            data: {
+                deputyId: '' + deputyId,
+                workId: '' + work.id
+            }
         }
         return payload;
     },
@@ -234,50 +241,6 @@ let getBallotType = function(ballotType) {
         }
     }
     return type;
-}
-
-let createPayloadForVote = function(deputyId, vote) {
-    let body = vote.theme ? vote.theme + ' : ' : '';
-    body += vote.title;
-    let payload = {
-        notification: {
-            title: createVoteTitleForPush(vote),
-            body: body.substring(0, 197) + '...'
-        },
-        data: {
-            deputyId: '' + deputyId,
-            workId: '' + vote.ballotId
-        }
-    }
-    return payload;
-}
-
-let createPayloadForWork = function(deputyId, work) {
-    let title = createWorkTitleForPush(work)
-    let body = work.themeId ? work.themeId.name + ' : ' : '';
-    body += work.description;
-    let payload = {
-        notification: {
-            title: title,
-            body: body.substring(0, 197) + '...'
-        },
-        data: {
-            deputyId: '' + deputyId,
-            workId: '' + work.id
-        }
-    }
-    return payload;
-}
-
-let createVoteTitleForPush = function(vote) {
-    let title = 'Votre député ';
-    if (vote.type === 'vote_motion_of_censure') {
-        title += vote.value === 'for' ? 'a' : 'n\'a pas';
-        title += ' signé la motion de censure';
-    } else {
-        title += voteValuePrefixedWording(vote.value);
-    }
-    return title;
 }
 
 let multipleVoteValuesWording = function(counts) {
