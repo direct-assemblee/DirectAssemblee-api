@@ -46,13 +46,14 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-'GET /api/deputies': 'DeputyController.getDeputiesResponse',  // optional ?latitude=XXX&longitude=YYY
-'GET /api/deputy': 'DeputyController.getDeputyResponse',  // ?departmentId=13&district=12
-'GET /api/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
-'POST /api/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
-'POST /api/unsubscribe' : 'SubscriberController.unsubscribeToDeputy', // ?deputyId=13
+'GET /api/v1/deputies': 'DeputyController.getDeputiesResponse',  // optional ?latitude=XXX&longitude=YYY
+'GET /api/v1/faineants': 'DeputyController.getFaineants',
+'GET /api/v1/deputy': 'DeputyController.getDeputyResponse',  // ?departmentId=13&district=12
+'GET /api/v1/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
+'POST /api/v1/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
+'POST /api/v1/unsubscribe' : 'SubscriberController.unsubscribeToDeputy', // ?deputyId=13
+'POST /api/v1/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
+'POST /api/v1/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
 // TODO disable for PROD
-'POST /api/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
-'POST /api/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
-'GET /api/testPushNotif' : 'PushNotifController.sendTestPushNotif', // ?deputyId=13&type={question/ballot/...}&workId=1212
+'GET /api/v1/testPushNotif' : 'PushNotifController.sendTestPushNotif', // ?deputyId=13&type={question/ballot/...}&workId=1212
 };
