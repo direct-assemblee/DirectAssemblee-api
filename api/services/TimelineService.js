@@ -1,6 +1,7 @@
 let DateHelper = require('./helpers/DateHelper.js');
 let BallotService = require('./BallotService.js');
 let WorkService = require('./WorkService.js');
+let Constants = require('./Constants.js');
 let Promise = require('bluebird');
 
 const TIMELINE_PAGE_ITEMS_COUNT = 20;
@@ -72,7 +73,7 @@ let handleTimelineResults = function(deputy, timelineItems) {
         if (timelineItem.totalVotes) {
             return retrieveVoteExtra(timelineItem, deputy);
         } else {
-            if (timelineItem.type === Constants.WORK_TYPE_PROPOSITIONS || timelineItem.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || timelineItem.type === Constants.WORK_TYPE_COMMISSION) {
+            if (timelineItem.type === Constants.WORK_TYPE_PROPOSITIONS || timelineItem.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || timelineItem.type === Constants.WORK_TYPE_COMMISSIONS) {
                 return ExtraInfoService.findExtraInfosForWork(timelineItem.id)
                 .then(function(extraInfos) {
                     timelineItem.extraInfos = extraInfos;

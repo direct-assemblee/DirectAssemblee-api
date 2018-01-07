@@ -100,9 +100,9 @@ let self = module.exports = {
         }
         response.description = description;
         if (extraInfos && extraInfos.length > 0) {
-            response.extraInfos = [];
+            response.extraInfos = {};
             for (let i in extraInfos) {
-                response.extraInfos.push({ [extraInfos[i].info] : extraInfos[i].value })
+                response.extraInfos[extraInfos[i].info] = extraInfos[i].value;
             }
         }
         return response;
