@@ -102,7 +102,7 @@ let self = module.exports = {
         if (extraInfos && extraInfos.length > 0) {
             response.extraInfos = [];
             for (let i in extraInfos) {
-                response.extraInfos.push({ 'info': extraInfos[i].info, 'value': extraInfos[i].value } )
+                response.extraInfos.push({ [extraInfos[i].info] : extraInfos[i].value })
             }
         }
         return response;
