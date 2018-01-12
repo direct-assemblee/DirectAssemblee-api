@@ -7,6 +7,8 @@ const SALARY_GENERAL_REPORTER = 880;
 const SALARY_SCIENTIFIC_CHOICE_PRESIDENT = 880;
 const SALARY_SECRETARY = 692;
 
+const BRUT_NET_RATIO = 0.80194;
+
 const PARLIAMENT_OFFICE_REGEX = /Assemblée\snationale/;
 
 const PRESIDENT_REGEX = /Président.{0,1}$/;
@@ -53,7 +55,7 @@ let self = module.exports = {
                     salary += matchPosition(extraPositions[i]);
                 }
             }
-            return salary;
+            return Math.round(salary * BRUT_NET_RATIO);
         })
     }
 }
