@@ -11,11 +11,8 @@ let self = module.exports = {
 			let page = req.param('page') ? req.param('page') : 0;
 			return self.getTimelineForDeputy(deputyId, parseInt(page))
 			.then(function(result) {
-				if (result.code === 200) {
-					return res.json(result.response);
-				} else {
-					return res.json(result.code, result.message);
-				}
+				return res.status(result.code).json(result.content);
+
 			})
 		}
 	},
@@ -24,14 +21,14 @@ let self = module.exports = {
 		return DeputyService.findDeputyWithId(deputyId)
 		.then(function(deputy) {
 			if (!deputy) {
-				return { code: 404, message: 'No deputy found with id : ' + deputyId };
+				return { code: 404, content: 'No deputy found with id : ' + deputyId };
 			} else if (!deputy.currentMandateStartDate) {
-				return { code: 404, message: 'Mandate has ended for deputy with id : ' + deputyId };
+				return { code: 404, content: 'Mandate has ended for deputy with id : ' + deputyId };
 			} else {
 				return TimelineService.getTimeline(deputy, page)
 				.then(function(timelineItems) {
 					let formattedItems = formatTimelineResponse(timelineItems, deputy);
-					return { code: 200, response: formattedItems }
+					return { code: 200, content: formattedItems }
 				})
 			}
 		})

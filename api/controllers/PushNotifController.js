@@ -7,9 +7,9 @@ module.exports = {
 			Promise.each(deputiesIds, function(deputyId) {
 				findWorksForUpdatedDeputy(deputyId);
 			})
-			return res.json(200);
+			return res.status(200).json('OK');
 		} else {
-			return res.json(400, 'Must provide deputyId argument')
+			return res.status(400).json('Must provide deputyId argument');
 		}
 	},
 
@@ -23,9 +23,9 @@ module.exports = {
 		let workId = req.param('workId');
 		if (deputyId && workId && Constants.WORK_TYPES.includes(type)) {
 			TestService.sendPush(deputyId, type, workId);
-			return res.json(200);
+			return res.status(200).json('OK');
 		} else {
-			return res.json(400, 'Must provide deputyId and valid type arguments')
+			return res.status(400).json('Must provide deputyId and valid type arguments');
 		}
 	}
 };
