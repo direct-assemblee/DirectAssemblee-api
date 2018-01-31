@@ -6,6 +6,7 @@ const WORK_TYPE_VOTE_SOLEMN = 'vote_solemn';
 const WORK_TYPE_VOTE_ORDINARY = 'vote_ordinary';
 const WORK_TYPE_VOTE_CENSURE = 'vote_motion_of_censure';
 const WORK_TYPE_VOTE_OTHER = 'vote_others';
+const WORK_TYPE_VOTE_UNDEFINED = 'vote_undefined';
 const WORK_TYPE_QUESTIONS = 'question';
 const WORK_TYPE_REPORTS = 'report';
 const WORK_TYPE_PROPOSITIONS = 'law_proposal';
@@ -13,11 +14,12 @@ const WORK_TYPE_COSIGNED_PROPOSITIONS = 'cosigned_law_proposal';
 const WORK_TYPE_COMMISSIONS = 'commission';
 const WORK_TYPE_PUBLIC_SESSIONS = 'public_session';
 
+const BALLOT_TYPE_UNDEFINED = { 'dbname' : 'UND', 'name' : WORK_TYPE_VOTE_UNDEFINED, 'displayname': 'Scrutin en cours de traitement' };
 const BALLOT_TYPE_ORDINARY = { 'dbname' : 'SOR', 'name' : WORK_TYPE_VOTE_ORDINARY, 'displayname': 'Scrutin ordinaire' };
 const BALLOT_TYPE_SOLEMN = { 'dbname' : 'SSO', 'name' : WORK_TYPE_VOTE_SOLEMN, 'displayname': 'Scrutin solennel' };
 const BALLOT_TYPE_OTHER = { 'dbname' : 'AUT', 'name' : WORK_TYPE_VOTE_OTHER, 'displayname': 'Autre scrutin' };
 const BALLOT_TYPE_CENSURE = { 'dbname' : 'motion_of_censure', 'name' : WORK_TYPE_VOTE_CENSURE, 'displayname': 'Motion de censure' };
-const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
+const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_UNDEFINED, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
 
 const NUMBER_OF_DEPUTIES = 577;
 
