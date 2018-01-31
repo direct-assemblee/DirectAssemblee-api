@@ -90,8 +90,8 @@ let sendDailyReportForBallots = function() {
     console.log('start preparing daily reports')
     return LastWorksService.find24hVotes()
     .then(function(newVotesByDeputy) {
-        if (newVotesByDeputy) {
-            console.log('- new votes to be pushed for the last 24h')
+        if (newVotesByDeputy && newVotesByDeputy.length > 0) {
+            console.log('- new votes to be pushed for the last 24h ' + newVotesByDeputy.length)
             return Promise.map(newVotesByDeputy, function(deputyVotes) {
                 return pushDeputyDailyVotes(deputyVotes.deputyId, deputyVotes.activities);
             }, {concurrency: 10})
