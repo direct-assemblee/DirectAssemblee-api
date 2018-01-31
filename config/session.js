@@ -35,6 +35,10 @@ module.exports.session = {
   //   maxAge: 24 * 60 * 60 * 1000
   // },
 
+  cookie: {
+    secure: true
+  }
+
   /***************************************************************************
   *                                                                          *
   * Uncomment the following lines to set up a Redis session store that can   *
