@@ -47,13 +47,10 @@ module.exports.routes = {
   ***************************************************************************/
 
 'GET /api/v1/deputies': 'DeputyController.getDeputiesResponse',  // optional ?latitude=XXX&longitude=YYY
-'GET /api/v1/faineants': 'DeputyController.getFaineants',
 'GET /api/v1/deputy': 'DeputyController.getDeputyResponse',  // ?departmentId=13&district=12
 'GET /api/v1/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
 'POST /api/v1/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
 'POST /api/v1/unsubscribe' : 'SubscriberController.unsubscribeToDeputy', // ?deputyId=13
 'POST /api/v1/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
 'POST /api/v1/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
-// TODO disable for PROD
-'GET /api/v1/testPushNotif' : 'PushNotifController.sendTestPushNotif', // ?deputyId=13&type={question/ballot/...}&workId=1212
 };
