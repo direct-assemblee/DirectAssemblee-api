@@ -19,6 +19,10 @@ module.exports = {
 let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, beforeDate, requestedOffset) {
     let offset = requestedOffset;
 
+    if (mandateStartDate > afterDate) {
+        afterDate = mandateStartDate
+    }
+
     var foundItems = [];
     do {
         var items = await findTimelineItems(deputy, afterDate, beforeDate)
