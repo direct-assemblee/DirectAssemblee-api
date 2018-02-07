@@ -1,7 +1,7 @@
 let Promise = require('bluebird');
 let DateHelper = require('./helpers/DateHelper.js');
 
-module.exports = {
+var self = module.exports = {
 	findDeputyWithId: function(deputyId) {
 		return Deputy.findOne().where({
 			officialId: deputyId
@@ -46,7 +46,7 @@ module.exports = {
 	},
 
 	hasSubscribers: function(deputyId) {
-		return DeputyService.findDeputyAndSubscribers(deputyId)
+		return self.findDeputyAndSubscribers(deputyId)
 		.then(function(deputy) {
 			return deputy && deputy.subscribers && deputy.subscribers.length > 0;
 		})
