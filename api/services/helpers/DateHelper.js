@@ -43,6 +43,14 @@ let self = module.exports = {
         return diff;
     },
 
+    getDiffInSeconds: function(date1, date2) {
+        var diff = 0;
+        if (date1 && date2) {
+            diff = moment(date2).diff(moment(date1), 'seconds');
+        }
+        return diff;
+    },
+
     convertDaysToMonths: function(days) {
         return Math.floor(days * 12 / 365);
     },
