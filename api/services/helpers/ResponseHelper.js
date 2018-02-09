@@ -217,7 +217,7 @@ let self = module.exports = {
         title += ballotsCount > 1 ? ' nouveaux scrutins' : ' nouveau scrutin'
         title += ' depuis hier';
 
-        let body = theme ? 'Thème : 'theme + '\n' : ''
+        let body = theme ? 'Thème : ' + theme + '\n' : ''
         body += 'Votre député ';
         body += sameValue ? voteValuePrefixedWording(sameValue) : ':\n' + multipleVoteValuesWording(counts);
 
