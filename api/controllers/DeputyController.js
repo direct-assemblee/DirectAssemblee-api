@@ -5,9 +5,6 @@ let DepartmentService = require('../services/DepartmentService.js');
 let GeolocService = require('../services/GeolocService.js');
 let DeclarationService = require('../services/DeclarationService.js');
 let MandateService = require('../services/MandateService.js');
-let BallotService = require('../services/BallotService.js');
-let VoteService = require('../services/VoteService.js');
-let WorkService = require('../services/WorkService.js');
 let DeputyService = require('../services/DeputyService.js');
 let ExtraPositionService = require('../services/ExtraPositionService.js');
 
@@ -32,35 +29,35 @@ let self = module.exports = {
 	getDeputyResponse: function(req, res) {
 		let departmentId = req.param('departmentId');
 		let district = req.param('district');
-		return self.getDeputy(departmentId, district)
+		return getDeputy(departmentId, district)
 		.then(function(response) {
 			return res.status(response.code).json(response.content);
 		})
-	},
+	}
+}
 
-	getDeputy(departmentId, district) {
-		if (departmentId && district) {
-			let formattedNow = DateHelper.getFormattedNow();
-			return DeputyService.findMostRecentDeputyAtDate(departmentId, district, formattedNow)
-			.then(function(deputy) {
-				if (deputy) {
-					if (deputy.mandateEndDate) {
-						return { code: 404, content: 'Found deputy, but mandate has ended.' };
-					} else {
-						return formatDeputyResponse(deputy)
-						.then(function(formattedDeputy) {
-							return { code: 200, content: formattedDeputy };
-						});
-					}
+let getDeputy = function(departmentId, district) {
+	if (departmentId && district) {
+		let formattedNow = DateHelper.getFormattedNow();
+		return DeputyService.findMostRecentDeputyAtDate(departmentId, district, formattedNow)
+		.then(function(deputy) {
+			if (deputy) {
+				if (deputy.mandateEndDate) {
+					return { code: 404, content: 'Found deputy, but mandate has ended.' };
 				} else {
-					return { code: 404, content: 'Could not find deputy, sorry.' };
+					return formatDeputyResponse(deputy)
+					.then(function(formattedDeputy) {
+						return { code: 200, content: formattedDeputy };
+					});
 				}
-			})
-		} else {
-			return new Promise(function(resolve) {
-				resolve({ code: 400, content: 'Must provide departmentId and district arguments' });
-			})
-		}
+			} else {
+				return { code: 404, content: 'Could not find deputy, sorry.' };
+			}
+		})
+	} else {
+		return new Promise(function(resolve) {
+			resolve({ code: 400, content: 'Must provide departmentId and district arguments' });
+		})
 	}
 }
 
@@ -119,9 +116,6 @@ let formatDeputyResponse = function(deputy) {
 		return retrieveDeclarationsForDeputy(deputy);
 	})
 	.then(function(deputy) {
-		return retrieveActivityRateForDeputy(deputy);
-	})
-	.then(function(deputy) {
 		return retrieveSalaryForDeputy(deputy);
 	})
 	.then(function(deputy) {
@@ -150,46 +144,11 @@ let retrieveDeclarationsForDeputy = function(deputyIn) {
 	})
 }
 
-let retrieveActivityRateForDeputy = function(deputyIn) {
-	return findActivityRate(deputyIn, false)
-	.then(function(activityRate) {
-		let deputyOut = deputyIn;
-		deputyOut.activityRate = activityRate;
-		return deputyOut;
-	})
-}
-
 let retrieveSalaryForDeputy = function(deputyIn) {
 	return ExtraPositionService.getSalaryForDeputy(deputyIn.officialId)
 	.then(function(salary) {
 		let deputyOut = deputyIn;
 		deputyOut.salary = salary;
 		return deputyOut;
-	})
-}
-
-let findActivityRate = function(deputy, solemnBallotsOnly) {
-	return BallotService.findBallotsFromDate(deputy.currentMandateStartDate, solemnBallotsOnly)
-	.then(function(allBallots) {
-		if (allBallots && allBallots.length > 0) {
-			return VoteService.findVotesBallotIds(deputy.officialId)
-			.then(function(votesBallotsIds) {
-				return Promise.filter(allBallots, function(ballot) {
-					return !votesBallotsIds.includes(ballot.officialId);
-				})
-			})
-			.then(function(missingBallots) {
-				return WorkService.findWorksDatesForDeputyAfterDate(deputy.officialId, deputy.currentMandateStartDate)
-				.then(function(worksDates) {
-					return Promise.filter(missingBallots, function(missingBallot) {
-						return !worksDates.includes(DateHelper.formatSimpleDate(missingBallot.date));
-					})
-					.then(function(definitelyMissing) {
-						var rate = definitelyMissing.length * 100 / allBallots.length;
-						return 100 - Math.round(rate);
-					})
-				})
-			})
-		}
 	})
 }

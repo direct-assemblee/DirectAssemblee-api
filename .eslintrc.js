@@ -37,6 +37,7 @@ module.exports = {
 
        'DeputyController': true,
 
+       'ActivityRateService': true,
        'BallotService': true,
        'DeclarationService': true,
        'DepartmentService': true,

@@ -50,6 +50,12 @@ var self = module.exports = {
 		.then(function(deputy) {
 			return deputy && deputy.subscribers && deputy.subscribers.length > 0;
 		})
+	},
+	
+	updateDeputyWithRate: function(officialId, rate) {
+		return Deputy.update({
+			officialId: officialId
+		}, { 'activityRate': rate })
 	}
 };
 

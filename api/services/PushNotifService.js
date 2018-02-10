@@ -1,7 +1,7 @@
 let admin = require('firebase-admin');
 let request = require('request-promise')
 let Promise = require('bluebird');
-var CronJob = require('cron').CronJob;
+let CronJob = require('cron').CronJob;
 let ResponseHelper = require('./helpers/ResponseHelper.js');
 let serviceAccount = require('../../assets/firebase/' + sails.config.firebase.configFile);
 
