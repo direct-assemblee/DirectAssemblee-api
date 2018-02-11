@@ -33,7 +33,7 @@ let updateActivityRate = function(solemnBallotsOnly) {
                 .then(function(ballots) {
                     return findActivityRate(deputy, ballots)
                     .then(function(activityRate) {
-                        DeputyService.updateDeputyWithRate(deputy.officialId, activityRate);
+                        return DeputyService.updateDeputyWithRate(deputy.officialId, activityRate);
                     })
                 })
             }, { concurrency: 1 })

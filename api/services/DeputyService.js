@@ -51,11 +51,18 @@ var self = module.exports = {
 			return deputy && deputy.subscribers && deputy.subscribers.length > 0;
 		})
 	},
-	
-	updateDeputyWithRate: function(officialId, rate) {
-		return Deputy.update({
-			officialId: officialId
-		}, { 'activityRate': rate })
+
+	updateDeputyWithRate: function(deputyId, rate) {
+		return Deputy.update()
+		.where({ officialId: deputyId })
+		.set({ 'activityRate': rate })
+		.then(function() {
+			return;
+		})
+		.catch(err => {
+			console.log('Error updating activity rate ' + err);
+			return
+		});
 	}
 };
 
