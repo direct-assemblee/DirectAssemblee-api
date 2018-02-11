@@ -52,5 +52,6 @@ module.exports.routes = {
 'POST /api/v1/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
 'POST /api/v1/unsubscribe' : 'SubscriberController.unsubscribeToDeputy', // ?deputyId=13
 'POST /api/v1/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
-'POST /api/v1/ballotsUpdated' : 'PushNotifController.ballotsUpdated'
+'POST /api/v1/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
+'POST /api/v1/resetCache' : 'CacheController.resetCache', 
 };

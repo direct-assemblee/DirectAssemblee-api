@@ -1,39 +1,48 @@
 let ResponseHelper = require('../services/helpers/ResponseHelper.js');
 let DeputyService = require('../services/DeputyService.js');
 let TimelineService = require('../services/TimelineService.js');
+let CacheService = require('../services/CacheService.js');
 
-let self = module.exports = {
+module.exports = {
 	getTimeline: function(req, res) {
 		let deputyId = req.param('deputyId');
 		if (!deputyId) {
-			return res.json(400, 'Must provide deputyId as a parameter.');
+			return res.status(400).json('Must provide deputyId as a parameter.');
 		} else {
 			let page = req.param('page') ? req.param('page') : 0;
-			return self.getTimelineForDeputy(deputyId, parseInt(page))
-			.then(function(result) {
-				return res.status(result.code).json(result.content);
-
+			let key = 'timeline_' + deputyId + '_' + page;
+			return CacheService.get(key)
+			.then(function(cached) {
+				if (!cached) {
+					return getTimelineForDeputy(deputyId, parseInt(page))
+					.then(function(result) {
+						CacheService.set(key, result);
+						return res.status(result.code).json(result.content);
+					})
+				} else {
+					return res.status(cached.code).json(cached.content);
+				}
 			})
 		}
-	},
-
-	getTimelineForDeputy: function(deputyId, page) {
-		return DeputyService.findDeputyWithId(deputyId)
-		.then(function(deputy) {
-			if (!deputy) {
-				return { code: 404, content: 'No deputy found with id : ' + deputyId };
-			} else if (!deputy.currentMandateStartDate) {
-				return { code: 404, content: 'Mandate has ended for deputy with id : ' + deputyId };
-			} else {
-				return TimelineService.getTimeline(deputy, page)
-				.then(function(timelineItems) {
-					let formattedItems = formatTimelineResponse(timelineItems, deputy);
-					return { code: 200, content: formattedItems }
-				})
-			}
-		})
 	}
 };
+
+let getTimelineForDeputy = function(deputyId, page) {
+	return DeputyService.findDeputyWithId(deputyId)
+	.then(function(deputy) {
+		if (!deputy) {
+			return { code: 404, content: 'No deputy found with id : ' + deputyId };
+		} else if (!deputy.currentMandateStartDate) {
+			return { code: 404, content: 'Mandate has ended for deputy with id : ' + deputyId };
+		} else {
+			return TimelineService.getTimeline(deputy, page)
+			.then(function(timelineItems) {
+				let formattedItems = formatTimelineResponse(timelineItems, deputy);
+				return { code: 200, content: formattedItems }
+			})
+		}
+	})
+}
 
 let formatTimelineResponse = function(items, deputy) {
 	let results = [];

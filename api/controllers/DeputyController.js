@@ -7,6 +7,7 @@ let DeclarationService = require('../services/DeclarationService.js');
 let MandateService = require('../services/MandateService.js');
 let DeputyService = require('../services/DeputyService.js');
 let ExtraPositionService = require('../services/ExtraPositionService.js');
+let CacheService = require('../services/CacheService.js');
 
 let self = module.exports = {
 	getDeputiesResponse: function(req, res) {
@@ -29,9 +30,18 @@ let self = module.exports = {
 	getDeputyResponse: function(req, res) {
 		let departmentId = req.param('departmentId');
 		let district = req.param('district');
-		return getDeputy(departmentId, district)
-		.then(function(response) {
-			return res.status(response.code).json(response.content);
+		let key = 'deputy_' + departmentId + '_' + district;
+		return CacheService.get(key)
+		.then(function(cached) {
+			if (!cached) {
+				return getDeputy(departmentId, district)
+				.then(function(response) {
+					CacheService.set(key, response)
+					return res.status(response.code).json(response.content);
+				})
+			} else {
+				return res.status(cached.code).json(cached.content);
+			}
 		})
 	}
 }
@@ -89,19 +99,28 @@ let getDeputiesWithCoordinates = function(lat, long) {
 }
 
 let retrieveDeputyForGeoDistrict = function(departmentCode, district) {
-	return DepartmentService.findDepartmentWithCode(departmentCode)
-	.then(function(department) {
-		if (department) {
-			let formattedNow = DateHelper.getFormattedNow();
-			return DeputyService.findMostRecentDeputyAtDate(department.id, district, formattedNow)
-			.then(function(deputy) {
-				let formattedDeputy = deputy;
-				if (deputy) {
-					deputy.department = department;
-					formattedDeputy = ResponseHelper.prepareSimpleDeputyResponse(deputy);
+	let key = 'deputy_simple_' + departmentCode + '_' + district;
+	return CacheService.get(key)
+	.then(function(cached) {
+		if (!cached) {
+			return DepartmentService.findDepartmentWithCode(departmentCode)
+			.then(function(department) {
+				if (department) {
+					let formattedNow = DateHelper.getFormattedNow();
+					return DeputyService.findMostRecentDeputyAtDate(department.id, district, formattedNow)
+					.then(function(deputy) {
+						let formattedDeputy = deputy;
+						if (deputy) {
+							deputy.department = department;
+							formattedDeputy = ResponseHelper.prepareSimpleDeputyResponse(deputy);
+						}
+						CacheService.set(key, formattedDeputy)
+						return formattedDeputy;
+					})
 				}
-				return formattedDeputy;
 			})
+		} else {
+			return cached
 		}
 	})
 }
