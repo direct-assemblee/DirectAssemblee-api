@@ -23,7 +23,14 @@ let self = module.exports = {
 let createSubscriber = function(instanceId, token) {
 	console.log('creating subscriber in DB with instanceId ' + instanceId + ' and token ' + token);
     return Subscriber.create({ instanceId: instanceId, token: token })
-    .meta({ fetch: true });
+    .meta({ fetch: true })
+    .then(function(insertedSubscriber) {
+        return insertedSubscriber;
+    })
+    .catch(err => {
+        console.log('Error creating subscriber ' + err);
+        return
+    });
 }
 
 let updateSubscriber = function(subscriber, token) {
@@ -31,5 +38,12 @@ let updateSubscriber = function(subscriber, token) {
     return Subscriber.update()
     .where({ instanceId: subscriber.instanceId })
     .set({ token: token })
-    .meta({ fetch: true });
+    .meta({ fetch: true })
+    .then(function(insertedSubscriber) {
+        return insertedSubscriber[0]
+    })
+    .catch(err => {
+        console.log('Error updating subscriber ' + err);
+        return
+    });
 }
