@@ -25,14 +25,19 @@ let findWorksForDeputyWithOptions = function(deputyId, options) {
     .populate('authors')
     .populate('participants')
     .then(function(works) {
-        return Promise.filter(works, function(work) {
-            return workHasDeputy(work, deputyId)
+        return Promise.map(works, function(work) {
+            let author = workContributorsContainsDeputyId(work.authors, deputyId);
+            let participant = workContributorsContainsDeputyId(work.participants, deputyId);
+            if (author || participant) {
+                if (work.type == Constants.WORK_TYPE_PROPOSITIONS && participant) {
+                    work.type = Constants.WORK_TYPE_COSIGNED_PROPOSITIONS;
+                } else if (work.type == Constants.WORK_TYPE_COSIGNED_PROPOSITIONS && author) {
+                    work.type = Constants.WORK_TYPE_PROPOSITIONS;
+                }
+                return work
+            }
         })
     })
-}
-
-let workHasDeputy = function(work, deputyId) {
-    return workContributorsContainsDeputyId(work.authors, deputyId) || workContributorsContainsDeputyId(work.participants, deputyId)
 }
 
 let workContributorsContainsDeputyId = function(contributors, deputyId) {
