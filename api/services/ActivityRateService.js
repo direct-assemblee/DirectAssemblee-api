@@ -11,7 +11,7 @@ module.exports = {
         new CronJob(ACTIVITY_RATE_UPDATE_TIME, function() {
             updateActivityRates()
         }, null, true, 'Europe/Paris');
-    },
+    }
 }
 
 
@@ -28,15 +28,26 @@ let updateActivityRate = function(solemnBallotsOnly) {
     .then(function(currentDeputies) {
         return BallotService.findBallotsFromDate(MANDATE_START_DATE, solemnBallotsOnly)
         .then(function(allBallots) {
-            return Promise.map(currentDeputies, function(deputy) {
-                return findDeputyBallots(deputy, allBallots, solemnBallotsOnly)
-                .then(function(ballots) {
-                    return findActivityRate(deputy, ballots)
-                    .then(function(activityRate) {
-                        return DeputyService.updateDeputyWithRate(deputy.officialId, activityRate);
+            return VoteService.findVotesOrderedByDeputy()
+            .then(function(votes) {
+                let votesMap = {}
+                for (let i in votes) {
+                    let vote = votes[i]
+                    if (!votesMap[vote.deputyId]) {
+                        votesMap[vote.deputyId] = [];
+                    }
+                    votesMap[vote.deputyId].push(vote.ballotId)
+                }
+                return Promise.map(currentDeputies, function(deputy) {
+                    return findDeputyBallots(deputy, allBallots, solemnBallotsOnly)
+                    .then(function(ballots) {
+                        return findActivityRate(deputy, ballots, votesMap[deputy.officialId])
+                        .then(function(activityRate) {
+                            return DeputyService.updateDeputyWithRate(deputy.officialId, activityRate);
+                        })
                     })
-                })
-            }, { concurrency: 1 })
+                }, { concurrency: 5 })
+            })
         })
     })
 }
@@ -47,20 +58,17 @@ let findDeputyBallots = function(deputy, allBallots, solemnBallotsOnly) {
             resolve(allBallots)
         })
     } else {
-        return BallotService.findBallotsFromDate(MANDATE_START_DATE, solemnBallotsOnly)
+        return BallotService.findBallotsFromDate(deputy.currentMandateStartDate, solemnBallotsOnly)
     }
 }
 
-let findActivityRate = function(deputy, ballots) {
+let findActivityRate = function(deputy, ballots, votes) {
 	if (ballots && ballots.length > 0) {
-		return VoteService.findVotesBallotIds(deputy.officialId)
-		.then(function(votesBallotsIds) {
-			return Promise.filter(ballots, function(ballot) {
-				return !votesBallotsIds.includes(ballot.officialId);
-			})
+		return Promise.filter(ballots, function(ballot) {
+			return votes && !votes.includes(ballot.officialId);
 		})
 		.then(function(missingBallots) {
-			return WorkService.findWorksDatesForDeputyAfterDate(deputy.officialId, deputy.currentMandateStartDate)
+			return DeputyService.findWorksForDeputy(deputy.officialId)
 			.then(function(worksDates) {
 				return Promise.filter(missingBallots, function(missingBallot) {
 					return !worksDates.includes(DateHelper.formatSimpleDate(missingBallot.date));

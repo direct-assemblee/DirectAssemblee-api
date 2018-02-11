@@ -42,13 +42,31 @@ var self = module.exports = {
 	findCurrentDeputies: function() {
 		var options = { currentMandateStartDate:  {'!=': ''}, mandateEndDate: '' };
 		return Deputy.find()
-		.where(options);
+		.where(options)
+		.sort('officialId ASC');
 	},
 
 	hasSubscribers: function(deputyId) {
 		return self.findDeputyAndSubscribers(deputyId)
 		.then(function(deputy) {
 			return deputy && deputy.subscribers && deputy.subscribers.length > 0;
+		})
+	},
+
+	findDeputyWithWorks: function(deputyId) {
+		return Deputy.findOne()
+		.where({ officialId: deputyId })
+		.populate('workParticipations')
+		.populate('workCreations');
+	},
+
+	findWorksForDeputy: function(deputyId) {
+		return self.findDeputyWithWorks(deputyId)
+		.then(function(deputy) {
+			let works = deputy.workParticipations.concat(deputy.workCreations)
+			return Promise.filter(works, function(work) {
+				return DateHelper.isLaterOrSame(work.date, deputy.currentMandateStartDate)
+			})
 		})
 	},
 

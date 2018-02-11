@@ -13,6 +13,11 @@ module.exports = {
 		})
 	},
 
+	findVotesOrderedByDeputy: function() {
+		return Vote.find()
+		.sort('deputyId ASC');
+	},
+
 	findVoteForDeputyAndBallot: function(deputyId, ballotId) {
 		return Vote.findOne()
 		.where({ ballotId: ballotId, deputyId: deputyId });

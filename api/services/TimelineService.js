@@ -18,7 +18,7 @@ module.exports = {
 
 let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, beforeDate, requestedOffset) {
     let offset = requestedOffset;
-
+    let reachedMandateStartDate = false;
     if (mandateStartDate > afterDate) {
         afterDate = mandateStartDate
     }
@@ -35,21 +35,22 @@ let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, befo
         let tmpOffset = offset - validItems.length;
         let skipTheseItems = tmpOffset >= 0;
         let needEvenMore = validItems.length - offset + foundItems.length < TIMELINE_PAGE_ITEMS_COUNT;
+        reachedMandateStartDate = mandateStartDate === afterDate;
 
-        if (skipTheseItems || needEvenMore) {
+        if ((skipTheseItems || needEvenMore) && !reachedMandateStartDate) {
             beforeDate = DateHelper.subtractAndFormat(beforeDate, TIMELINE_MONTHS_INCREMENT_STEP, 'months');
             afterDate = DateHelper.subtractAndFormat(afterDate, TIMELINE_MONTHS_INCREMENT_STEP, 'months');
         }
 
         if (!skipTheseItems) {
-            let sortedItems = sortItemsWithDateAndOfficialId(validItems);
+            let sortedItems = sortItemsWithDateAndOfficialId(validItems)
             for (let i = offset ; i < sortedItems.length ; i++) {
                 foundItems.push(sortedItems[i])
             }
         }
 
         offset = skipTheseItems ? tmpOffset : needEvenMore ? 0 : offset;
-    } while(foundItems.length < TIMELINE_PAGE_ITEMS_COUNT);
+    } while(foundItems.length < TIMELINE_PAGE_ITEMS_COUNT && !reachedMandateStartDate);
 
     return handlePageItems(deputy, foundItems);
 }

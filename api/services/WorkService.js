@@ -2,10 +2,6 @@ let Promise = require('bluebird');
 let DateHelper = require('./helpers/DateHelper.js');
 
 module.exports = {
-    findWorksWithThemeForDeputyAfterDate: function(deputyId, date) {
-        return findWorksForDeputyAfterDate(deputyId, date);
-    },
-
     findLastCreatedWorksWithThemeForDeputyAfterDate: function(deputyId, date) {
         let options = { createdAt: { '>=': date } }
         return findWorksForDeputyWithOptions(deputyId, options)
@@ -16,24 +12,10 @@ module.exports = {
         });
     },
 
-    findWorksDatesForDeputyAfterDate: function(deputyId, date) {
-        return findWorksForDeputyAfterDate(deputyId, date)
-        .then(function(works) {
-            return Promise.map(works, function(work) {
-                return DateHelper.formatSimpleDate(work.date);
-            })
-        })
-    },
-
     findWorksForDeputyBetweenDates: function(deputyId, afterDate,  beforeDate) {
         let options = { date: { '>': afterDate, '<=': beforeDate } }
         return findWorksForDeputyWithOptions(deputyId, options)
     }
-}
-
-let findWorksForDeputyAfterDate = function(deputyId, date) {
-    let options = { date: { '>=': date } }
-    return findWorksForDeputyWithOptions(deputyId, options)
 }
 
 let findWorksForDeputyWithOptions = function(deputyId, options) {
