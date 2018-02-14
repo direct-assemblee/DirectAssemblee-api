@@ -187,7 +187,7 @@ let pushDeputyActivitiesByRange = function(deputyId, activities, start) {
 
 let pushDeputyActivitiesIfSubscribers = async function(deputyId, activities) {
     if (await DeputyService.hasSubscribers(deputyId)) {
-        console.log('- deputy ' + deputyId + ' has ' + activities.length + ' activities to be pushed')
+        //console.log('- deputy ' + deputyId + ' has ' + activities.length + ' activities to be pushed')
         pushDeputyActivities(deputyId, activities)
     }
 }
