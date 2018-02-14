@@ -2,7 +2,6 @@ let Request = require('request-promise');
 
 const PARAM_LATITUDE = '{latitude}';
 const PARAM_LONGITUDE = '{longitude}';
-const GMAP_API_KEY = 'AIzaSyCwHl1AXUzENiz_VsABqZ8QIAHO5C-K8Js';
 const GMAP_API_KEY = sails.config.gmap.key;
 
 const PROVIDER_GMAP = { name: 'PROVIDER_GMAP', url: 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + PARAM_LATITUDE + ',' + PARAM_LONGITUDE + '&key=' + GMAP_API_KEY };
