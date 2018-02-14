@@ -14,7 +14,11 @@ module.exports = {
 
     firebase: {
         configFile: 'firebase_service_account_dev.json',
-        serverKey: 'AAAATv-4Kqk:APA91bGXc-kCx6EsfzWRqNDZ9OBzqHs30MzRv1QNz00FbtrufnAfjr3eZOKmaw0DVHKGITkbjAxypt9Q138LboGArpMFhsuzcR02U1m3R7eqHyT0pibcDi7cCul-WD5ITGx6cZrmheXt'
+        serverKey: 'AAAATv-4Kqk:APA91bGXc-kCx6EsfzWRqNDZ9OBzqHs30MzRv1QNz00FbtrufnAfjr3eZOKmaw0DVHKGITkbjAxypt9Q138LboGArpMFhsuzcR02U1m3R7eqHyT0pibcDi7cCul-WD5ITGx6cZrmheXt',
+    },
+
+    gmap: {
+        key: 'AIzaSyCwHl1AXUzENiz_VsABqZ8QIAHO5C-K8Js'
     },
 
     routes: {
