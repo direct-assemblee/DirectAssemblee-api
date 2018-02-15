@@ -72,7 +72,7 @@ let findActivityRate = function(deputy, ballots, votes) {
 			.then(function(works) {
                 let worksDates = []
                 for (let i in works) {
-                    worksDates.push(works[i])
+                    worksDates.push(works[i].date)
                 }
 				return Promise.filter(missingBallots, function(missingBallot) {
 					return !worksDates.includes(DateHelper.formatSimpleDate(missingBallot.date));
