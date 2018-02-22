@@ -7,7 +7,7 @@ let serviceAccount = require('../../assets/firebase/' + sails.config.firebase.co
 
 const serverKey = sails.config.firebase.serverKey;
 
-const PUSH_DAILY_REPORT_TIME = '0 15 19 * * *'
+const PUSH_DAILY_REPORT_TIME = sails.config.cronPush
 const COLLAPSE_KEY = 'NOTIF_VOTE';
 const FIREBASE_INSTANCE_ID_SERVICE_URL = 'https://iid.googleapis.com/iid/';
 const PARAM_IID_TOKEN = '{IID_TOKEN}';
