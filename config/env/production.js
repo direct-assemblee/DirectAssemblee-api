@@ -19,5 +19,7 @@ module.exports = {
 
     gmap: {
         key: 'AIzaSyCwHl1AXUzENiz_VsABqZ8QIAHO5C-K8Js'
-    }
+    },
+
+    cronPush: '0 15 19 * * *'
 };
