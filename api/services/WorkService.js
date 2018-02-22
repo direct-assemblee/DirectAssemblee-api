@@ -7,9 +7,9 @@ module.exports = {
         return findWorksForDeputyWithOptions(deputyId, options)
         .then(function(works) {
             return Promise.filter(works, function(work) {
-                return DateHelper.isLaterOrSame(work.date, work.createdAt);
+                return work && DateHelper.isLaterOrSame(work.date, work.createdAt);
             })
-        });
+        })
     },
 
     findWorksForDeputyBetweenDates: function(deputyId, afterDate,  beforeDate) {

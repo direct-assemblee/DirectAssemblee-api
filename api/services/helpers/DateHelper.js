@@ -1,7 +1,7 @@
 let moment = require('moment');
 moment.locale('fr');
 
-const DATE_AND_HOUR_TEMPLATE = 'YYYY-MM-DDTHH:mm:ss';
+const DATE_AND_HOUR_TEMPLATE = 'YYYY-MM-DDThh:mm:ss';
 
 let self = module.exports = {
     DATE_AND_HOUR_TEMPLATE:DATE_AND_HOUR_TEMPLATE,
@@ -24,7 +24,7 @@ let self = module.exports = {
     },
 
     formatMomentWithTemplate: function(date, formatTemplate) {
-        return moment(date).format(formatTemplate);
+        return moment(date).utc().format(formatTemplate);
     },
 
     formatDateWithTemplate: function(dateString, parseTemplate, formatTemplate) {
@@ -79,5 +79,13 @@ let self = module.exports = {
     getYesterdaySameTime: function() {
         // TODO make sure this is right
         return moment().subtract(1, 'day');
+    },
+
+    getNow: function() {
+        return moment();
+    },
+
+    getMoment: function(date) {
+        return moment(date);
     }
 }

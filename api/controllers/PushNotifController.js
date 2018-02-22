@@ -14,6 +14,7 @@ module.exports = {
 	},
 
 	ballotsUpdated: function(req, res) {
+		LastWorksService.updateLastScanTime()
 		return res.json(200);
 	},
 

@@ -111,7 +111,7 @@ let pushDeputyDailyVotes = async function(deputyId, dailyVotes) {
         // console.log('workId : ' + payload.data.workId)
         return pushPayloadForSubject(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload)
     } else {
-        console.log('deputy : ' + deputyId + ' doesn\'t have any subscribers')
+        // console.log('deputy : ' + deputyId + ' doesn\'t have any subscribers')
     }
 }
 
@@ -187,8 +187,8 @@ let pushDeputyActivitiesByRange = function(deputyId, activities, start) {
 
 let pushDeputyActivitiesIfSubscribers = async function(deputyId, activities) {
     if (await DeputyService.hasSubscribers(deputyId)) {
-        //console.log('- deputy ' + deputyId + ' has ' + activities.length + ' activities to be pushed')
-        pushDeputyActivities(deputyId, activities)
+        console.log('- deputy ' + deputyId + ' has ' + activities.length + ' activities to be pushed')
+        return pushDeputyActivities(deputyId, activities)
     }
 }
 

@@ -5,5 +5,6 @@ module.exports = {
         ThemeHelper.initThemes();
         PushNotifService.startDailyVotesCron();
         ActivityRateService.startUpdateCron();
+        LastWorksService.initLastScanTime();
     }
 }
