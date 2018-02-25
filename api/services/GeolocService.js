@@ -2,7 +2,7 @@ let Promise = require('bluebird');
 let RequestService = require('./RequestService');
 let fs = require('fs');
 let Turf = require('@turf/turf');
-
+let geojsonFiles = ['./assets/geojson/simplified_circonscriptions.json', './assets/geojson/simplified_fhf_01.json', './assets/geojson/simplified_fhf_02.json', './assets/geojson/simplified_fhf_03.json', './assets/geojson/simplified_fhf_04.json', './assets/geojson/simplified_fhf_05.json',  './assets/geojson/simplified_fhf_07.json', './assets/geojson/simplified_fhf_08.json', './assets/geojson/simplified_fhf_09.json', './assets/geojson/simplified_fhf_10.json', './assets/geojson/simplified_fhf_11.json'];
 
 module.exports = {
     getDistricts: function(latitude, longitude) {
@@ -35,8 +35,14 @@ let findDistricts = function(provider, latitude, longitude) {
             }
             return Promise.all(promises)
             .then(function(citiesAndCodes) {
-                return filterCirconscritptions(targetDepartment, citiesAndCodes, extraCoords);
+                let coordsAndCities = []
+                for (let i in extraCoords) {
+                    coordsAndCities.push({ extraCoords: extraCoords[i], cityAndCode: citiesAndCodes[i] })
+                }
+                return filterCirconscriptions(targetDepartment, coordsAndCities);
             })
+        } else {
+            return getDistrictsWorldWideForPoint(latitude, longitude);
         }
     })
 }
@@ -54,7 +60,10 @@ let reverseGeocode = function(provider, latitude, longitude) {
                 }
             } else if (json.results && json.results.length > 0) {
                 let addressComponents = json.results[0].address_components;
-                cityAndCode = findCityAndCode(addressComponents);
+                let found = findCityAndCode(addressComponents);
+                if (found) {
+                    cityAndCode = found;
+                }
             }
             return cityAndCode;
         }
@@ -62,8 +71,9 @@ let reverseGeocode = function(provider, latitude, longitude) {
 }
 
 let findCityAndCode = function(addressComponents) {
-    let result = {};
+    let result;
     if (addressComponents.postcode) {
+        result = {}
         result.locality = addressComponents.city;
         result.postalCode = addressComponents.postcode;
     } else {
@@ -71,11 +81,17 @@ let findCityAndCode = function(addressComponents) {
             let types = addressComponents[i].types;
             for (let j in types) {
                 if (types[j] === 'locality') {
+                    result = {}
                     result.locality = addressComponents[i].long_name;
                 } else if (types[j] === 'postal_code') {
+                    result = {}
                     result.postalCode = addressComponents[i].long_name;
                 } else if (types[j] === 'country') {
-                    result.postalCode = findPostalCodeFromCountry(addressComponents[i].short_name);
+                    let postalCode = findPostalCodeFromCountry(addressComponents[i].short_name);
+                    if (postalCode) {
+                        result = {}
+                        result.postalCode = postalCode
+                    }
                 }
             }
         }
@@ -110,22 +126,33 @@ let findPostalCodeFromCountry = function(country) {
     }
 }
 
-let filterCirconscritptions = function(targetDepartment, citiesAndCodes, extraCoords) {
-    return Promise.filter(citiesAndCodes, function(cityAndCode) {
-        return cityAndCode && targetDepartment === parseInt(cityAndCode.postalCode / 100)
+let filterCirconscriptions = function(targetDepartment, coordsAndCities) {
+    return Promise.filter(coordsAndCities, function(coordsAndCity) {
+        return coordsAndCity && coordsAndCity.cityAndCode && targetDepartment === parseInt(coordsAndCity.cityAndCode.postalCode / 100)
     })
-    .then(function(foundCitiesAndCodes) {
+    .then(function(filteredCoordsAndCities) {
         let districts = [];
-        for (let i in foundCitiesAndCodes) {
-            let foundCirc = getDistrictsForPoint(extraCoords[i][0], extraCoords[i][1]);
+        for (let i in filteredCoordsAndCities) {
+            let foundCirc = getDistrictsWorldWideForPoint(filteredCoordsAndCities[i].extraCoords[0], filteredCoordsAndCities[i].extraCoords[1]);
             districts = addUniqueDistricts(foundCirc, districts);
         }
         return districts;
     })
 }
 
-let getDistrictsForPoint = function(latitude, longitude) {
-    let polygonsGeojson = fs.readFileSync('./assets/simplified_circonscriptions.json', 'utf-8');
+let getDistrictsWorldWideForPoint = function(latitude, longitude) {
+    var districts = []
+    for (let i in geojsonFiles) {
+        districts = getDistrictsForPoint(geojsonFiles[i], latitude, longitude)
+        if (districts.length > 0) {
+            break;
+        }
+    }
+    return districts
+}
+
+let getDistrictsForPoint = function(geojson, latitude, longitude) {
+    let polygonsGeojson = fs.readFileSync(geojson, 'utf-8');
     let json = JSON.parse(polygonsGeojson);
     let point = [ parseFloat(longitude), parseFloat(latitude) ];
     let districts = [];
