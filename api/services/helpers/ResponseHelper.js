@@ -215,7 +215,7 @@ let self = module.exports = {
 
     createPayloadForDailyVotes: function(deputyId, ballotsCount, theme, sameValue, counts) {
         let title = ballotsCount + ' ';
-        title += ballotsCount > 1 ? ' nouveaux scrutins' : ' nouveau scrutin'
+        title += ballotsCount > 1 ? 'nouveaux scrutins' : 'nouveau scrutin'
         title += ' depuis hier';
 
         let body = theme ? 'Thème : ' + theme + '\n' : ''
