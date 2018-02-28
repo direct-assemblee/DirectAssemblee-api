@@ -66,6 +66,8 @@ let getAllDeputies = function() {
 					return { code: 200, content: allDeputies }
 				})
 			})
+		} else {
+			return { code: 200, content: cached }
 		}
 	})
 }
