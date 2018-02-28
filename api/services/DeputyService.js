@@ -43,7 +43,7 @@ var self = module.exports = {
 		var options = { currentMandateStartDate:  {'!=': ''}, mandateEndDate: '' };
 		return Deputy.find()
 		.where(options)
-		.sort('officialId ASC');
+		.sort('lastname ASC');
 	},
 
 	hasSubscribers: function(deputyId) {

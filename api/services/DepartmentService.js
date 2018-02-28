@@ -1,4 +1,8 @@
 module.exports = {
+    findDepartements: function() {
+        return Department.find()
+    },
+
     findDepartmentWithCode: function(code) {
         return Department.findOne()
         .where({ code : code })

@@ -45,7 +45,7 @@ module.exports.routes = {
   * for configuration options and examples.                                  *
   *                                                                          *
   ***************************************************************************/
-
+'GET /api/v1/alldeputies': 'DeputyController.getAllDeputies',
 'GET /api/v1/deputies': 'DeputyController.getDeputiesResponse',  // optional ?latitude=XXX&longitude=YYY
 'GET /api/v1/deputy': 'DeputyController.getDeputyResponse',  // ?departmentId=13&district=12
 'GET /api/v1/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
@@ -53,5 +53,5 @@ module.exports.routes = {
 'POST /api/v1/unsubscribe' : 'SubscriberController.unsubscribeToDeputy', // ?deputyId=13
 'POST /api/v1/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
 'POST /api/v1/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
-'POST /api/v1/resetCache' : 'CacheController.resetCache', 
+'POST /api/v1/resetCache' : 'CacheController.resetCache',
 };

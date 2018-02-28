@@ -9,22 +9,19 @@ let DeputyService = require('../services/DeputyService.js');
 let ExtraPositionService = require('../services/ExtraPositionService.js');
 let CacheService = require('../services/CacheService.js');
 
-let self = module.exports = {
-	getDeputiesResponse: function(req, res) {
-		return self.getDeputies(req.param('latitude'), req.param('longitude'))
+module.exports = {
+	getAllDeputies: function(req, res) {
+		return getAllDeputies()
 		.then(function(response) {
 			return res.status(response.code).json(response.content);
 		})
 	},
 
-	getDeputies: function(lat, long) {
-		if (lat && long) {
-			return getDeputiesWithCoordinates(lat, long);
-		} else {
-			return new Promise(function(resolve) {
-				resolve({ code: 400, content: 'Must provide latitude and longitude arguments' });
-			})
-		}
+	getDeputiesResponse: function(req, res) {
+		return getDeputies(req.param('latitude'), req.param('longitude'))
+		.then(function(response) {
+			return res.status(response.code).json(response.content);
+		})
 	},
 
 	getDeputyResponse: function(req, res) {
@@ -42,6 +39,53 @@ let self = module.exports = {
 			} else {
 				return res.status(cached.code).json(cached.content);
 			}
+		})
+	}
+}
+
+let getAllDeputies = function() {
+	let key = 'all_deputies';
+	return CacheService.get(key)
+	.then(function(cached) {
+		if (!cached) {
+			return DepartmentService.findDepartements()
+			.then(function(departments) {
+				return DeputyService.findCurrentDeputies()
+				.then(function(allDeputies) {
+					return Promise.map(allDeputies, function(deputy) {
+						let formattedDeputy = deputy;
+						if (deputy) {
+							deputy.department = findDepartmentForDeputy(deputy, departments);
+							formattedDeputy = ResponseHelper.prepareSimpleDeputyResponse(deputy);
+						}
+						return formattedDeputy;
+					}, { concurrency: 5 })
+				})
+				.then(function(allDeputies) {
+					CacheService.set(key, allDeputies)
+					return { code: 200, content: allDeputies }
+				})
+			})
+		}
+	})
+}
+
+let findDepartmentForDeputy = function(deputy, departments) {
+	let department
+	for (let i in departments) {
+		if (departments[i].id === deputy.departmentId) {
+			department = departments[i];
+		}
+	}
+	return department;
+}
+
+let getDeputies = function(lat, long) {
+	if (lat && long) {
+		return getDeputiesWithCoordinates(lat, long);
+	} else {
+		return new Promise(function(resolve) {
+			resolve({ code: 400, content: 'Must provide latitude and longitude arguments' });
 		})
 	}
 }
