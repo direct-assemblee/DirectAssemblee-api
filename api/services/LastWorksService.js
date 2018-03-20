@@ -27,7 +27,7 @@ module.exports = {
     },
 
     updateLastScanTime: function() {
-        let lastScanTime = DateHelper.getNow();
+        lastScanTime = DateHelper.getNow();
         return storage.init()
         .then(function() {
             return storage.setItem(LAST_SCAN_TIME_KEY, lastScanTime)
