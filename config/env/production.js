@@ -21,5 +21,5 @@ module.exports = {
         key: 'AIzaSyCwHl1AXUzENiz_VsABqZ8QIAHO5C-K8Js'
     },
 
-    cronPush: '0 15 19 * * *'
+    cronPush: '0 45 19 * * *'
 };

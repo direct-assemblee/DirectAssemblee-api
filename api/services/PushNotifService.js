@@ -91,12 +91,12 @@ let sendDailyReportForBallots = function() {
     return LastWorksService.find24hVotes()
     .then(function(newVotesByDeputy) {
         if (newVotesByDeputy && newVotesByDeputy.length > 0) {
-            console.log('- new votes to be pushed for the last 24h ' + newVotesByDeputy.length)
+            // console.log('- new votes to be pushed for the last 24h ' + newVotesByDeputy.length)
             return Promise.map(newVotesByDeputy, function(deputyVotes) {
                 return pushDeputyDailyVotes(deputyVotes.deputyId, deputyVotes.activities);
             }, {concurrency: 10})
         } else {
-            console.log('- no new votes to be pushed for the last 24h')
+            // console.log('- no new votes to be pushed for the last 24h')
         }
         return;
     })
@@ -104,12 +104,15 @@ let sendDailyReportForBallots = function() {
 
 let pushDeputyDailyVotes = async function(deputyId, dailyVotes) {
     if (await DeputyService.hasSubscribers(deputyId)) {
-        let payload = createPayloadForDailyVotes(deputyId, dailyVotes)
-        // console.log('title : ' + payload.notification.title)
-        // console.log('body : ' + payload.notification.body)
-        // console.log('deputyId : ' + payload.data.deputyId)
-        // console.log('workId : ' + payload.data.workId)
-        return pushPayloadForSubject(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload)
+        return Promise.delay(60000)
+        .then(function() {
+            let payload = createPayloadForDailyVotes(deputyId, dailyVotes)
+            // console.log('title : ' + payload.notification.title)
+            // console.log('body : ' + payload.notification.body)
+            // console.log('deputyId : ' + payload.data.deputyId)
+            // console.log('workId : ' + payload.data.workId)
+            return pushPayloadForSubject(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload)
+        })
     } else {
         // console.log('deputy : ' + deputyId + ' doesn\'t have any subscribers')
     }
