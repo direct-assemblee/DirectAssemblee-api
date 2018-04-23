@@ -54,4 +54,14 @@ module.exports.routes = {
 'POST /api/v1/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
 'POST /api/v1/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
 'POST /api/v1/resetCache' : 'CacheController.resetCache',
+
+'GET /v1/alldeputies': 'DeputyController.getAllDeputies',
+'GET /v1/deputies': 'DeputyController.getDeputiesResponse',  // optional ?latitude=XXX&longitude=YYY
+'GET /v1/deputy': 'DeputyController.getDeputyResponse',  // ?departmentId=13&district=12
+'GET /v1/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
+'POST /v1/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
+'POST /v1/unsubscribe' : 'SubscriberController.unsubscribeToDeputy', // ?deputyId=13
+'POST /v1/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
+'POST /v1/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
+'POST /v1/resetCache' : 'CacheController.resetCache',
 };
