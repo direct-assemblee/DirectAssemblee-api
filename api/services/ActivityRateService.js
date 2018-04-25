@@ -2,7 +2,7 @@ let Promise = require('bluebird');
 let CronJob = require('cron').CronJob;
 let DateHelper = require('./helpers/DateHelper.js');
 
-const ACTIVITY_RATE_UPDATE_TIME = '0 10 22 * * *'
+const ACTIVITY_RATE_UPDATE_TIME = '0 30 3 * * *'
 const MANDATE_START_DATE = '2017-06-18'
 
 module.exports = {
