@@ -68,21 +68,9 @@ let findActivityRate = function(deputy, ballots, votes) {
 			return votes && !votes.includes(ballot.officialId);
 		})
 		.then(function(missingBallots) {
-			return DeputyService.findWorksForDeputy(deputy.officialId)
-			.then(function(works) {
-                let worksDates = []
-                for (let i in works) {
-                    worksDates.push(works[i].date)
-                }
-				return Promise.filter(missingBallots, function(missingBallot) {
-					return !worksDates.includes(DateHelper.formatSimpleDate(missingBallot.date));
-				})
-				.then(function(definitelyMissing) {
-					let rate = definitelyMissing.length * 100 / ballots.length;
-                    let reverse = 100 - rate
-					return Math.round(reverse * 100) / 100;
-				})
-			})
+			let rate = missingBallots.length * 100 / ballots.length;
+            let reverse = 100 - rate
+			return Math.round(reverse * 100) / 100;
 		})
 	}
 }
