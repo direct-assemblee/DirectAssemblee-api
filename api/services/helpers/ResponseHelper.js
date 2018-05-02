@@ -48,7 +48,11 @@ let self = module.exports = {
         deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
         deputy.age = DateHelper.findAge(deputy.birthDate);
         deputy.declarations = self.prepareDeclarationsResponse(deputy.declarations);
-        deputy.activityRate = Math.round(deputy.activityRate);
+        if (parseInt(deputy.activityRate) >= 0) {
+            deputy.activityRate = Math.round(deputy.activityRate);
+        } else {
+            delete deputy.activityRate;
+        }
         delete deputy.birthDate;
         delete deputy.department.slug;
         delete deputy.department.soundexName;
