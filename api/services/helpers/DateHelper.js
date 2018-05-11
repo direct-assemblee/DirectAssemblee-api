@@ -59,6 +59,10 @@ let self = module.exports = {
         return self.subtractAndFormat(moment(), numberOfMonths, 'months');
     },
 
+    getDateForDaysBack: function(numberOfDays) {
+        return self.subtractAndFormat(moment(), numberOfDays, 'days');
+    },
+
     subtractAndFormat: function(date, quantity, timeUnit) {
         var newDate = moment(date).subtract(quantity, timeUnit);
         return newDate.format('YYYY-MM-DD');
