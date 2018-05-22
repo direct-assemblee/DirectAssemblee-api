@@ -9,11 +9,11 @@ let DeputyService = require('../services/DeputyService.js');
 let ExtraPositionService = require('../services/ExtraPositionService.js');
 let CacheService = require('../services/CacheService.js');
 
-module.exports = {
-	getAllDeputies: function(req, res) {
-		return getAllDeputies()
-		.then(function(response) {
-			return res.status(response.code).json(response.content);
+let self = module.exports = {
+	getAllDeputiesResponse: function(req, res) {
+		return self.getAllDeputies()
+		.then(function(deputies) {
+			return res.status(200).json(deputies);
 		})
 	},
 
@@ -40,36 +40,36 @@ module.exports = {
 				return res.status(cached.code).json(cached.content);
 			}
 		})
-	}
-}
+	},
 
-let getAllDeputies = function() {
-	let key = 'all_deputies';
-	return CacheService.get(key)
-	.then(function(cached) {
-		if (!cached) {
-			return DepartmentService.findDepartements()
-			.then(function(departments) {
-				return DeputyService.findCurrentDeputies()
-				.then(function(allDeputies) {
-					return Promise.map(allDeputies, function(deputy) {
-						let formattedDeputy = deputy;
-						if (deputy) {
-							deputy.department = findDepartmentForDeputy(deputy, departments);
-							formattedDeputy = ResponseHelper.prepareSimpleDeputyResponse(deputy);
-						}
-						return formattedDeputy;
-					}, { concurrency: 5 })
+	getAllDeputies: function() {
+		let key = 'all_deputies';
+		return CacheService.get(key)
+		.then(function(cached) {
+			if (!cached) {
+				return DepartmentService.findDepartements()
+				.then(function(departments) {
+					return DeputyService.findCurrentDeputies()
+					.then(function(allDeputies) {
+						return Promise.map(allDeputies, function(deputy) {
+							let formattedDeputy = deputy;
+							if (deputy) {
+								deputy.department = findDepartmentForDeputy(deputy, departments);
+								formattedDeputy = ResponseHelper.prepareSimpleDeputyResponse(deputy);
+							}
+							return formattedDeputy;
+						}, { concurrency: 5 })
+					})
+					.then(function(allDeputies) {
+						CacheService.set(key, allDeputies)
+						return allDeputies
+					})
 				})
-				.then(function(allDeputies) {
-					CacheService.set(key, allDeputies)
-					return { code: 200, content: allDeputies }
-				})
-			})
-		} else {
-			return { code: 200, content: cached }
-		}
-	})
+			} else {
+				return cached
+			}
+		})
+	}
 }
 
 let findDepartmentForDeputy = function(deputy, departments) {

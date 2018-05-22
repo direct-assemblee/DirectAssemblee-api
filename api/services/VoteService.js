@@ -43,6 +43,11 @@ module.exports = {
 				});
 			}
 		});
+	},
+
+	findVotes: function(ballotId) {
+		return Vote.find()
+		.where({ ballotId: ballotId })
 	}
 };
 

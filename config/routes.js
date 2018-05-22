@@ -45,7 +45,7 @@ module.exports.routes = {
   * for configuration options and examples.                                  *
   *                                                                          *
   ***************************************************************************/
-'GET /api/v1/alldeputies': 'DeputyController.getAllDeputies',
+'GET /api/v1/alldeputies': 'DeputyController.getAllDeputiesResponse',
 'GET /api/v1/deputies': 'DeputyController.getDeputiesResponse',  // optional ?latitude=XXX&longitude=YYY
 'GET /api/v1/deputy': 'DeputyController.getDeputyResponse',  // ?departmentId=13&district=12
 'GET /api/v1/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
@@ -55,7 +55,7 @@ module.exports.routes = {
 'POST /api/v1/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
 'POST /api/v1/resetCache' : 'CacheController.resetCache',
 
-'GET /v1/alldeputies': 'DeputyController.getAllDeputies',
+'GET /v1/alldeputies': 'DeputyController.getAllDeputiesResponse',
 'GET /v1/deputies': 'DeputyController.getDeputiesResponse',  // optional ?latitude=XXX&longitude=YYY
 'GET /v1/deputy': 'DeputyController.getDeputyResponse',  // ?departmentId=13&district=12
 'GET /v1/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
@@ -64,4 +64,5 @@ module.exports.routes = {
 'POST /v1/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
 'POST /v1/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
 'POST /v1/resetCache' : 'CacheController.resetCache',
+'GET /v1/votes': 'VoteController.getVotes',
 };
