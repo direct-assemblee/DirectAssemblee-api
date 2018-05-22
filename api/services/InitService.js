@@ -7,6 +7,7 @@ module.exports = {
         if (process.env.NODE_APP_INSTANCE === '0') {
             PushNotifService.startDailyVotesCron();
             ActivityRateService.startUpdateCron();
+            BackupService.startBackupCron();
         }
     }
 }

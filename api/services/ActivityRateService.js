@@ -43,7 +43,9 @@ let updateActivityRate = function(solemnBallotsOnly) {
                     .then(function(ballots) {
                         return findActivityRate(deputy, ballots, votesMap[deputy.officialId])
                         .then(function(activityRate) {
-                            return DeputyService.updateDeputyWithRate(deputy.officialId, activityRate);
+                            if (activityRate) {
+                                return DeputyService.updateDeputyWithRate(deputy.officialId, activityRate);
+                            }
                         })
                     })
                 }, { concurrency: 5 })
@@ -72,5 +74,9 @@ let findActivityRate = function(deputy, ballots, votes) {
             let reverse = 100 - rate
 			return Math.round(reverse * 100) / 100;
 		})
-	}
+	} else {
+        return new Promise(function(resolve) {
+            resolve(-1);
+        })
+    }
 }
