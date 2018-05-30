@@ -19,33 +19,43 @@ module.exports = {
 						let againsts = []
 						let nonvotings = []
 						let blanks = []
-						let missings = []
 						return VoteService.findVotes(ballotId)
 						.then(function(votes) {
-							return Promise.map(votes, function(vote) {
+							return Promise.each(votes, function(vote) {
 								for (i = allDeputies.length - 1 ; i >= 0 ; i--) {
 									if (allDeputies[i].id == vote.deputyId) {
 										let deputy = allDeputies[i]
 										switch(vote.value) {
 											case 'for':
-											fors.push(deputy);
+											fors.push(vote.deputyId);
 											break;
 											case 'against':
-											againsts.push(deputy);
+											againsts.push(vote.deputyId);
 											break;
 											case 'blank':
-											blanks.push(deputy);
+											blanks.push(vote.deputyId);
 											break;
 											case 'non-voting':
-											nonvotings.push(deputy);
+											nonvotings.push(vote.deputyId);
 											break;
 										}
-										allDeputies.splice(i, 1)
 									}
 								}
+								return votes;
 							})
 							.then(function() {
-								let result = { 'for': fors, 'against': againsts, 'missing': allDeputies, 'non-voting': nonvotings, 'blank': blanks }
+								return Promise.filter(allDeputies, function(deputy) {
+									return !(fors.includes(deputy.id) || againsts.includes(deputy.id) || blanks.includes(deputy.id) || nonvotings.includes(deputy.id))
+								})
+							})
+							.then(function(missings) {
+								let result = {
+									'for': getDeputies(allDeputies, fors),
+		 							'against': getDeputies(allDeputies, againsts),
+									'missing': missings,
+								  'nonVoting': getDeputies(allDeputies, nonvotings),
+									'blank': getDeputies(allDeputies, blanks)
+							 	}
 								CacheService.set(key, result);
 								return res.status(200).json(result);
 							})
@@ -58,3 +68,19 @@ module.exports = {
 		}
 	}
 };
+
+let getDeputies = function(allDeputies, ids) {
+	let deputies = []
+	for (let i in ids) {
+		deputies.push(getDeputy(allDeputies, ids[i]))
+	}
+	return deputies
+}
+
+let getDeputy = function(allDeputies, id) {
+	for (let i in allDeputies) {
+		if (allDeputies[i].id == id) {
+			return allDeputies[i]
+		}
+	}
+}
