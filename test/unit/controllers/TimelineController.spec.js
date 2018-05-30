@@ -14,7 +14,7 @@ describe('The TimelineController ', function() {
             .then(function(response) {
                 should.exist(response);
                 response.code.should.equal(404);
-                response.message.should.equal('No deputy found with id : 14');
+                response.content.should.equal('No deputy found with id : 14');
                 done();
             })
             .catch(done);
@@ -30,7 +30,7 @@ describe('The TimelineController ', function() {
             .then(function(response) {
                 should.exist(response);
                 response.code.should.equal(404);
-                response.message.should.equal('Mandate has ended for deputy with id : 14');
+                response.content.should.equal('Mandate has ended for deputy with id : 14');
                 done();
             })
             .catch(done);
@@ -49,7 +49,7 @@ describe('The TimelineController ', function() {
             .then(function(result) {
                 should.exist(result);
                 result.code.should.equal(200);
-                result.response.length.should.equal(0);
+                result.content.length.should.equal(0);
                 done();
             })
             .catch(done);
@@ -66,9 +66,9 @@ describe('The TimelineController ', function() {
             .then(function(result) {
                 should.exist(result);
                 result.code.should.equal(200);
-                result.response.length.should.equal(1);
+                result.content.length.should.equal(1);
 
-                let ballot = result.response[0];
+                let ballot = result.content[0];
                 ballot.id.should.equal(105);
                 ballot.date.should.equal('01/08/2017');
                 ballot.description.should.equal('scrutin description');

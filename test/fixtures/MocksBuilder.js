@@ -13,7 +13,8 @@ let self = module.exports = {
                 birthDate: birthDate,
                 firstname: 'JM',
                 lastname: 'Député',
-                parliamentGroup: 'FI'
+                parliamentGroup: 'FI',
+                activityRate: 40.2
             };
             if (hasCurrentMandate) {
                 deputy.currentMandateStartDate = '2016-06-18';

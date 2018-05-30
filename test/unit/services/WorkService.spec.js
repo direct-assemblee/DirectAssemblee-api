@@ -19,9 +19,8 @@ let createWorks = function(createdThemeId) {
     let promises = [];
     promises.push(Work.create({ title: 'another title before', themeId: createdThemeId, date: '2014-08-13', url: 'http://titi', description: 'another description', type: 'commission', deputyId: 33 }));
     promises.push(Work.create({ title: 'another title', themeId: createdThemeId, date: '2014-08-14', url: 'http://toto', description: 'another description', type: 'question', deputyId: 33 }));
-    promises.push(Work.create({ title: 'another title after', themeId: createdThemeId, date: '2014-08-15', url: 'http://toto', description: 'another description', type: 'commission', deputyId: 33 }));
-
-    promises.push(Work.create({ title: 'very old title', themeId: createdThemeId, date: '2004-08-14', url: 'http://toto', description: 'very old description', type: 'commission', deputyId: 33 }));
+    promises.push(Work.create({ title: 'another title after', themeId: createdThemeId, date: '2014-08-15', url: 'http://tata', description: 'another description', type: 'commission', deputyId: 33 }));
+    promises.push(Work.create({ title: 'very old title', themeId: createdThemeId, date: '2004-08-14', url: 'http://tutu', description: 'very old description', type: 'commission', deputyId: 33 }));
     return Promise.all(promises)
     .then(function() {
         return Work.findOne({ url: 'http://titi' });
@@ -53,7 +52,7 @@ describe('The WorkService', function () {
     });
 
     it('should return works with theme for deputy from given date', function(done) {
-        WorkService.findWorksWithThemeForDeputyAfterDate(33, '2014-08-14')
+        WorkService.findLastCreatedWorksWithThemeForDeputyAfterDate(33, '2014-08-14')
         .then(function(works) {
             should.exist(works);
             works.length.should.equal(2);
@@ -71,7 +70,7 @@ describe('The WorkService', function () {
     });
 
     it('should return no work for deputy from given date too recent date', function(done) {
-        WorkService.findWorksWithThemeForDeputyAfterDate(33, '2017-01-01')
+        WorkService.findLastCreatedWorksWithThemeForDeputyAfterDate(33, '2017-01-01')
         .then(function(works) {
             should.exist(works);
             works.length.should.equal(0);
@@ -81,7 +80,7 @@ describe('The WorkService', function () {
     });
 
     it('should return no work for deputy from given date - wrong deputy', function(done) {
-        WorkService.findWorksWithThemeForDeputyAfterDate(3, '2014-08-14')
+        WorkService.findLastCreatedWorksWithThemeForDeputyAfterDate(3, '2014-08-14')
         .then(function(works) {
             should.exist(works);
             works.length.should.equal(0);

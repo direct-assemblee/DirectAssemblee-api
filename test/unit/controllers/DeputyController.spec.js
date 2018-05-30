@@ -192,7 +192,7 @@ let verifyDeputyFullResponse = function(deputy) {
     deputy.photoUrl.should.equal('http://www2.assemblee-nationale.fr/static/tribun/15/photos/14.jpg');
     deputy.age.should.equal(20);
     deputy.parliamentAgeInMonths.should.equal(10);
-    deputy.activityRate.should.equal(50);
+    deputy.activityRate.should.equal(40);
     deputy.salary.should.equal(7200);
     deputy.currentMandateStartDate.should.equal('18/06/2016');
 

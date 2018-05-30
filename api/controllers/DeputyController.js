@@ -18,10 +18,20 @@ let self = module.exports = {
 	},
 
 	getDeputiesResponse: function(req, res) {
-		return getDeputies(req.param('latitude'), req.param('longitude'))
+		return self.getDeputies(req.param('latitude'), req.param('longitude'))
 		.then(function(response) {
 			return res.status(response.code).json(response.content);
 		})
+	},
+
+	getDeputies: function(lat, long) {
+		if (lat && long) {
+			return getDeputiesWithCoordinates(lat, long);
+		} else {
+			return new Promise(function(resolve) {
+				resolve({ code: 400, content: 'Must provide latitude and longitude arguments' });
+			})
+		}
 	},
 
 	getDeputyResponse: function(req, res) {
@@ -31,7 +41,7 @@ let self = module.exports = {
 		return CacheService.get(key)
 		.then(function(cached) {
 			if (!cached) {
-				return getDeputy(departmentId, district)
+				return self.getDeputy(departmentId, district)
 				.then(function(response) {
 					CacheService.set(key, response)
 					return res.status(response.code).json(response.content);
@@ -40,6 +50,31 @@ let self = module.exports = {
 				return res.status(cached.code).json(cached.content);
 			}
 		})
+	},
+
+	getDeputy: function(departmentId, district) {
+		if (departmentId && district) {
+			let formattedNow = DateHelper.getFormattedNow();
+			return DeputyService.findMostRecentDeputyAtDate(departmentId, district, formattedNow)
+			.then(function(deputy) {
+				if (deputy) {
+					if (deputy.mandateEndDate) {
+						return { code: 404, content: 'Found deputy, but mandate has ended.' };
+					} else {
+						return formatDeputyResponse(deputy)
+						.then(function(formattedDeputy) {
+							return { code: 200, content: formattedDeputy };
+						});
+					}
+				} else {
+					return { code: 404, content: 'Could not find deputy, sorry.' };
+				}
+			})
+		} else {
+			return new Promise(function(resolve) {
+				resolve({ code: 400, content: 'Must provide departmentId and district arguments' });
+			})
+		}
 	},
 
 	getAllDeputies: function() {
@@ -80,41 +115,6 @@ let findDepartmentForDeputy = function(deputy, departments) {
 		}
 	}
 	return department;
-}
-
-let getDeputies = function(lat, long) {
-	if (lat && long) {
-		return getDeputiesWithCoordinates(lat, long);
-	} else {
-		return new Promise(function(resolve) {
-			resolve({ code: 400, content: 'Must provide latitude and longitude arguments' });
-		})
-	}
-}
-
-let getDeputy = function(departmentId, district) {
-	if (departmentId && district) {
-		let formattedNow = DateHelper.getFormattedNow();
-		return DeputyService.findMostRecentDeputyAtDate(departmentId, district, formattedNow)
-		.then(function(deputy) {
-			if (deputy) {
-				if (deputy.mandateEndDate) {
-					return { code: 404, content: 'Found deputy, but mandate has ended.' };
-				} else {
-					return formatDeputyResponse(deputy)
-					.then(function(formattedDeputy) {
-						return { code: 200, content: formattedDeputy };
-					});
-				}
-			} else {
-				return { code: 404, content: 'Could not find deputy, sorry.' };
-			}
-		})
-	} else {
-		return new Promise(function(resolve) {
-			resolve({ code: 400, content: 'Must provide departmentId and district arguments' });
-		})
-	}
 }
 
 let getDeputiesWithCoordinates = function(lat, long) {

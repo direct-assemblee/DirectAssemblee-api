@@ -3,7 +3,7 @@ let DeputyService = require('../services/DeputyService.js');
 let TimelineService = require('../services/TimelineService.js');
 let CacheService = require('../services/CacheService.js');
 
-module.exports = {
+let self = module.exports = {
 	getTimeline: function(req, res) {
 		let deputyId = req.param('deputyId');
 		if (!deputyId) {
@@ -14,7 +14,7 @@ module.exports = {
 			return CacheService.get(key)
 			.then(function(cached) {
 				if (!cached) {
-					return getTimelineForDeputy(deputyId, parseInt(page))
+					return self.getTimelineForDeputy(deputyId, parseInt(page))
 					.then(function(result) {
 						CacheService.set(key, result);
 						return res.status(result.code).json(result.content);
@@ -24,25 +24,27 @@ module.exports = {
 				}
 			})
 		}
+	},
+
+	getTimelineForDeputy: function(deputyId, page) {
+		return DeputyService.findDeputyWithId(deputyId)
+		.then(function(deputy) {
+			if (!deputy) {
+				return { code: 404, content: 'No deputy found with id : ' + deputyId };
+			} else if (!deputy.currentMandateStartDate) {
+				return { code: 404, content: 'Mandate has ended for deputy with id : ' + deputyId };
+			} else {
+				return TimelineService.getTimeline(deputy, page)
+				.then(function(timelineItems) {
+					let formattedItems = formatTimelineResponse(timelineItems, deputy);
+					return { code: 200, content: formattedItems }
+				})
+			}
+		})
 	}
 };
 
-let getTimelineForDeputy = function(deputyId, page) {
-	return DeputyService.findDeputyWithId(deputyId)
-	.then(function(deputy) {
-		if (!deputy) {
-			return { code: 404, content: 'No deputy found with id : ' + deputyId };
-		} else if (!deputy.currentMandateStartDate) {
-			return { code: 404, content: 'Mandate has ended for deputy with id : ' + deputyId };
-		} else {
-			return TimelineService.getTimeline(deputy, page)
-			.then(function(timelineItems) {
-				let formattedItems = formatTimelineResponse(timelineItems, deputy);
-				return { code: 200, content: formattedItems }
-			})
-		}
-	})
-}
+
 
 let formatTimelineResponse = function(items, deputy) {
 	let results = [];

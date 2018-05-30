@@ -1,13 +1,16 @@
-const SALARY_BASE = 7210;
-const SALARY_PRESIDENT = 7267;
-const SALARY_QUESTER = 5004;
-const SALARY_VICE_PRESIDENT = 1038;
-const SALARY_COMMISSION_PRESIDENT = 880;
-const SALARY_GENERAL_REPORTER = 880;
-const SALARY_SCIENTIFIC_CHOICE_PRESIDENT = 880;
-const SALARY_SECRETARY = 692;
-
 const BRUT_NET_RATIO = 0.80194;
+let netSalary = function(brut) {
+    return Math.round(brut * BRUT_NET_RATIO)
+}
+
+const SALARY_BASE = netSalary(7210);
+const SALARY_PRESIDENT = netSalary(7267);
+const SALARY_QUESTER = netSalary(5004);
+const SALARY_VICE_PRESIDENT = netSalary(1038);
+const SALARY_COMMISSION_PRESIDENT = netSalary(880);
+const SALARY_GENERAL_REPORTER = netSalary(880);
+const SALARY_SCIENTIFIC_CHOICE_PRESIDENT = netSalary(880);
+const SALARY_SECRETARY = netSalary(692);
 
 const PARLIAMENT_OFFICE_REGEX = /Assemblée\snationale/;
 
@@ -55,7 +58,7 @@ let self = module.exports = {
                     salary += matchPosition(extraPositions[i]);
                 }
             }
-            return Math.round(salary * BRUT_NET_RATIO);
+            return salary;
         })
     }
 }
