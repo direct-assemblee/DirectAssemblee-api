@@ -83,78 +83,87 @@ module.exports = {
 
     pushDeputyActivities: function(deputyId, activities) {
         return pushDeputyActivitiesByRange(deputyId, activities, 0)
-    }
-}
+    },
 
-let sendDailyReportForBallots = function() {
-    console.log('start preparing daily reports')
-    return LastWorksService.find24hVotes()
-    .then(function(newVotesByDeputy) {
-        if (newVotesByDeputy && newVotesByDeputy.length > 0) {
-            // console.log('- new votes to be pushed for the last 24h ' + newVotesByDeputy.length)
-            return Promise.map(newVotesByDeputy, function(deputyVotes) {
-                return pushDeputyDailyVotes(deputyVotes.deputyId, deputyVotes.activities);
-            }, {concurrency: 10})
+    pushDeputyDailyVotes: async function(deputyId, dailyVotes) {
+        if (await DeputyService.hasSubscribers(deputyId)) {
+            return Promise.delay(60000)
+            .then(function() {
+                let payload = self.createPayloadForDailyVotes(deputyId, dailyVotes)
+                // console.log('title : ' + payload.notification.title)
+                // console.log('body : ' + payload.notification.body)
+                // console.log('deputyId : ' + payload.data.deputyId)
+                // console.log('workId : ' + payload.data.workId)
+                return pushPayloadForSubject(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload)
+            })
         } else {
-            // console.log('- no new votes to be pushed for the last 24h')
+            // console.log('deputy : ' + deputyId + ' doesn\'t have any subscribers')
         }
-        return;
-    })
-}
+    },
 
-let pushDeputyDailyVotes = async function(deputyId, dailyVotes) {
-    if (await DeputyService.hasSubscribers(deputyId)) {
-        return Promise.delay(60000)
-        .then(function() {
-            let payload = createPayloadForDailyVotes(deputyId, dailyVotes)
-            // console.log('title : ' + payload.notification.title)
-            // console.log('body : ' + payload.notification.body)
-            // console.log('deputyId : ' + payload.data.deputyId)
-            // console.log('workId : ' + payload.data.workId)
-            return pushPayloadForSubject(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload)
+    sendDailyReportForBallots: function() {
+        console.log('start preparing daily reports')
+        return LastWorksService.find24hVotes()
+        .then(function(newVotesByDeputy) {
+            if (newVotesByDeputy && newVotesByDeputy.length > 0) {
+                // console.log('- new votes to be pushed for the last 24h ' + newVotesByDeputy.length)
+                return Promise.map(newVotesByDeputy, function(deputyVotes) {
+                    return pushDeputyDailyVotes(deputyVotes.deputyId, deputyVotes.activities);
+                }, {concurrency: 10})
+            } else {
+                // console.log('- no new votes to be pushed for the last 24h')
+            }
+            return;
         })
-    } else {
-        // console.log('deputy : ' + deputyId + ' doesn\'t have any subscribers')
-    }
-}
+    },
 
-let createPayloadForDailyVotes = function(deputyId, dailyVotes) {
-    let counts = initCountsToZero();
-    let allSameValue = true;
-    let allSameTheme = true;
-    let firstValue;
-    let firstTheme;
-    for (let i in dailyVotes) {
-        let vote =  dailyVotes[i];
-        if (!firstValue) {
-            firstValue = vote.value;
-            firstTheme = vote.theme;
-        } else {
-            allSameValue = vote.value === firstValue;
-            allSameTheme = vote.theme === firstTheme;
+    createPayloadForDailyVotes: function(deputyId, dailyVotes) {
+        let payload = self.getPayloadValuesForDailyVotes(dailyVotes)
+        return ResponseHelper.createPayloadForDailyVotes(deputyId, dailyVotes.length,
+            payload.theme,
+            payload.value,
+            payload.counts)
+    },
+
+    getPayloadValuesForDailyVotes: function(dailyVotes) {
+        let counts = initCountsToZero();
+        let allSameValue = true;
+        let allSameTheme = true;
+        let firstValue;
+        let firstTheme;
+        for (let i in dailyVotes) {
+            let vote =  dailyVotes[i];
+            if (!firstValue) {
+                firstValue = vote.value;
+                firstTheme = vote.theme;
+            } else {
+                allSameValue = allSameValue && vote.value === firstValue;
+                allSameTheme = allSameTheme && vote.theme === firstTheme;
+            }
+            switch (dailyVotes[i].value) {
+                case 'for':
+                counts.for++;
+                break;
+                case 'against':
+                counts.against++;
+                break;
+                case 'blank':
+                counts.blank++;
+                break;
+                case 'missing':
+                counts.missing++;
+                break;
+                case 'non-voting':
+                counts.nonVoting++;
+                break;
+            }
         }
-        switch (dailyVotes[i].value) {
-            case 'for':
-            counts.for++;
-            break;
-            case 'against':
-            counts.against++;
-            break;
-            case 'blank':
-            counts.blank++;
-            break;
-            case 'missing':
-            counts.missing++;
-            break;
-            case 'non-voting':
-            counts.nonVoting++;
-            break;
+        return {
+            theme: allSameTheme ? firstTheme : null,
+            value: allSameValue ? firstValue : null,
+            counts: counts,
         }
     }
-    return ResponseHelper.createPayloadForDailyVotes(deputyId, dailyVotes.length,
-        allSameTheme ? firstTheme : null,
-        allSameValue ? firstValue : null,
-        counts)
 }
 
 let initCountsToZero = function() {
