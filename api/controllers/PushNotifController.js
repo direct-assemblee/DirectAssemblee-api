@@ -36,7 +36,10 @@ let findWorksForUpdatedDeputy = function(deputyId) {
 	.then(function(newWorks) {
 		if (newWorks && newWorks.length > 0) {
 			console.log('- deputy ' + deputyId + ' has ' + newWorks.length + ' new works to be pushed')
-			return PushNotifService.pushDeputyActivities(deputyId, newWorks);
+			return CacheService.resetTimeline(deputyId)
+			.then(function() {
+				return PushNotifService.pushDeputyActivities(deputyId, newWorks);
+			})
 		} else {
 			// console.log('- deputy ' + deputyId + ' has no new works to be pushed')
 			return;

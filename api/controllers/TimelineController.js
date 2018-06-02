@@ -10,13 +10,12 @@ let self = module.exports = {
 			return res.status(400).json('Must provide deputyId as a parameter.');
 		} else {
 			let page = req.param('page') ? req.param('page') : 0;
-			let key = 'timeline_' + deputyId + '_' + page;
-			return CacheService.get(key)
+			return CacheService.getTimeline(deputyId, page)
 			.then(function(cached) {
 				if (!cached) {
 					return self.getTimelineForDeputy(deputyId, parseInt(page))
 					.then(function(result) {
-						CacheService.set(key, result);
+						CacheService.setTimeline(deputyId, page, result);
 						return res.status(result.code).json(result.content);
 					})
 				} else {
