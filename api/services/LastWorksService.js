@@ -16,7 +16,7 @@ module.exports = {
     findNewWorks: function(deputyId) {
         if (lastScanTime) {
             let time = DateHelper.formatMomentWithTemplate(lastScanTime, DateHelper.DATE_AND_HOUR_TEMPLATE);
-            return WorkService.findLastCreatedWorksWithThemeForDeputyAfterDate(deputyId, time);
+            return WorkService.findLastCreatedWorksForDeputyAfterDate(deputyId, time);
         } else {
             console.log('last scan time is undefined')
         }

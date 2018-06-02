@@ -2,7 +2,7 @@ let Promise = require('bluebird');
 let DateHelper = require('./helpers/DateHelper.js');
 
 module.exports = {
-    findLastCreatedWorksWithThemeForDeputyAfterDate: function(deputyId, date) {
+    findLastCreatedWorksForDeputyAfterDate: function(deputyId, date) {
         let options = { createdAt: { '>=': date } }
         return findWorksForDeputyWithOptions(deputyId, options)
         .then(function(works) {
