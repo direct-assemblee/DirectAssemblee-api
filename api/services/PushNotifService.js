@@ -77,7 +77,7 @@ module.exports = {
     startDailyVotesCron: function() {
         console.log('starting cron for daily reports')
         new CronJob(PUSH_DAILY_REPORT_TIME, function() {
-            sendDailyReportForBallots()
+            self.sendDailyReportForBallots()
         }, null, true, 'Europe/Paris');
     },
 
