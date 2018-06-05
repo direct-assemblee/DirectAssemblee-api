@@ -175,7 +175,7 @@ let checkFirstDeputyActivities = function(activities) {
 }
 
 let checkSecondDeputyActivities = function(activities) {
-        activities.length.should.equal(3);
+    activities.length.should.equal(3);
 
     activities[1].title.should.equal('a title');
     activities[1].theme.should.equal('themeName');

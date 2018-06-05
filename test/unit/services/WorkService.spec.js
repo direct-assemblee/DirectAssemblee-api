@@ -1,7 +1,9 @@
 require('../../bootstrap.test');
 let moment = require('moment');
-
 let Promise = require('bluebird');
+
+let StubsBuilder = require('../../fixtures/StubsBuilder');
+let WorkService;
 
 let createTheme = function() {
     let promises = [];
@@ -17,21 +19,49 @@ let createTheme = function() {
 
 let createWorks = function(createdThemeId) {
     let promises = [];
-    promises.push(Work.create({ title: 'another title before', themeId: createdThemeId, date: '2014-08-13', url: 'http://titi', description: 'another description', type: 'commission', deputyId: 33 }));
-    promises.push(Work.create({ title: 'another title', themeId: createdThemeId, date: '2014-08-14', url: 'http://toto', description: 'another description', type: 'question', deputyId: 33 }));
-    promises.push(Work.create({ title: 'another title after', themeId: createdThemeId, date: '2014-08-15', url: 'http://tata', description: 'another description', type: 'commission', deputyId: 33 }));
-    promises.push(Work.create({ title: 'very old title', themeId: createdThemeId, date: '2004-08-14', url: 'http://tutu', description: 'very old description', type: 'commission', deputyId: 33 }));
+    promises.push(addWork(33, 'another title before', createdThemeId, '2014-08-13', 'http://titi', 'another description', 'commission'));
+    promises.push(addWork(33, 'another title', createdThemeId, '2014-08-14', 'http://toto', 'another description', 'question'));
+    promises.push(addWork(33, 'another title after', createdThemeId, '2014-08-15', 'http://tata', 'another description', 'commission'));
+    promises.push(addWork(33, 'very old title', createdThemeId, '2004-08-14', 'http://tutu', 'very old description', 'commission'));
     return Promise.all(promises)
     .then(function() {
         return Work.findOne({ url: 'http://titi' });
     })
 }
 
+let addWork = function(deputyId, title, themeId, date, url, description, type) {
+    return Work.create({ title: title, themeId: themeId, date: date, url: url, description: description, type: type })
+    .meta({ fetch: true })
+    .then(function(insertedWork) {
+        return Deputy.addToCollection(deputyId, 'workCreations')
+        .members(insertedWork.id)
+        .then(function() {
+            return Work.find()
+            .where({ id: insertedWork.id} )
+            .populate('themeId')
+            .populate('authors')
+            .then(function(works) {
+                console.log('lenght  ' + works.length)
+                return Promise.map(works, function(work) {
+                    console.log('authors '+ work.authors.length + ' ' + work.id)
+                })
+            })
+        })
+        .catch(err => {
+            console.log('-- Error adding creation ' + err);
+            return
+        });
+    })
+}
+
 describe('The WorkService', function () {
     before(function(done) {
+        let stubs = {
+            './helpers/DateHelper.js': StubsBuilder.buildDateHelperStub()
+        }
+        WorkService = StubsBuilder.buildStub('services/WorkService', stubs);
         createTheme()
         .then(function(createdThemeId) {
-            console.log('createdThemeId ' + createdThemeId)
             return createWorks(createdThemeId)
             .then(function(firstCreatedWork) {
                 return ExtraInfo.create({ info: 'an info', value: 'a value', workId: firstCreatedWork.id });
@@ -42,16 +72,16 @@ describe('The WorkService', function () {
         })
     });
 
-    after(function(done) {
-        let promises = [];
-        promises.push(Work.destroy({}))
-        Promise.all(promises)
-        .then(function() {
-            done();
-        })
-    });
+    // after(function(done) {
+    //     let promises = [];
+    //     promises.push(Work.destroy({}))
+    //     Promise.all(promises)
+    //     .then(function() {
+    //         done();
+    //     })
+    // });
 
-    it('should return works with theme for deputy from given date', function(done) {
+    it('should return last created works for deputy after date date', function(done) {
         WorkService.findLastCreatedWorksForDeputyAfterDate(33, '2014-08-14')
         .then(function(works) {
             should.exist(works);

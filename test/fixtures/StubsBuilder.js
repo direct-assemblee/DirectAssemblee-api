@@ -8,6 +8,10 @@ module.exports = {
         dateHelperStub.getFormattedNow = function() {
             return '2017-10-10';
         }
+        dateHelperStub.isLaterOrSame = function(date1, date2) {
+            console.log('test')
+            return true;
+        }
         return dateHelperStub;
     },
 

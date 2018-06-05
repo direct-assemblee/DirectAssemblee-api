@@ -27,7 +27,7 @@ before(function (done) {
                 port: process.env.DATABASE_PORT || 3306,
                 user: process.env.DATABASE_USER || 'root',
                 password: process.env.DATABASE_PASSWORD || '',
-                database: process.env.DATABASE_NAME || 'testdirectassemblee',
+                database: process.env.DATABASE_NAME || 'directassemblee',
                 charset:'utf8mb4'
             }
         }

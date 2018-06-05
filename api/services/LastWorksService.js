@@ -19,6 +19,9 @@ module.exports = {
             return WorkService.findLastCreatedWorksForDeputyAfterDate(deputyId, time);
         } else {
             console.log('last scan time is undefined')
+            return new Promise(function(resolve) {
+                resolve()
+            })
         }
     },
 
