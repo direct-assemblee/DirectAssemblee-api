@@ -30,7 +30,7 @@ module.exports = {
 
     features: {
         searchDeputyByAddress: {
-            isEnabled: true,
+            isEnabled: false,
             disabledMessage: "Suite aux modifications tarifaires de Google, nous ne sommes actuellement plus en mesure  de proposer la recherche par saisie d’adresse. Nous sommes en train d’étudier différentes solutions pour trouver une alternative. Toutes nos excuses pour la gêne occasionnée."
         }
     }
