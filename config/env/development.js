@@ -26,5 +26,12 @@ module.exports = {
         'GET /v1/testPushNotif' : 'PushNotifController.sendTestPushNotif', // ?deputyId=13&type={question/ballot/...}&workId=1212
     },
 
-    cronPush: '0 15 18 * * *'
+    cronPush: '0 15 18 * * *',
+
+    features: {
+        searchDeputyByAddress: {
+            isEnabled: true,
+            disabledMessage: "Suite aux modifications tarifaires de Google, nous ne sommes actuellement plus en mesure  de proposer la recherche par saisie d’adresse. Nous sommes en train d’étudier différentes solutions pour trouver une alternative. Toutes nos excuses pour la gêne occasionnée."
+        }
+    }
 };

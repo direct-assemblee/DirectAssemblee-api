@@ -21,5 +21,12 @@ module.exports = {
         key: 'AIzaSyCwHl1AXUzENiz_VsABqZ8QIAHO5C-K8Js'
     },
 
-    cronPush: '0 45 19 * * *'
+    cronPush: '0 45 19 * * *',
+
+    features: {
+        addressInput: {
+            isEnabled: true,
+            disabledMessage: "Suite aux modifications tarifaires de Google, nous ne sommes actuellement plus en mesure  de proposer la recherche par saisie d’adresse. Nous sommes en train d’étudier différentes solutions pour trouver une alternative. Toutes nos excuses pour la gêne occasionnée."
+        }
+    }
 };

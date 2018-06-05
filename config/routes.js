@@ -65,4 +65,5 @@ module.exports.routes = {
 'POST /v1/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
 'POST /v1/resetCache' : 'CacheController.resetCache',
 'GET /v1/votes': 'VoteController.getVotes',
+'GET /v1/features': 'FeatureController.getFeatures',
 };
