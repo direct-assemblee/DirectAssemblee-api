@@ -66,7 +66,7 @@ let self = module.exports = {
 let matchPosition = function(deputyPosition) {
     var salary = 0;
     for (let j in EXTRA_POSITIONS) {
-        if (deputyPosition.position.match(EXTRA_POSITIONS[j].position) && deputyPosition.office.match(EXTRA_POSITIONS[j].office)) {
+        if (deputyPosition.position.match(EXTRA_POSITIONS[j].position)) {
             salary = EXTRA_POSITIONS[j].salary;
             break;
         }

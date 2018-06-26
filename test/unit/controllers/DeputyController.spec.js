@@ -263,7 +263,6 @@ let verifyDeputyFieldsAreDeletedForSimpleResponse = function(deputy) {
     should.not.exist(deputy.updatedAt);
     should.not.exist(deputy.mandateEndDate);
     should.not.exist(deputy.mandateEndReason);
-    should.not.exist(deputy.commission);
     should.not.exist(deputy.phone);
     should.not.exist(deputy.email);
     should.not.exist(deputy.currentMandateStartDate);

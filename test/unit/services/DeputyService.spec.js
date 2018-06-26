@@ -23,7 +23,7 @@ let getExtraPromises = function() {
     promises.push(Mandate.create({ deputyId: 15, name: 'Très petit mandat', startingDate: '2014-06-04', endingDate: '2014-08-04' }))
     promises.push(Declaration.create({ deputyId: 15, date: '2016-12-22' }))
     promises.push(Declaration.create({ deputyId: 15, date: '2016-01-13' }))
-    promises.push(ExtraPosition.create({ deputyId: 15, position: 'Secrétaire', office: 'Assemblée nationale' }))
+    promises.push(ExtraPosition.create({ deputyId: 15, position: 'Secrétaire' }))
     return promises;
 }
 

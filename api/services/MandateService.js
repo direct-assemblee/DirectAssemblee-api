@@ -6,6 +6,11 @@ module.exports = {
         .then(function(mandates) {
             return getAllMandatesDuration(mandates, currentMandateStartDate)
         })
+    },
+
+    findCurrentMandates: function(deputyId) {
+        return Mandate.find()
+        .where({ deputyId: deputyId, startingDate: '' });
     }
 }
 

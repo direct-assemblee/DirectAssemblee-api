@@ -77,7 +77,7 @@ module.exports = {
     startDailyVotesCron: function() {
         console.log('starting cron for daily reports')
         new CronJob(PUSH_DAILY_REPORT_TIME, function() {
-            sendDailyReportForBallots()
+            self.sendDailyReportForBallots()
         }, null, true, 'Europe/Paris');
     },
 
@@ -94,7 +94,7 @@ module.exports = {
                 // console.log('body : ' + payload.notification.body)
                 // console.log('deputyId : ' + payload.data.deputyId)
                 // console.log('workId : ' + payload.data.workId)
-                return pushPayloadForSubject(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload)
+                return self.pushPayloadForSubject(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload)
             })
         } else {
             // console.log('deputy : ' + deputyId + ' doesn\'t have any subscribers')

@@ -8,6 +8,9 @@ let MandateService = require('../services/MandateService.js');
 let DeputyService = require('../services/DeputyService.js');
 let ExtraPositionService = require('../services/ExtraPositionService.js');
 let CacheService = require('../services/CacheService.js');
+let RoleService = require('../services/RoleService.js');
+let InstanceTypeService = require('../services/InstanceTypeService.js');
+let RoleHelper = require('../services/helpers/RoleHelper.js');
 
 let self = module.exports = {
 	getAllDeputiesResponse: function(req, res) {
@@ -175,6 +178,12 @@ let formatDeputyResponse = function(deputy) {
 	return DepartmentService.findDepartmentWithId(deputy.departmentId)
 	.then(function(department) {
 		deputy.department = department;
+		return retrieveCurrentMandatesForDeputy(deputy);
+	})
+	.then(function(deputy) {
+		return retrieveRolesForDeputy(deputy);
+	})
+	.then(function(deputy) {
 		return retrieveParliamentAgeForDeputy(deputy);
 	})
 	.then(function(deputy) {
@@ -191,28 +200,79 @@ let formatDeputyResponse = function(deputy) {
 	})
 }
 
-let retrieveParliamentAgeForDeputy = function(deputyIn) {
-	return MandateService.getPoliticalAgeOfDeputy(deputyIn.officialId, deputyIn.currentMandateStartDate)
+let retrieveCurrentMandatesForDeputy = function(deputy) {
+	return MandateService.findCurrentMandates(deputy.officialId)
+	.then(function(currentMandates) {
+		let deputyOut = deputy;
+		deputyOut.otherCurrentMandates = []
+		for (let i in currentMandates) {
+			deputyOut.otherCurrentMandates.push(currentMandates[i].name);
+		}
+		return deputyOut;
+	})
+}
+
+let retrieveRolesForDeputy = function(deputy) {
+	return RoleService.find(deputy.officialId)
+	.then(function(roles) {
+		let promises = []
+		for (let i in roles) {
+			promises.push(formatRoleAndInstance(roles[i], deputy))
+		}
+		return Promise.all(promises)
+		.then(function(formattedRoles) {
+			let deputyOut = deputy;
+			deputyOut.roles = []
+			for (let i in formattedRoles) {
+				deputyOut.roles.push(formattedRoles[i]);
+			}
+			return deputyOut;
+		})
+	})
+}
+
+let formatRoleAndInstance = function(role, deputy) {
+	return populateInstanceTypeForInstance(role.instanceId)
+	.then(function(typeName) {
+		role.instanceId.typeName = typeName
+		return RoleHelper.formatRole(role, deputy.gender)
+	})
+}
+
+let populateInstanceTypeForInstance = function(instance) {
+	console.log('instance.typeId : ' + instance.typeId)
+	return InstanceTypeService.find()
+	.then(function(types) {
+		for (let i in types) {
+			if (types[i].id == instance.typeId) {
+				return types[i].singular
+			}
+		}
+	})
+}
+
+let retrieveParliamentAgeForDeputy = function(deputy) {
+	return MandateService.getPoliticalAgeOfDeputy(deputy.officialId, deputy.currentMandateStartDate)
 	.then(function(parliamentAgeInMonths) {
-		let deputyOut = deputyIn;
+		let deputyOut = deputy;
 		deputyOut.parliamentAgeInMonths = parliamentAgeInMonths;
 		return deputyOut;
 	})
 }
 
-let retrieveDeclarationsForDeputy = function(deputyIn) {
-	return DeclarationService.findDeclarationsForDeputy(deputyIn.officialId)
+let retrieveDeclarationsForDeputy = function(deputy) {
+	return DeclarationService.findDeclarationsForDeputy(deputy.officialId)
 	.then(function(declarations) {
-		let deputyOut = deputyIn;
+		let deputyOut = deputy;
 		deputyOut.declarations = declarations;
 		return deputyOut;
 	})
 }
 
-let retrieveSalaryForDeputy = function(deputyIn) {
-	return ExtraPositionService.getSalaryForDeputy(deputyIn.officialId)
+let retrieveSalaryForDeputy = function(deputy) {
+	return ExtraPositionService.getSalaryForDeputy(deputy.officialId)
 	.then(function(salary) {
-		let deputyOut = deputyIn;
+		let deputyOut = deputy;
 		deputyOut.salary = salary;
 		return deputyOut;
 	})

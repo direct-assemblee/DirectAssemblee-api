@@ -31,7 +31,6 @@ const DEPUTY_PHOTO_URL = BASE_URL + 'static/tribun/' + PARAM_MANDATE_NUMBER + '/
 let self = module.exports = {
     prepareSimpleDeputyResponse: function(deputy) {
         deputy = self.prepareDeputyResponse(deputy);
-        delete deputy.commission;
         delete deputy.phone;
         delete deputy.email;
         delete deputy.job;
