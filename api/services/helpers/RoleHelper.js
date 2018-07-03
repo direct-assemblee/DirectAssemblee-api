@@ -2,7 +2,7 @@ const GENDER_MALE = 'M'
 
 module.exports = {
     formatRole: function(role, gender) {
-        let roleName = gender === GENDER_MALE ? role.roleTypeId.maleName : role.roleTypeId.femaleName
-        return { 'roleName' : roleName, 'instance': { 'type' : role.instanceId.typeName, 'name' : role.instanceId.name  } }
+        let position = gender === GENDER_MALE ? role.roleTypeId.maleName : role.roleTypeId.femaleName
+        return { 'position' : position, 'instanceName': role.instanceId.name }
     }
 }

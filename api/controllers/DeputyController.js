@@ -213,11 +213,11 @@ let retrieveCurrentMandatesForDeputy = function(deputy) {
 }
 
 let retrieveRolesForDeputy = function(deputy) {
-	return RoleService.find(deputy.officialId)
-	.then(function(roles) {
+	return RoleService.findAndSort(deputy.officialId)
+	.then(function(rolesSortedByInstance) {
 		let promises = []
-		for (let i in roles) {
-			promises.push(formatRoleAndInstance(roles[i], deputy))
+		for (let i in rolesSortedByInstance) {
+			promises.push(populateInstanceNameAndFormatRoles(rolesSortedByInstance[i], deputy))
 		}
 		return Promise.all(promises)
 		.then(function(formattedRoles) {
@@ -231,20 +231,26 @@ let retrieveRolesForDeputy = function(deputy) {
 	})
 }
 
-let formatRoleAndInstance = function(role, deputy) {
-	return populateInstanceTypeForInstance(role.instanceId)
+let populateInstanceNameAndFormatRoles = function(instanceAndRoles, deputy) {
+	return populateInstanceTypeForInstance(instanceAndRoles.instanceType.id)
 	.then(function(typeName) {
-		role.instanceId.typeName = typeName
-		return RoleHelper.formatRole(role, deputy.gender)
+		instanceAndRoles.instanceType.name = typeName
+		return Promise.map(instanceAndRoles.roles, function(role) {
+			return RoleHelper.formatRole(role, deputy.gender)
+		})
+		.then(function(formattedRoles) {
+			instanceAndRoles.roles = formattedRoles
+			return instanceAndRoles
+		})
 	})
 }
 
-let populateInstanceTypeForInstance = function(instance) {
-	console.log('instance.typeId : ' + instance.typeId)
+let populateInstanceTypeForInstance = function(instanceTypeId) {
+	console.log('instance.typeId : ' + instanceTypeId)
 	return InstanceTypeService.find()
 	.then(function(types) {
 		for (let i in types) {
-			if (types[i].id == instance.typeId) {
+			if (types[i].id == instanceTypeId) {
 				return types[i].singular
 			}
 		}
