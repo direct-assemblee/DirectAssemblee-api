@@ -8,7 +8,10 @@ module.exports = {
                 allTypes = types;
                 return allTypes
             })
+        } else {
+            return new Promise(function(resolve) {
+                resolve(allTypes)
+            })
         }
-        return allTypes
     }
 }
