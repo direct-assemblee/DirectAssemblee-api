@@ -15,8 +15,7 @@ module.exports = {
 
     findNewWorks: function(deputyId) {
         if (lastScanTime) {
-            let time = DateHelper.formatMomentWithTemplate(lastScanTime, DateHelper.DATE_AND_HOUR_TEMPLATE);
-            return WorkService.findLastCreatedWorksForDeputyAfterDate(deputyId, time);
+            return WorkService.findLastCreatedWorksForDeputyAfterDate(deputyId, lastScanTime);
         } else {
             console.log('last scan time is undefined')
             return new Promise(function(resolve) {
@@ -30,7 +29,7 @@ module.exports = {
     },
 
     updateLastScanTime: function() {
-        lastScanTime = DateHelper.getNow();
+        lastScanTime = DateHelper.getNowUtc();
         return storage.init()
         .then(function() {
             return storage.setItem(LAST_SCAN_TIME_KEY, lastScanTime)
@@ -46,7 +45,6 @@ module.exports = {
 
 let findVotesAfterDate = function(date) {
     let time = DateHelper.formatMomentWithTemplate(date, DateHelper.DATE_AND_HOUR_TEMPLATE);
-    console.log('findVotesAfterDate ' + time)
     return DeputyService.findCurrentDeputies()
     .then(function(deputies) {
         return VoteService.findLastVotesByDeputy(time, deputies)
@@ -62,7 +60,7 @@ let getLastScanTime = function() {
         if (time) {
             return time;
         } else {
-            return storage.setItem(LAST_SCAN_TIME_KEY, DateHelper.getNow())
+            return storage.setItem(LAST_SCAN_TIME_KEY, DateHelper.getNowUtc())
             .then(function() {
                 return storage.getItem(LAST_SCAN_TIME_KEY)
             })

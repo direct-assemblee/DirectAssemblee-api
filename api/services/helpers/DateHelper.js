@@ -85,8 +85,8 @@ let self = module.exports = {
         return moment().subtract(1, 'day');
     },
 
-    getNow: function() {
-        return moment();
+    getNowUtc: function() {
+        return moment().utc();
     },
 
     getMoment: function(date) {
