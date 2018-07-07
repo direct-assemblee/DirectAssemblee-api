@@ -8,9 +8,7 @@ let MandateService = require('../services/MandateService.js');
 let DeputyService = require('../services/DeputyService.js');
 let ExtraPositionService = require('../services/ExtraPositionService.js');
 let CacheService = require('../services/CacheService.js');
-let RoleService = require('../services/RoleService.js');
-let InstanceTypeService = require('../services/InstanceTypeService.js');
-let RoleHelper = require('../services/helpers/RoleHelper.js');
+let DeputyHelper = require('../services/helpers/DeputyHelper.js');
 
 let self = module.exports = {
 	getAllDeputiesResponse: function(req, res) {
@@ -181,7 +179,11 @@ let formatDeputyResponse = function(deputy) {
 		return retrieveCurrentMandatesForDeputy(deputy);
 	})
 	.then(function(deputy) {
-		return retrieveRolesForDeputy(deputy);
+		return DeputyHelper.retrieveRolesForDeputy(deputy)
+		.then(function(roles) {
+			deputy.roles = roles;
+			return deputy
+		})
 	})
 	.then(function(deputy) {
 		return retrieveParliamentAgeForDeputy(deputy);
@@ -209,51 +211,6 @@ let retrieveCurrentMandatesForDeputy = function(deputy) {
 			deputyOut.otherCurrentMandates.push(currentMandates[i].name);
 		}
 		return deputyOut;
-	})
-}
-
-let retrieveRolesForDeputy = function(deputy) {
-	return RoleService.findAndSort(deputy.officialId)
-	.then(function(rolesSortedByInstance) {
-		let promises = []
-		for (let i in rolesSortedByInstance) {
-			promises.push(populateInstanceNameAndFormatRoles(rolesSortedByInstance[i], deputy))
-		}
-		return Promise.all(promises)
-		.then(function(formattedRoles) {
-			let deputyOut = deputy;
-			deputyOut.roles = []
-			for (let i in formattedRoles) {
-				deputyOut.roles.push(formattedRoles[i]);
-			}
-			return deputyOut;
-		})
-	})
-}
-
-let populateInstanceNameAndFormatRoles = function(instanceAndRoles, deputy) {
-	return populateInstanceTypeForInstance(instanceAndRoles.instanceType.id)
-	.then(function(typeName) {
-		instanceAndRoles.instanceType.name = typeName
-		return Promise.map(instanceAndRoles.roles, function(role) {
-			return RoleHelper.formatRole(role, deputy.gender)
-		})
-		.then(function(formattedRoles) {
-			instanceAndRoles.roles = formattedRoles
-			return instanceAndRoles
-		})
-	})
-}
-
-let populateInstanceTypeForInstance = function(instanceTypeId) {
-	console.log('instance.typeId : ' + instanceTypeId)
-	return InstanceTypeService.find()
-	.then(function(types) {
-		for (let i in types) {
-			if (types[i].id == instanceTypeId) {
-				return types[i].singular
-			}
-		}
 	})
 }
 

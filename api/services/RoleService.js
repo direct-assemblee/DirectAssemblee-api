@@ -1,21 +1,31 @@
 let DateHelper = require('./helpers/DateHelper.js');
 
+const GENDER_MALE = 'M'
+
 let self = module.exports = {
-    findAndSort: function(deputyId) {
-        return self.find(deputyId)
-        .then(function(roles) {
-            let instanceTypes = {}
-            for (let i in roles) {
-                let typeId = roles[i].instanceId.typeId
-                if (instanceTypes[typeId] == null) {
-                    instanceTypes[typeId] = {}
-                    instanceTypes[typeId].instanceType = {}
-                    instanceTypes[typeId].instanceType.id = typeId
-                    instanceTypes[typeId].roles = []
+    findAndSortByInstanceAndPosition: function(deputy) {
+        return self.find(deputy.officialId)
+        .then(function(foundRoles) {
+            let roles = []
+            for (let i in foundRoles) {
+                let foundRole = foundRoles[i]
+                let order = foundRole.instanceId.typeId
+                if (roles[order] == null) {
+                    roles[order] = {
+                        instanceType: foundRole.instanceId.name,
+                        positions: []
+                    }
                 }
-                instanceTypes[typeId].roles.push(roles[i])
+                let positionId = foundRole.roleTypeId
+                if (roles[order].positions[positionId] == null) {
+                    roles[order].positions[positionId] = {
+                        name: getPositionName(foundRole, deputy.gender),
+                        instances: []
+                    }
+                }
+                roles[order].positions[positionId].instances.push(foundRole.instanceId.name)
             }
-            return instanceTypes
+            return roles
         })
     },
 
@@ -25,4 +35,8 @@ let self = module.exports = {
         .populate('roleTypeId')
         .populate('instanceId')
     }
+}
+
+let getPositionName = function(role, gender) {
+    return gender === GENDER_MALE ? role.roleTypeId.maleName : role.roleTypeId.femaleName
 }
