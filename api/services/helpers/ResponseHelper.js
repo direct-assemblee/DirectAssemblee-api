@@ -47,6 +47,10 @@ let self = module.exports = {
         deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
         deputy.age = DateHelper.findAge(deputy.birthDate);
         deputy.declarations = self.prepareDeclarationsResponse(deputy.declarations);
+        let permanentCommission = getPermanentCommission(deputy)
+        if (permanentCommission != null) {
+            deputy.commission = permanentCommission
+        }
         if (parseInt(deputy.activityRate) >= 0) {
             deputy.activityRate = Math.round(deputy.activityRate);
         } else {
@@ -380,4 +384,16 @@ let shouldShowThemeSubName = function(themeName, originalThemeName) {
         }
     }
     return shouldShow;
+}
+
+let getPermanentCommission = function(deputy) {
+    for (let i in deputy.roles) {
+        let role = deputy.roles[i]
+        if (role.instanceType === 'Commission permanente') {
+            if (role.positions != null && role.positions.length > 0 && role.positions[0] != null && role.positions[0].instances != null && role.positions[0].instances.length > 0) {
+                return role.positions[0].instances[0]
+            }
+        }
+    }
+    return null
 }
