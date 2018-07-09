@@ -94,7 +94,6 @@ let self = module.exports = {
             id: work.id,
             type: work.type,
             date: DateHelper.formatDateForWS(work.date),
-            title: work.title,
             fileUrl: work.url
         }
 
@@ -110,6 +109,14 @@ let self = module.exports = {
             for (let i in extraInfos) {
                 response.extraInfos[extraInfos[i].info] = extraInfos[i].value;
             }
+        }
+
+        if (work.type === WORK_TYPE_COMMISSIONS) {
+            response.title = response.extraInfos['commissionName']
+        } else if (work.type === WORK_TYPE_PUBLIC_SESSIONS) {
+            response.title = 'Séance publique'
+        }  else {
+            response.title = work.title
         }
         return response;
     },
