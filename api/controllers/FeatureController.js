@@ -1,7 +1,8 @@
 let Promise = require('bluebird');
+let ResponseBuilder = require('./ResponseBuilder.js');
 
 module.exports = {
 	getFeatures: function(req, res) {
-		return res.status(200).json(sails.config.features);
+		return ResponseBuilder.build(res, 200, sails.config.features)
 	}
 };

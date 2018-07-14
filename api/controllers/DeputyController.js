@@ -9,19 +9,20 @@ let DeputyService = require('../services/DeputyService.js');
 let ExtraPositionService = require('../services/ExtraPositionService.js');
 let CacheService = require('../services/CacheService.js');
 let DeputyHelper = require('../services/helpers/DeputyHelper.js');
+let ResponseBuilder = require('./ResponseBuilder.js');
 
 let self = module.exports = {
 	getAllDeputiesResponse: function(req, res) {
 		return self.getAllDeputies()
 		.then(function(deputies) {
-			return res.status(200).json(deputies);
+			return ResponseBuilder.build(res, 200, deputies)
 		})
 	},
 
 	getDeputiesResponse: function(req, res) {
 		return self.getDeputies(req.param('latitude'), req.param('longitude'))
 		.then(function(response) {
-			return res.status(response.code).json(response.content);
+			return ResponseBuilder.build(res, response.code, response.content)
 		})
 	},
 
@@ -45,10 +46,10 @@ let self = module.exports = {
 				return self.getDeputy(departmentId, district)
 				.then(function(response) {
 					CacheService.set(key, response)
-					return res.status(response.code).json(response.content);
+					return ResponseBuilder.build(res, response.code, response.content)
 				})
 			} else {
-				return res.status(cached.code).json(cached.content);
+				return ResponseBuilder.build(res, cached.code, cached.content)
 			}
 		})
 	},

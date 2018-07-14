@@ -2,12 +2,13 @@ let ResponseHelper = require('../services/helpers/ResponseHelper.js');
 let DeputyService = require('../services/DeputyService.js');
 let TimelineService = require('../services/TimelineService.js');
 let CacheService = require('../services/CacheService.js');
+let ResponseBuilder = require('./ResponseBuilder.js');
 
 let self = module.exports = {
 	getTimeline: function(req, res) {
 		let deputyId = req.param('deputyId');
 		if (!deputyId) {
-			return res.status(400).json('Must provide deputyId as a parameter.');
+			return ResponseBuilder.build(res, 400, 'Must provide deputyId as a parameter.')
 		} else {
 			let page = req.param('page') ? req.param('page') : 0;
 			return CacheService.getTimeline(deputyId, page)
@@ -16,10 +17,10 @@ let self = module.exports = {
 					return self.getTimelineForDeputy(deputyId, parseInt(page))
 					.then(function(result) {
 						CacheService.setTimeline(deputyId, page, result);
-						return res.status(result.code).json(result.content);
+						return ResponseBuilder.build(res, result.code, result.content);
 					})
 				} else {
-					return res.status(cached.code).json(cached.content);
+					return ResponseBuilder.build(res, cached.code, cached.content);
 				}
 			})
 		}
@@ -42,8 +43,6 @@ let self = module.exports = {
 		})
 	}
 };
-
-
 
 let formatTimelineResponse = function(items, deputy) {
 	let results = [];
