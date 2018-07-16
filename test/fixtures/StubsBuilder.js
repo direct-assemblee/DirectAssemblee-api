@@ -9,7 +9,6 @@ module.exports = {
             return '2017-10-10';
         }
         dateHelperStub.isLaterOrSame = function(date1, date2) {
-            console.log('test')
             return true;
         }
         return dateHelperStub;
@@ -62,14 +61,12 @@ module.exports = {
         return departmentServiceStub;
     },
 
-    buildExtraPositionServiceStub: function() {
-        let extraPositionServiceStub = function(){};
-        extraPositionServiceStub.getSalaryForDeputy = function(deputyId) {
-            return new Promise(function(resolve) {
-                resolve(7200);
-            });
+    buildSalaryHelperStub: function() {
+        let salaryHelperStub = function(){};
+        salaryHelperStub.calculateSalary = function(deputyInstancesAndRoles) {
+            return 7200;
         }
-        return extraPositionServiceStub;
+        return salaryHelperStub;
     },
 
     buildMandateServiceStub: function() {

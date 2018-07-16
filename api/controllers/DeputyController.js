@@ -6,9 +6,9 @@ let GeolocService = require('../services/GeolocService.js');
 let DeclarationService = require('../services/DeclarationService.js');
 let MandateService = require('../services/MandateService.js');
 let DeputyService = require('../services/DeputyService.js');
-let ExtraPositionService = require('../services/ExtraPositionService.js');
 let CacheService = require('../services/CacheService.js');
-let DeputyHelper = require('../services/helpers/DeputyHelper.js');
+let DeputyRolesHelper = require('../services/helpers/DeputyRolesHelper.js');
+let SalaryHelper = require('../services/helpers/SalaryHelper.js');
 let ResponseBuilder = require('./ResponseBuilder.js');
 
 let self = module.exports = {
@@ -180,9 +180,10 @@ let formatDeputyResponse = function(deputy) {
 		return retrieveCurrentMandatesForDeputy(deputy);
 	})
 	.then(function(deputy) {
-		return DeputyHelper.retrieveRolesForDeputy(deputy)
+		return DeputyRolesHelper.retrieveRolesForDeputy(deputy)
 		.then(function(roles) {
 			deputy.roles = roles;
+			deputy.salary = SalaryHelper.calculateSalary(deputy.roles)
 			return deputy
 		})
 	})
@@ -191,9 +192,6 @@ let formatDeputyResponse = function(deputy) {
 	})
 	.then(function(deputy) {
 		return retrieveDeclarationsForDeputy(deputy);
-	})
-	.then(function(deputy) {
-		return retrieveSalaryForDeputy(deputy);
 	})
 	.then(function(deputy) {
 		if (deputy.currentMandateStartDate) {
@@ -229,15 +227,6 @@ let retrieveDeclarationsForDeputy = function(deputy) {
 	.then(function(declarations) {
 		let deputyOut = deputy;
 		deputyOut.declarations = declarations;
-		return deputyOut;
-	})
-}
-
-let retrieveSalaryForDeputy = function(deputy) {
-	return ExtraPositionService.getSalaryForDeputy(deputy.officialId)
-	.then(function(salary) {
-		let deputyOut = deputy;
-		deputyOut.salary = salary;
 		return deputyOut;
 	})
 }

@@ -43,7 +43,6 @@ module.exports = {
        'DeclarationService': true,
        'DepartmentService': true,
        'ExtraInfoService': true,
-       'ExtraPositionService': true,
        'DeputyService': true,
        'GeolocService': true,
        'InitService': true,

@@ -7,6 +7,7 @@ let WorkService;
 
 let createTheme = function() {
     let promises = [];
+    promises.push(Deputy.create({ officialId: 33, departmentId: 1, district: 1, currentMandateStartDate: '2014-06-18', mandateEndDate: '' }))
     promises.push(Theme.create({ name: 'themeName', typeName: 'themeTypeName' }))
     return Promise.all(promises)
     .then(function() {
@@ -30,23 +31,11 @@ let createWorks = function(createdThemeId) {
 }
 
 let addWork = function(deputyId, title, themeId, date, url, description, type) {
-    return Work.create({ title: title, themeId: themeId, date: date, url: url, description: description, type: type })
+    return Work.create({ createdAt: date, title: title, themeId: themeId, date: date, url: url, description: description, type: type })
     .meta({ fetch: true })
     .then(function(insertedWork) {
         return Deputy.addToCollection(deputyId, 'workCreations')
         .members(insertedWork.id)
-        .then(function() {
-            return Work.find()
-            .where({ id: insertedWork.id} )
-            .populate('themeId')
-            .populate('authors')
-            .then(function(works) {
-                console.log('lenght  ' + works.length)
-                return Promise.map(works, function(work) {
-                    console.log('authors '+ work.authors.length + ' ' + work.id)
-                })
-            })
-        })
         .catch(err => {
             console.log('-- Error adding creation ' + err);
             return
@@ -119,38 +108,6 @@ describe('The WorkService', function () {
         .catch(done);
     });
 
-    it('should return work dates for deputy from given date', function(done) {
-        WorkService.findWorksDatesForDeputyAfterDate(33, '2014-08-14')
-        .then(function(works) {
-            should.exist(works);
-            works.length.should.equal(2);
-            works[0].should.equal('2014-08-14');
-            works[1].should.equal('2014-08-15');
-            done();
-        })
-        .catch(done);
-    });
-
-    it('should return no work dates for deputy from given date too recent date', function(done) {
-        WorkService.findWorksDatesForDeputyAfterDate(33, '2017-01-01')
-        .then(function(works) {
-            should.exist(works);
-            works.length.should.equal(0);
-            done();
-        })
-        .catch(done);
-    });
-
-    it('should return no works date for deputy from given date - wrong deputy', function(done) {
-        WorkService.findWorksDatesForDeputyAfterDate(3, '2014-01-01')
-        .then(function(works) {
-            should.exist(works);
-            works.length.should.equal(0);
-            done();
-        })
-        .catch(done);
-    });
-
     it('should return complete works for timeline for deputy between dates', function(done) {
         WorkService.findWorksForDeputyBetweenDates(33, '2013-08-14', '2014-08-14')
         .then(function(works) {
@@ -179,7 +136,7 @@ describe('The WorkService', function () {
         .catch(done);
     });
 
-    it('should return no work dates for deputy from given date too recent date', function(done) {
+    it('should return no work for deputy between dates - too recent dates', function(done) {
         WorkService.findWorksForDeputyBetweenDates(33, '2017-01-01', '2017-08-14')
         .then(function(works) {
             should.exist(works);
@@ -189,8 +146,8 @@ describe('The WorkService', function () {
         .catch(done);
     });
 
-    it('should return no works date for deputy from given date - wrong deputy', function(done) {
-        WorkService.findWorksForDeputyBetweenDates(3, '2013-08-14', '2014-08-14')
+    it('should return no works for deputy between dates - wrong deputy', function(done) {
+        WorkService.findWorksForDeputyBetweenDates(1222, '2013-08-14', '2014-08-14')
         .then(function(works) {
             should.exist(works);
             works.length.should.equal(0);

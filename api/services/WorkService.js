@@ -37,6 +37,9 @@ let findWorksForDeputyWithOptions = function(deputyId, options) {
                 return work
             }
         })
+        .filter(function(work) {
+            return work != null
+        })
     })
 }
 
