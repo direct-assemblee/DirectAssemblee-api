@@ -87,7 +87,7 @@ let self = module.exports = {
 					if (deputy.mandateEndDate) {
 						return { code: 404, content: 'Found deputy, but mandate has ended.' };
 					} else {
-						return formatDeputyResponse(deputy)
+						return retrieveDeputyAttachedInfos(deputy)
 						.then(function(formattedDeputy) {
 							return { code: 200, content: formattedDeputy };
 						});
@@ -155,19 +155,14 @@ let retrieveDeputyForGeoDistrict = function(departmentCode, district) {
 	})
 }
 
-let formatDeputyResponse = function(deputy) {
+let retrieveDeputyAttachedInfos = function(deputy) {
 	return DepartmentService.findDepartmentWithId(deputy.departmentId)
 	.then(function(department) {
 		deputy.department = department;
 		return retrieveCurrentMandatesForDeputy(deputy);
 	})
 	.then(function(deputy) {
-		return DeputyRolesHelper.retrieveRolesForDeputy(deputy)
-		.then(function(roles) {
-			deputy.roles = roles;
-			deputy.salary = SalaryHelper.calculateSalary(deputy.roles)
-			return deputy
-		})
+		return retrieveRolesForDeputy(deputy);
 	})
 	.then(function(deputy) {
 		return retrieveParliamentAgeForDeputy(deputy);
@@ -176,9 +171,6 @@ let formatDeputyResponse = function(deputy) {
 		return retrieveDeclarationsForDeputy(deputy);
 	})
 	.then(function(deputy) {
-		if (deputy.currentMandateStartDate) {
-			deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
-		}
 		return DeputyResponseHelper.prepareDeputyResponse(deputy);
 	})
 }
@@ -192,6 +184,15 @@ let retrieveCurrentMandatesForDeputy = function(deputy) {
 			deputyOut.otherCurrentMandates.push(currentMandates[i].name);
 		}
 		return deputyOut;
+	})
+}
+
+let retrieveRolesForDeputy = function(deputy) {
+	return DeputyRolesHelper.retrieveRolesForDeputy(deputy)
+	.then(function(roles) {
+		deputy.roles = roles;
+		deputy.salary = SalaryHelper.calculateSalary(deputy.roles)
+		return deputy
 	})
 }
 

@@ -52,6 +52,9 @@ var self = module.exports = {
         deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
         deputy.age = DateHelper.findAge(deputy.birthDate);
         deputy.declarations = self.prepareDeclarationsResponse(deputy.declarations);
+        if (deputy.currentMandateStartDate) {
+            deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
+        }
         let permanentCommission = getPermanentCommission(deputy)
         if (permanentCommission != null) {
             deputy.commission = permanentCommission
