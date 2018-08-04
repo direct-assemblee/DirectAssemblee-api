@@ -13,6 +13,11 @@ let ResponseBuilder = require('./helpers/ResponseBuilder.js');
 let DeputyResponseHelper = require('./helpers/DeputyResponseHelper.js');
 
 const CACHE_KEY_ALL_DEPUTIES = 'all_deputies'
+const CACHE_KEY_DEPUTY = 'deputy_departmentId_district'
+const PARAM_LATITUDE = 'latitude'
+const PARAM_LONGITUDE = 'longitude'
+const PARAM_DEPARTMENT_ID = 'departmentId'
+const PARAM_DISTRICT = 'district'
 
 let self = module.exports = {
 	getAllDeputiesResponse: function(req, res) {
@@ -44,7 +49,7 @@ let self = module.exports = {
 	},
 
 	getDeputiesResponse: function(req, res) {
-		return self.getDeputies(req.param('latitude'), req.param('longitude'))
+		return self.getDeputies(req.param(PARAM_LATITUDE), req.param(PARAM_LONGITUDE))
 		.then(function(response) {
 			return ResponseBuilder.build(res, response.code, response.content)
 		})
@@ -61,9 +66,9 @@ let self = module.exports = {
 	},
 
 	getDeputyResponse: function(req, res) {
-		let departmentId = req.param('departmentId');
-		let district = req.param('district');
-		let key = 'deputy_' + departmentId + '_' + district;
+		let departmentId = req.param(PARAM_DEPARTMENT_ID);
+		let district = req.param(PARAM_DISTRICT);
+		let key = CACHE_KEY_DEPUTY.replace(PARAM_DEPARTMENT_ID, departmentId).replace(PARAM_DISTRICT, district);
 		return CacheService.get(key)
 		.then(function(cached) {
 			if (!cached) {
