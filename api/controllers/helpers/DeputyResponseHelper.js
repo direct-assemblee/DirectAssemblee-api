@@ -56,7 +56,7 @@ var self = module.exports = {
             deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
         }
         let permanentCommission = getPermanentCommission(deputy)
-        if (permanentCommission != null) {
+        if (permanentCommission) {
             deputy.commission = permanentCommission
         }
         if (parseInt(deputy.activityRate) >= 0) {
@@ -91,13 +91,15 @@ var self = module.exports = {
 }
 
 let getPermanentCommission = function(deputy) {
+    let permanentCommission
     for (let i in deputy.roles) {
         let role = deputy.roles[i]
         if (role.instanceType === 'Commission permanente') {
-            if (role.positions != null && role.positions.length > 0 && role.positions[0] != null && role.positions[0].instances != null && role.positions[0].instances.length > 0) {
-                return role.positions[0].instances[0]
+            if (role.positions && role.positions.length > 0 && role.positions[0] && role.positions[0].instances && role.positions[0].instances.length > 0) {
+                permanentCommission = role.positions[0].instances[0]
+                break;
             }
         }
     }
-    return null
+    return permanentCommission
 }

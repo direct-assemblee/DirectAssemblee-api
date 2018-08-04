@@ -15,7 +15,7 @@ module.exports = {
 
 	ballotsUpdated: function(req, res) {
 		LastWorksService.updateLastScanTime()
-		return res.json(200);
+		return res.status(200).json('OK');
 	},
 
 	sendTestPushNotif: function(req, res) {

@@ -328,15 +328,3 @@ let shouldShowThemeSubName = function(themeName, originalThemeName) {
     }
     return shouldShow;
 }
-
-let getPermanentCommission = function(deputy) {
-    for (let i in deputy.roles) {
-        let role = deputy.roles[i]
-        if (role.instanceType === 'Commission permanente') {
-            if (role.positions != null && role.positions.length > 0 && role.positions[0] != null && role.positions[0].instances != null && role.positions[0].instances.length > 0) {
-                return role.positions[0].instances[0]
-            }
-        }
-    }
-    return null
-}
