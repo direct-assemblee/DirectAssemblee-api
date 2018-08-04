@@ -1,4 +1,3 @@
-let Promise = require('bluebird');
 let ResponseBuilder = require('./helpers/ResponseBuilder.js');
 
 module.exports = {
