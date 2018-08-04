@@ -2,7 +2,7 @@ let ResponseHelper = require('../services/helpers/ResponseHelper.js');
 let DeputyService = require('../services/DeputyService.js');
 let TimelineService = require('../services/TimelineService.js');
 let CacheService = require('../services/CacheService.js');
-let ResponseBuilder = require('./ResponseBuilder.js');
+let ResponseBuilder = require('./helpers/ResponseBuilder.js');
 
 let self = module.exports = {
 	getTimeline: function(req, res) {

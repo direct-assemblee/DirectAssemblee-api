@@ -3,7 +3,7 @@ require('../../bootstrap.test');
 let StubsBuilder = require('../../fixtures/StubsBuilder');
 let DeputyController;
 
-describe('The DeputyController ', function() {
+describe('The DeputyController', function() {
     describe('getDeputies function', function() {
         describe('called with wrong input', function () {
             before(function() {

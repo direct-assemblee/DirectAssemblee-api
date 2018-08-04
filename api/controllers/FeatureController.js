@@ -1,5 +1,5 @@
 let Promise = require('bluebird');
-let ResponseBuilder = require('./ResponseBuilder.js');
+let ResponseBuilder = require('./helpers/ResponseBuilder.js');
 
 module.exports = {
 	getFeatures: function(req, res) {

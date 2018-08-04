@@ -23,64 +23,7 @@ const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_UND
 
 const NUMBER_OF_DEPUTIES = 577;
 
-const BASE_URL = 'http://www2.assemblee-nationale.fr/';
-const PARAM_DEPUTY_ID = '{deputy_id}';
-const PARAM_MANDATE_NUMBER = '15';
-const DEPUTY_PHOTO_URL = BASE_URL + 'static/tribun/' + PARAM_MANDATE_NUMBER + '/photos/' + PARAM_DEPUTY_ID + '.jpg'
-
 let self = module.exports = {
-    prepareSimpleDeputyResponse: function(deputy) {
-        deputy = self.prepareDeputyResponse(deputy);
-        delete deputy.phone;
-        delete deputy.email;
-        delete deputy.job;
-        delete deputy.currentMandateStartDate;
-        delete deputy.age;
-        return deputy;
-    },
-
-    prepareDeputyResponse: function(deputy) {
-        deputy.id = parseInt(deputy.officialId);
-        deputy.seatNumber = parseInt(deputy.seatNumber)
-        deputy.department.id = parseInt(deputy.department.id)
-        deputy.district = parseInt(deputy.district)
-        deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
-        deputy.age = DateHelper.findAge(deputy.birthDate);
-        deputy.declarations = self.prepareDeclarationsResponse(deputy.declarations);
-        let permanentCommission = getPermanentCommission(deputy)
-        if (permanentCommission != null) {
-            deputy.commission = permanentCommission
-        }
-        if (parseInt(deputy.activityRate) >= 0) {
-            deputy.activityRate = Math.round(deputy.activityRate);
-        } else {
-            delete deputy.activityRate;
-        }
-        delete deputy.birthDate;
-        delete deputy.department.slug;
-        delete deputy.department.soundexName;
-        delete deputy.department.nameUppercase;
-        delete deputy.departmentId;
-        delete deputy.officialId;
-        delete deputy.gender;
-        delete deputy.createdAt;
-        delete deputy.updatedAt;
-        delete deputy.mandateEndDate;
-        delete deputy.mandateEndReason;
-        return deputy;
-    },
-
-    prepareDeclarationsResponse: function(declarations) {
-        for (let i in declarations) {
-            delete declarations[i].deputyId;
-            delete declarations[i].id;
-            delete declarations[i].createdAt;
-            delete declarations[i].updatedAt;
-            declarations[i].date = DateHelper.formatDateForWS(declarations[i].date);
-        }
-        return declarations;
-    },
-
     createBallotDetailsResponse: function(ballot, deputy) {
         let ballotResponse = self.prepareBallotResponse(ballot);
         ballotResponse.extraBallotInfo.deputyVote = {

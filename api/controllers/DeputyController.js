@@ -9,13 +9,37 @@ let DeputyService = require('../services/DeputyService.js');
 let CacheService = require('../services/CacheService.js');
 let DeputyRolesHelper = require('../services/helpers/DeputyRolesHelper.js');
 let SalaryHelper = require('../services/helpers/SalaryHelper.js');
-let ResponseBuilder = require('./ResponseBuilder.js');
+let ResponseBuilder = require('./helpers/ResponseBuilder.js');
+let DeputyResponseHelper = require('./helpers/DeputyResponseHelper.js');
+
+const CACHE_KEY_ALL_DEPUTIES = 'all_deputies'
 
 let self = module.exports = {
 	getAllDeputiesResponse: function(req, res) {
 		return self.getAllDeputies()
 		.then(function(deputies) {
 			return ResponseBuilder.build(res, 200, deputies)
+		})
+	},
+
+	getAllDeputies: function() {
+		return CacheService.get(CACHE_KEY_ALL_DEPUTIES)
+		.then(function(cached) {
+			if (!cached) {
+				return DepartmentService.findDepartements()
+				.then(function(departments) {
+					return DeputyService.findCurrentDeputies()
+					.then(function(allDeputies) {
+						return DeputyResponseHelper.prepareSimpleDeputiesResponse(allDeputies, departments)
+					})
+				})
+				.then(function(allDeputies) {
+					CacheService.set(CACHE_KEY_ALL_DEPUTIES, allDeputies)
+					return allDeputies
+				})
+			} else {
+				return cached
+			}
 		})
 	},
 
@@ -77,46 +101,7 @@ let self = module.exports = {
 				resolve({ code: 400, content: 'Must provide departmentId and district arguments' });
 			})
 		}
-	},
-
-	getAllDeputies: function() {
-		let key = 'all_deputies';
-		return CacheService.get(key)
-		.then(function(cached) {
-			if (!cached) {
-				return DepartmentService.findDepartements()
-				.then(function(departments) {
-					return DeputyService.findCurrentDeputies()
-					.then(function(allDeputies) {
-						return Promise.map(allDeputies, function(deputy) {
-							let formattedDeputy = deputy;
-							if (deputy) {
-								deputy.department = findDepartmentForDeputy(deputy, departments);
-								formattedDeputy = ResponseHelper.prepareSimpleDeputyResponse(deputy);
-							}
-							return formattedDeputy;
-						}, { concurrency: 5 })
-					})
-					.then(function(allDeputies) {
-						CacheService.set(key, allDeputies)
-						return allDeputies
-					})
-				})
-			} else {
-				return cached
-			}
-		})
 	}
-}
-
-let findDepartmentForDeputy = function(deputy, departments) {
-	let department
-	for (let i in departments) {
-		if (departments[i].id === deputy.departmentId) {
-			department = departments[i];
-		}
-	}
-	return department;
 }
 
 let getDeputiesWithCoordinates = function(lat, long) {
@@ -157,13 +142,10 @@ let retrieveDeputyForGeoDistrict = function(departmentCode, district) {
 					let formattedNow = DateHelper.getFormattedNow();
 					return DeputyService.findMostRecentDeputyAtDate(department.id, district, formattedNow)
 					.then(function(deputy) {
-						let formattedDeputy = deputy;
-						if (deputy) {
-							deputy.department = department;
-							formattedDeputy = ResponseHelper.prepareSimpleDeputyResponse(deputy);
-						}
-						CacheService.set(key, formattedDeputy)
-						return formattedDeputy;
+						deputy.department = department
+						deputy = DeputyResponseHelper.prepareSimpleDeputyResponse(deputy);
+						CacheService.set(key, deputy)
+						return deputy;
 					})
 				}
 			})
@@ -197,7 +179,7 @@ let formatDeputyResponse = function(deputy) {
 		if (deputy.currentMandateStartDate) {
 			deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
 		}
-		return ResponseHelper.prepareDeputyResponse(deputy);
+		return DeputyResponseHelper.prepareDeputyResponse(deputy);
 	})
 }
 

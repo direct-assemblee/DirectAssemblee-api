@@ -46,10 +46,8 @@ const OFFICES_EXTRA_ROLES = [
 let self = module.exports = {
     calculateSalary: function(deputyInstancesAndRoles) {
         let salary = SALARY_BASE;
-        if (deputyInstancesAndRoles) {
-            for (let i in deputyInstancesAndRoles) {
-                salary += matchPosition(deputyInstancesAndRoles[i]);
-            }
+        for (let i in deputyInstancesAndRoles) {
+            salary += matchPosition(deputyInstancesAndRoles[i]);
         }
         return salary;
     }
