@@ -2,8 +2,8 @@ require('../../bootstrap.test');
 
 let StubsBuilder = require('../../fixtures/StubsBuilder');
 
-describe('The TimelineController ', function() {
-    describe('has an invalid deputy', function() {
+describe('The TimelineController', function() {
+    describe('with an invalid deputy', function() {
         it('should return error message with 404 - no deputy', function(done) {
             let stubs = {
                 '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(false, false),
@@ -37,7 +37,7 @@ describe('The TimelineController ', function() {
         })
     })
 
-    describe('has a valid deputy', function() {
+    describe('with a valid deputy', function() {
         it('should return empty timeline', function(done) {
             let stubs = {
                 '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),

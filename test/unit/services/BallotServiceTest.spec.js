@@ -37,24 +37,6 @@ describe('The BallotService', function () {
             .catch(done);
         });
 
-        it('should return 30 ballots in first page', function(done) {
-            BallotService.findBallots(0)
-            .then(function(ballots) {
-                ballots.length.should.equal(30);
-                done();
-            })
-            .catch(done);
-        });
-
-        it('should return 7 ballots in second page', function(done) {
-            BallotService.findBallots(1)
-            .then(function(ballots) {
-                ballots.length.should.equal(7);
-                done();
-            })
-            .catch(done);
-        });
-
         it('should return all ballots from given date', function(done) {
             let date = moment('12/02/2017', 'DD/MM/YYYY').format('YYYY-MM-DD');
             BallotService.findBallotsFromDate(date)

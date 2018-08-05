@@ -1,5 +1,4 @@
 let DateHelper = require('./DateHelper.js');
-let QuestionHelper = require('./QuestionHelper.js')
 let ThemeHelper = require('./ThemeHelper.js')
 
 const WORK_TYPE_VOTE_SOLEMN = 'vote_solemn';
@@ -21,63 +20,7 @@ const BALLOT_TYPE_OTHER = { 'dbname' : 'AUT', 'name' : WORK_TYPE_VOTE_OTHER, 'di
 const BALLOT_TYPE_CENSURE = { 'dbname' : 'motion_of_censure', 'name' : WORK_TYPE_VOTE_CENSURE, 'displayname': 'Motion de censure' };
 const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_UNDEFINED, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
 
-const NUMBER_OF_DEPUTIES = 577;
-
 let self = module.exports = {
-    createBallotDetailsResponse: function(ballot, deputy) {
-        let ballotResponse = self.prepareBallotResponse(ballot);
-        ballotResponse.extraBallotInfo.deputyVote = {
-            'voteValue': self.createVoteValueForWS(ballot.type, ballot.deputyVote),
-            'deputy': {
-                'firstname': deputy.firstname,
-                'lastname': deputy.lastname
-            }
-        }
-        return ballotResponse;
-    },
-
-    createWorkForTimeline: function(work, extraInfos) {
-        let response = {
-            id: work.id,
-            type: work.type,
-            date: DateHelper.formatDateForWS(work.date),
-            fileUrl: work.url
-        }
-
-        response.theme = createThemeResponse(work.themeId, work.originalThemeName);
-
-        let description = work.description;
-        if (work.type === WORK_TYPE_QUESTIONS) {
-            description = QuestionHelper.formatQuestionWithLineBreaks(description);
-        }
-        response.description = description;
-        if (extraInfos && extraInfos.length > 0) {
-            response.extraInfos = {};
-            for (let i in extraInfos) {
-                response.extraInfos[extraInfos[i].info] = extraInfos[i].value;
-            }
-        }
-
-        if (work.type === WORK_TYPE_COMMISSIONS) {
-            response.title = response.extraInfos['commissionName']
-        } else if (work.type === WORK_TYPE_PUBLIC_SESSIONS) {
-            response.title = 'Séance publique'
-        }  else {
-            response.title = work.title
-        }
-        return response;
-    },
-
-    createBallotResponse: function(ballot, addToCurrentBallot) {
-        let response = addToCurrentBallot ? ballot : {};
-        response.type = self.getBallotTypeName(ballot.type);
-        response.date = DateHelper.formatDateForWS(ballot.date);
-        response.description = ballot.title;
-        response.title = self.getBallotTypeDisplayName(ballot.type);
-        response.theme = createThemeResponse(ballot.themeId, ballot.originalThemeName);
-        return response;
-    },
-
     prepareSimplifiedBallotResponse: function(ballot) {
         return {
             id: ballot.officialId,
@@ -87,27 +30,6 @@ let self = module.exports = {
             description: ballot.title,
             type: self.getBallotTypeName(ballot.type),
             isAdopted: ballot.isAdopted ? true : false
-        }
-    },
-
-    prepareBallotResponse: function(ballot) {
-        return {
-            id: parseInt(ballot.officialId),
-            date: DateHelper.formatDateForWS(ballot.date),
-            description: ballot.title,
-            title: self.getBallotTypeDisplayName(ballot.type),
-            type: self.getBallotTypeName(ballot.type),
-            theme: createThemeResponse(ballot.themeId, ballot.originalThemeName),
-            fileUrl: ballot.fileUrl,
-            extraBallotInfo: {
-                totalVotes: parseInt(ballot.totalVotes),
-                yesVotes: parseInt(ballot.yesVotes),
-                noVotes: parseInt(ballot.noVotes),
-                nonVoting: parseInt(ballot.nonVoting),
-                blankVotes: ballot.totalVotes - ballot.yesVotes - ballot.noVotes,
-                missing: NUMBER_OF_DEPUTIES - parseInt(ballot.totalVotes) - parseInt(ballot.nonVoting),
-                isAdopted: ballot.isAdopted ? true : false
-            }
         }
     },
 
@@ -189,6 +111,23 @@ let self = module.exports = {
             }
         }
         return payload
+    },
+
+    createThemeResponse: function(theme, originalName) {
+        if (theme) {
+            delete theme.typeName;
+        } else {
+            theme = {
+                id: 0,
+                name: 'Catégorisation à venir'
+            }
+        }
+
+        if (shouldShowThemeSubName(theme.name, originalName)) {
+            theme.fullName = originalName;
+            theme.shortName = ThemeHelper.findShorterName(originalName);
+        }
+        return theme;
     }
 }
 
@@ -296,23 +235,6 @@ let createWorkTitleForPush = function(work) {
         break;
     }
     return title;
-}
-
-let createThemeResponse = function(theme, originalName) {
-    if (theme) {
-        delete theme.typeName;
-    } else {
-        theme = {
-            id: 0,
-            name: 'Catégorisation à venir'
-        }
-    }
-
-    if (shouldShowThemeSubName(theme.name, originalName)) {
-        theme.fullName = originalName;
-        theme.shortName = ThemeHelper.findShorterName(originalName);
-    }
-    return theme;
 }
 
 let shouldShowThemeSubName = function(themeName, originalThemeName) {
