@@ -1,5 +1,9 @@
 let Promise = require('bluebird');
 
+const PARAM_DEPUTY_ID = 'deputyId'
+const PARAM_TYPE = 'type'
+const PARAM_WORK_ID = 'workId'
+
 module.exports = {
 	deputiesUpdated: function(req, res) {
 		let deputiesIds = req.param('deputiesIds');
@@ -19,9 +23,9 @@ module.exports = {
 	},
 
 	sendTestPushNotif: function(req, res) {
-		let deputyId = req.param('deputyId');
-		let type = req.param('type');
-		let workId = req.param('workId');
+		let deputyId = req.param(PARAM_DEPUTY_ID);
+		let type = req.param(PARAM_TYPE);
+		let workId = req.param(PARAM_WORK_ID);
 		if (deputyId && workId && Constants.WORK_TYPES.includes(type)) {
 			TestService.sendPush(deputyId, type, workId);
 			return res.status(200).json('OK');
