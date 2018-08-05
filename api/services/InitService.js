@@ -1,4 +1,4 @@
-let ThemeHelper = require('./helpers/ThemeHelper')
+let ThemeHelper = require('../controllers/helpers/ThemeHelper')
 
 module.exports = {
     init: function() {

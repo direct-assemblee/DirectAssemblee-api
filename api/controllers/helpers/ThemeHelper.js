@@ -1,4 +1,4 @@
-let ShortThemeService = require('../ShortThemeService');
+let ShortThemeService = require('../../services/ShortThemeService');
 
 let shortThemes;
 

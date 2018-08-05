@@ -3,6 +3,7 @@ let ResponseBuilder = require('./ResponseBuilder.js');
 let DateHelper = require('../../services/helpers/DateHelper.js');
 let ResponseHelper = require('../../services/helpers/ResponseHelper.js');
 let QuestionHelper = require('./QuestionHelper.js')
+let ThemeHelper = require('./ThemeHelper.js')
 
 const BASE_URL = 'http://www2.assemblee-nationale.fr/';
 const PARAM_DEPUTY_ID = '{deputy_id}';
@@ -66,7 +67,7 @@ var self = module.exports = {
             fileUrl: work.url
         }
 
-        response.theme = ResponseHelper.createThemeResponse(work.themeId, work.originalThemeName);
+        response.theme = createThemeResponse(work.themeId, work.originalThemeName);
 
         let description = work.description;
         if (work.type === WORK_TYPE_QUESTIONS) {
@@ -97,7 +98,7 @@ var self = module.exports = {
             description: ballot.title,
             title: getBallotTypeDisplayName(ballot.type),
             type: getBallotTypeName(ballot.type),
-            theme: ResponseHelper.createThemeResponse(ballot.themeId, ballot.originalThemeName),
+            theme: createThemeResponse(ballot.themeId, ballot.originalThemeName),
             fileUrl: ballot.fileUrl,
             extraBallotInfo: {
                 totalVotes: parseInt(ballot.totalVotes),
@@ -129,4 +130,35 @@ let getBallotType = function(ballotType) {
         }
     }
     return type;
+}
+
+let createThemeResponse = function(theme, originalName) {
+    if (theme) {
+        delete theme.typeName;
+    } else {
+        theme = {
+            id: 0,
+            name: 'Catégorisation à venir'
+        }
+    }
+
+    if (shouldShowThemeSubName(theme.name, originalName)) {
+        theme.fullName = originalName;
+        theme.shortName = ThemeHelper.findShorterName(originalName);
+    }
+    return theme;
+}
+
+let shouldShowThemeSubName = function(themeName, originalThemeName) {
+    let shouldShow = true;
+    if (!originalThemeName || originalThemeName.length === 0) {
+        shouldShow = false;
+    } else if (themeName == originalThemeName) {
+        shouldShow = false;
+    } else {
+        if (themeName.toLowerCase().includes(originalThemeName.toLowerCase()) && (100 * originalThemeName.length / themeName.length >= 50)) {
+            shouldShow = false;
+        }
+    }
+    return shouldShow;
 }

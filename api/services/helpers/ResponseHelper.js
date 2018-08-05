@@ -1,5 +1,4 @@
 let DateHelper = require('./DateHelper.js');
-let ThemeHelper = require('./ThemeHelper.js')
 
 const WORK_TYPE_VOTE_SOLEMN = 'vote_solemn';
 const WORK_TYPE_VOTE_ORDINARY = 'vote_ordinary';
@@ -12,13 +11,6 @@ const WORK_TYPE_PROPOSITIONS = 'law_proposal';
 const WORK_TYPE_COSIGNED_PROPOSITIONS = 'cosigned_law_proposal';
 const WORK_TYPE_COMMISSIONS = 'commission';
 const WORK_TYPE_PUBLIC_SESSIONS = 'public_session';
-
-const BALLOT_TYPE_UNDEFINED = { 'dbname' : 'UND', 'name' : WORK_TYPE_VOTE_UNDEFINED, 'displayname': 'Scrutin en cours de traitement' };
-const BALLOT_TYPE_ORDINARY = { 'dbname' : 'SOR', 'name' : WORK_TYPE_VOTE_ORDINARY, 'displayname': 'Scrutin ordinaire' };
-const BALLOT_TYPE_SOLEMN = { 'dbname' : 'SSO', 'name' : WORK_TYPE_VOTE_SOLEMN, 'displayname': 'Scrutin solennel' };
-const BALLOT_TYPE_OTHER = { 'dbname' : 'AUT', 'name' : WORK_TYPE_VOTE_OTHER, 'displayname': 'Autre scrutin' };
-const BALLOT_TYPE_CENSURE = { 'dbname' : 'motion_of_censure', 'name' : WORK_TYPE_VOTE_CENSURE, 'displayname': 'Motion de censure' };
-const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_UNDEFINED, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
 
 let self = module.exports = {
     createVoteValueForWS: function(ballotType, voteValue) {
@@ -91,23 +83,6 @@ let self = module.exports = {
             }
         }
         return payload
-    },
-
-    createThemeResponse: function(theme, originalName) {
-        if (theme) {
-            delete theme.typeName;
-        } else {
-            theme = {
-                id: 0,
-                name: 'Catégorisation à venir'
-            }
-        }
-
-        if (shouldShowThemeSubName(theme.name, originalName)) {
-            theme.fullName = originalName;
-            theme.shortName = ThemeHelper.findShorterName(originalName);
-        }
-        return theme;
     }
 }
 
@@ -204,18 +179,4 @@ let createWorkTitleForPush = function(work) {
         break;
     }
     return title;
-}
-
-let shouldShowThemeSubName = function(themeName, originalThemeName) {
-    let shouldShow = true;
-    if (!originalThemeName || originalThemeName.length === 0) {
-        shouldShow = false;
-    } else if (themeName == originalThemeName) {
-        shouldShow = false;
-    } else {
-        if (themeName.toLowerCase().includes(originalThemeName.toLowerCase()) && (100 * originalThemeName.length / themeName.length >= 50)) {
-            shouldShow = false;
-        }
-    }
-    return shouldShow;
 }
