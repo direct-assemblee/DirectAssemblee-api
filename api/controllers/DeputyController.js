@@ -8,7 +8,7 @@ let MandateService = require('../services/MandateService.js');
 let DeputyService = require('../services/DeputyService.js');
 let CacheService = require('../services/CacheService.js');
 let DeputyRolesHelper = require('../services/helpers/DeputyRolesHelper.js');
-let SalaryHelper = require('../services/helpers/SalaryHelper.js');
+let SalaryHelper = require('./helpers/SalaryHelper.js');
 let ResponseBuilder = require('./helpers/ResponseBuilder.js');
 let DeputyResponseHelper = require('./helpers/DeputyResponseHelper.js');
 

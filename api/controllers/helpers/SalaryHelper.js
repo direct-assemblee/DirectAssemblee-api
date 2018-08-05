@@ -1,6 +1,6 @@
 let Promise = require('bluebird');
-let RoleService = require('../RoleService.js');
-let InstanceTypeService = require('../InstanceTypeService.js');
+let RoleService = require('../../services/RoleService.js');
+let InstanceTypeService = require('../../services/InstanceTypeService.js');
 
 const BRUT_NET_RATIO = 0.80194;
 let netSalary = function(brut) {

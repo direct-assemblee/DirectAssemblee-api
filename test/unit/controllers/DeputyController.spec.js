@@ -93,7 +93,7 @@ describe('The DeputyController', function() {
                     '../services/WorkService.js': StubsBuilder.buildWorkServiceStub(2),
                     '../services/helpers/DateHelper.js': StubsBuilder.buildDateHelperStub(),
                     '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),
-                    '../services/helpers/SalaryHelper.js': StubsBuilder.buildSalaryHelperStub()
+                    './helpers/SalaryHelper.js': StubsBuilder.buildSalaryHelperStub()
                 }
                 DeputyController = StubsBuilder.buildStub('controllers/DeputyController', stubs);
             }),

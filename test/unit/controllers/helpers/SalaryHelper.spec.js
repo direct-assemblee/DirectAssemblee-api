@@ -1,5 +1,5 @@
 require('../../../bootstrap.test');
-let SalaryHelper = require('../../../../api/services/helpers/SalaryHelper.js')
+let SalaryHelper = require('../../../../api/controllers/helpers/SalaryHelper.js')
 
 describe('The SalaryHelper', function () {
     before(function(done) {
