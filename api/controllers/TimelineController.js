@@ -39,25 +39,10 @@ let self = module.exports = {
 			} else {
 				return TimelineService.getTimeline(deputy, page)
 				.then(function(timelineItems) {
-					console.log('timelineItems: ' + timelineItems.length)
-					let formattedItems = formatTimelineResponse(timelineItems, deputy);
+					let formattedItems = TimelineResponseHelper.formatTimelineResponse(timelineItems, deputy);
 					return { code: 200, content: formattedItems }
 				})
 			}
 		})
 	}
 };
-
-let formatTimelineResponse = function(items, deputy) {
-	let results = [];
-	for (let i in items) {
-		let item = items[i];
-		if (item.totalVotes > 0) {
-			item = TimelineResponseHelper.createBallotDetailsResponse(item, deputy);
-		} else {
-			item = TimelineResponseHelper.createWorkForTimeline(item, item.extraInfos);
-		}
-		results.push(item);
-	}
-	return results;
-}

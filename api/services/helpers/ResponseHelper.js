@@ -21,26 +21,6 @@ const BALLOT_TYPE_CENSURE = { 'dbname' : 'motion_of_censure', 'name' : WORK_TYPE
 const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_UNDEFINED, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
 
 let self = module.exports = {
-    prepareSimplifiedBallotResponse: function(ballot) {
-        return {
-            id: ballot.officialId,
-            date: DateHelper.formatDateForWS(ballot.date),
-            title: self.getBallotTypeDisplayName(ballot.type),
-            theme: createThemeResponse(ballot.themeId, ballot.originalThemeName),
-            description: ballot.title,
-            type: self.getBallotTypeName(ballot.type),
-            isAdopted: ballot.isAdopted ? true : false
-        }
-    },
-
-    getBallotTypeName: function(ballotType) {
-        return getBallotType(ballotType).name;
-    },
-
-    getBallotTypeDisplayName: function(ballotType) {
-        return getBallotType(ballotType).displayname;
-    },
-
     createVoteValueForWS: function(ballotType, voteValue) {
         if (ballotType.includes('motion_of_censure')) {
             return voteValue === 'for' ? 'signed' : 'not_signed'
@@ -129,17 +109,6 @@ let self = module.exports = {
         }
         return theme;
     }
-}
-
-let getBallotType = function(ballotType) {
-    var type;
-    for (let i in BALLOT_TYPES) {
-        if (BALLOT_TYPES[i].dbname === ballotType || BALLOT_TYPES[i].name === ballotType) {
-            type = BALLOT_TYPES[i];
-            break;
-        }
-    }
-    return type;
 }
 
 let multipleVoteValuesWording = function(counts) {

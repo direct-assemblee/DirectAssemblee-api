@@ -21,9 +21,30 @@ const WORK_TYPE_COSIGNED_PROPOSITIONS = 'cosigned_law_proposal';
 const WORK_TYPE_COMMISSIONS = 'commission';
 const WORK_TYPE_PUBLIC_SESSIONS = 'public_session';
 
+const BALLOT_TYPE_UNDEFINED = { 'dbname' : 'UND', 'name' : WORK_TYPE_VOTE_UNDEFINED, 'displayname': 'Scrutin en cours de traitement' };
+const BALLOT_TYPE_ORDINARY = { 'dbname' : 'SOR', 'name' : WORK_TYPE_VOTE_ORDINARY, 'displayname': 'Scrutin ordinaire' };
+const BALLOT_TYPE_SOLEMN = { 'dbname' : 'SSO', 'name' : WORK_TYPE_VOTE_SOLEMN, 'displayname': 'Scrutin solennel' };
+const BALLOT_TYPE_OTHER = { 'dbname' : 'AUT', 'name' : WORK_TYPE_VOTE_OTHER, 'displayname': 'Autre scrutin' };
+const BALLOT_TYPE_CENSURE = { 'dbname' : 'motion_of_censure', 'name' : WORK_TYPE_VOTE_CENSURE, 'displayname': 'Motion de censure' };
+const BALLOT_TYPES = [ BALLOT_TYPE_ORDINARY, BALLOT_TYPE_SOLEMN, BALLOT_TYPE_UNDEFINED, BALLOT_TYPE_OTHER, BALLOT_TYPE_CENSURE ];
+
 const NUMBER_OF_DEPUTIES = 577;
 
 var self = module.exports = {
+    formatTimelineResponse: function(items, deputy) {
+    	let results = [];
+    	for (let i in items) {
+    		let item = items[i];
+    		if (item.totalVotes > 0) {
+    			item = self.createBallotDetailsResponse(item, deputy);
+    		} else {
+    			item = self.createWorkForTimeline(item, item.extraInfos);
+    		}
+    		results.push(item);
+    	}
+    	return results;
+    },
+
     createBallotDetailsResponse: function(ballot, deputy) {
         let ballotResponse = self.prepareBallotResponse(ballot);
         let voteValue = ResponseHelper.createVoteValueForWS(ballot.type, ballot.deputyVote)
@@ -74,8 +95,8 @@ var self = module.exports = {
             id: parseInt(ballot.officialId),
             date: DateHelper.formatDateForWS(ballot.date),
             description: ballot.title,
-            title: ResponseHelper.getBallotTypeDisplayName(ballot.type),
-            type: ResponseHelper.getBallotTypeName(ballot.type),
+            title: getBallotTypeDisplayName(ballot.type),
+            type: getBallotTypeName(ballot.type),
             theme: ResponseHelper.createThemeResponse(ballot.themeId, ballot.originalThemeName),
             fileUrl: ballot.fileUrl,
             extraBallotInfo: {
@@ -89,4 +110,23 @@ var self = module.exports = {
             }
         }
     }
+}
+
+let getBallotTypeName = function(ballotType) {
+    return getBallotType(ballotType).name;
+}
+
+let getBallotTypeDisplayName = function(ballotType) {
+    return getBallotType(ballotType).displayname;
+}
+
+let getBallotType = function(ballotType) {
+    var type;
+    for (let i in BALLOT_TYPES) {
+        if (BALLOT_TYPES[i].dbname === ballotType || BALLOT_TYPES[i].name === ballotType) {
+            type = BALLOT_TYPES[i];
+            break;
+        }
+    }
+    return type;
 }
