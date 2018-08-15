@@ -1,20 +1,9 @@
 let DateHelper = require('./DateHelper.js');
-
-const WORK_TYPE_VOTE_SOLEMN = 'vote_solemn';
-const WORK_TYPE_VOTE_ORDINARY = 'vote_ordinary';
-const WORK_TYPE_VOTE_CENSURE = 'vote_motion_of_censure';
-const WORK_TYPE_VOTE_OTHER = 'vote_others';
-const WORK_TYPE_VOTE_UNDEFINED = 'vote_undefined';
-const WORK_TYPE_QUESTIONS = 'question';
-const WORK_TYPE_REPORTS = 'report';
-const WORK_TYPE_PROPOSITIONS = 'law_proposal';
-const WORK_TYPE_COSIGNED_PROPOSITIONS = 'cosigned_law_proposal';
-const WORK_TYPE_COMMISSIONS = 'commission';
-const WORK_TYPE_PUBLIC_SESSIONS = 'public_session';
+let WorkAndBallotTypeHelper = require('../../controllers/helpers/WorkAndBallotTypeHelper.js');
 
 let self = module.exports = {
     createVoteValueForWS: function(ballotType, voteValue) {
-        if (ballotType.includes('motion_of_censure')) {
+        if (ballotType.displayName == WorkAndBallotTypeHelper.BALLOT_MOTION) {
             return voteValue === 'for' ? 'signed' : 'not_signed'
         } else {
             return voteValue ? voteValue : 'missing';
@@ -159,22 +148,22 @@ let voteValueWording = function(voteValue) {
 let createWorkTitleForPush = function(work) {
     let title = 'Votre député ';
     switch(work.type) {
-        case WORK_TYPE_QUESTIONS:
+        case Constants.WORK_TYPE_QUESTIONS:
         title += 'a posé une question';
         break;
-        case WORK_TYPE_REPORTS:
+        case Constants.WORK_TYPE_REPORTS:
         title += 'a rédigé un rapport';
         break;
-        case WORK_TYPE_PROPOSITIONS:
+        case Constants.WORK_TYPE_PROPOSITIONS:
         title += 'a proposé une loi';
         break;
-        case WORK_TYPE_COSIGNED_PROPOSITIONS:
+        case Constants.WORK_TYPE_COSIGNED_PROPOSITIONS:
         title += 'a co-signé une proposition de loi';
         break;
-        case WORK_TYPE_COMMISSIONS:
+        case Constants.WORK_TYPE_COMMISSIONS:
         title += 'a participé à une commission';
         break;
-        case WORK_TYPE_PUBLIC_SESSIONS:
+        case Constants.WORK_TYPE_PUBLIC_SESSIONS:
         title += 'a participé à une séance publique';
         break;
     }

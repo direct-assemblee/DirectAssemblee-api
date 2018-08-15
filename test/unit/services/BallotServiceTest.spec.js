@@ -63,16 +63,6 @@ describe('The BallotService', function () {
                 done();
             })
         });
-
-        it('should return ballot with id', function(done) {
-            BallotService.getBallotWithId(5)
-            .then(function(ballot) {
-                ballot.officialId.should.equal(5);
-                ballot.themeId.name.should.equal('Education');
-                ballot.themeId.typeName.should.equal('EDUCATION');
-                done();
-            })
-        });
     });
 });
 
@@ -89,9 +79,9 @@ let createOneBallotADay = function(size, type, startingId) {
 
 let createBallotsForFirstTests = function(done) {
     let promises = [];
-    promises = promises.concat(createOneBallotADay(10, 'SSO', 1));
-    promises = promises.concat(createOneBallotADay(20, 'SOR', 15));
-    promises = promises.concat(createOneBallotADay(7, 'SSO', 40));
+    promises = promises.concat(createOneBallotADay(10, 2, 1));
+    promises = promises.concat(createOneBallotADay(20, 1, 15));
+    promises = promises.concat(createOneBallotADay(7, 2, 40));
     Promise.all(promises)
     .then(function() {
         // Ballot.findOne({ 'officialId': 5 })

@@ -116,13 +116,6 @@ let findTimelineItems = function(deputy, afterDate, beforeDate) {
     })
 }
 
-// let retrieveVoteExtraForDistrict = function(ballot, departmentId, district) {
-//     return DeputyService.findMostRecentDeputyAtDate(departmentId, district, ballot.date)
-//     .then(function(deputy) {
-//         return retrieveVoteExtra(ballot, deputy);
-//     })
-// }
-
 let retrieveVoteExtra = function(ballot, deputy) {
     if (deputy) {
         return VoteService.findVoteForDeputyAndBallot(deputy.officialId, ballot.officialId)

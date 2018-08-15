@@ -24,16 +24,13 @@ let findWorksForDeputyWithOptions = function(deputyId, options) {
     .populate('themeId')
     .populate('authors')
     .populate('participants')
+    .populate('type')
     .then(function(works) {
         return Promise.map(works, function(work) {
             let author = workContributorsContainsDeputyId(work.authors, deputyId);
             let participant = workContributorsContainsDeputyId(work.participants, deputyId);
             if (author || participant) {
-                if (work.type == Constants.WORK_TYPE_PROPOSITIONS && participant) {
-                    work.type = Constants.WORK_TYPE_COSIGNED_PROPOSITIONS;
-                } else if (work.type == Constants.WORK_TYPE_COSIGNED_PROPOSITIONS && author) {
-                    work.type = Constants.WORK_TYPE_PROPOSITIONS;
-                }
+                work.isAuthor = author
                 return work
             }
         })

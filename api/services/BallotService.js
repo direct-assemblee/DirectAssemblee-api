@@ -13,14 +13,10 @@ module.exports = {
         .populate('themeId')
     },
 
-    getBallotWithId: function(id) {
-        return Ballot.findOne({ officialId: id })
-        .populate('themeId')
-    },
-
     findBallotsBetweenDates: function(beforeDate, afterDate) {
         return Ballot.find()
         .where({ date: { '<=': beforeDate , '>': afterDate } })
-        .populate('themeId');
+        .populate('themeId')
+        .populate('type');
     }
 }

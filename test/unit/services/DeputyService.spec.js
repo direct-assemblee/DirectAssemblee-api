@@ -66,7 +66,7 @@ describe('The DeputyService', function () {
     });
 
     it('should return most recent deputy', function(done) {
-        DeputyService.findMostRecentDeputyAtDate(1, 1, '2018-06-12')
+        DeputyService.findMostRecentDeputyAtDate(1, 1, '2118-06-12')
         .then(function(deputy) {
             should.exist(deputy);
             deputy.officialId.should.equal(15)

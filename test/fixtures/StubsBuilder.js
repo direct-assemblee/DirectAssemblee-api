@@ -160,7 +160,12 @@ module.exports = {
                             'title': 'scrutin description',
                             'date': moment('2017-08-01'),
                             'dateDetailed': 'Première séance du 01/08/2017',
-                            'type': 'SOR',
+                            'type': {
+                                id: 1,
+                                name: 'vote_ordinary',
+                                displayName: 'Scrutin ordinaire',
+                                officialPath: 'SOR'
+                            },
                             'totalVotes': '302',
                             'yesVotes': '36',
                             'noVotes': '256',

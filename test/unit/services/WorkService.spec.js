@@ -20,10 +20,12 @@ let createTheme = function() {
 
 let createWorks = function(createdThemeId) {
     let promises = [];
-    promises.push(addWork(33, 'another title before', createdThemeId, '2014-08-13', 'http://titi', 'another description', 'commission'));
-    promises.push(addWork(33, 'another title', createdThemeId, '2014-08-14', 'http://toto', 'another description', 'question'));
-    promises.push(addWork(33, 'another title after', createdThemeId, '2014-08-15', 'http://tata', 'another description', 'commission'));
-    promises.push(addWork(33, 'very old title', createdThemeId, '2004-08-14', 'http://tutu', 'very old description', 'commission'));
+    promises.push(WorkType.create({ id: 1, displayName: 'Question', name: 'question', officialPath: 'Questions' }));
+    promises.push(WorkType.create({ id: 4, displayName: 'Commission', name: 'commission', officialPath: 'ComptesRendusCommission' }));
+    promises.push(addWork(33, 'another title before', createdThemeId, '2014-08-13', 'http://titi', 'another description', 4));
+    promises.push(addWork(33, 'another title', createdThemeId, '2014-08-14', 'http://toto', 'another description', 1));
+    promises.push(addWork(33, 'another title after', createdThemeId, '2014-08-15', 'http://tata', 'another description', 4));
+    promises.push(addWork(33, 'very old title', createdThemeId, '2004-08-14', 'http://tutu', 'very old description', 4));
     return Promise.all(promises)
     .then(function() {
         return Work.findOne({ url: 'http://titi' });
@@ -117,7 +119,8 @@ describe('The WorkService', function () {
             works[0].date.should.equal('2014-08-13');
             works[0].title.should.equal('another title before');
             should.not.exist(works[0].theme);
-            works[0].type.should.equal('commission');
+            should.exist(works[0].type);
+            works[0].type.id.should.equal(4);
             works[0].url.should.equal('http://titi');
             works[0].description.should.equal('another description');
 
@@ -127,7 +130,8 @@ describe('The WorkService', function () {
             works[1].themeId.typeName.should.equal('themeTypeName');
             works[1].themeId.name.should.equal('themeName');
             works[1].themeId.id.should.be.above(0);
-            works[1].type.should.equal('question');
+            should.exist(works[1].type);
+            works[1].type.id.should.equal(1);
             works[1].url.should.equal('http://toto');
             works[1].description.should.equal('another description');
 
