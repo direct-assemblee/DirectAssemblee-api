@@ -9,6 +9,9 @@ module.exports = {
         },
         name: {
             type: 'string'
+        },
+        officialPath: {
+            type: 'string'
         }
     }
 };
