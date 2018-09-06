@@ -40,7 +40,13 @@
 ################################################
 
 config/local.js
+config/env
+config/env/development.js
+config/env/production.js
 
+assets/firebase
+assets/firebase/firebase_service_account_dev.json
+assets/firebase/firebase_service_account_prod.json
 
 
 
