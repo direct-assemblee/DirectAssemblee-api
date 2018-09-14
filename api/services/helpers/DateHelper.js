@@ -86,7 +86,7 @@ let self = module.exports = {
     },
 
     getNowUtc: function() {
-        return moment().utc();
+        return moment().utc().format(DATE_AND_HOUR_TEMPLATE);
     },
 
     getMoment: function(date) {

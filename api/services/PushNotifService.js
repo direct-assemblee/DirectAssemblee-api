@@ -97,7 +97,7 @@ let self = module.exports = {
                 return pushPayloadForSubject(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload)
             })
         } else {
-            // console.log('deputy : ' + deputyId + ' doesn\'t have any subscribers')
+            console.log('deputy : ' + deputyId + ' doesn\'t have any subscribers')
         }
     },
 
@@ -106,12 +106,12 @@ let self = module.exports = {
         return LastWorksService.find24hVotes()
         .then(function(newVotesByDeputy) {
             if (newVotesByDeputy && newVotesByDeputy.length > 0) {
-                // console.log('- new votes to be pushed for the last 24h ' + newVotesByDeputy.length)
+                console.log('- new votes to be pushed for the last 24h')
                 return Promise.map(newVotesByDeputy, function(deputyVotes) {
                     return self.pushDeputyDailyVotes(deputyVotes.deputyId, deputyVotes.activities);
                 }, {concurrency: 10})
             } else {
-                // console.log('- no new votes to be pushed for the last 24h')
+                console.log('- no new votes to be pushed for the last 24h')
             }
             return;
         })
