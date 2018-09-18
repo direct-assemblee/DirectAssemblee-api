@@ -88,7 +88,7 @@ let unsubscribe = function(instanceId, deputyId) {
 			.then(function(deputy) {
 				if (deputy) {
 					console.log('existing subscriber with instanceId ' + instanceId + ' ==> removing subscriber from deputy ' + deputyId);
-					return removeSubscriptionFromFirebase(token, deputyId)
+					return removeSubscriptionFromFirebase(subscriber, deputyId)
 				} else {
 					return { code: 404, content: 'could not find deputy with id ' + deputyId };
 				}
@@ -100,10 +100,10 @@ let unsubscribe = function(instanceId, deputyId) {
 	})
 }
 
-let removeSubscriptionFromFirebase = function(token, deputyId) {
-	return PushNotifService.removeSubscriberFromDeputy(token, deputyId)
+let removeSubscriptionFromFirebase = function(subscriber, deputyId) {
+	return PushNotifService.removeSubscriberFromDeputy(subscriber.token, deputyId)
 	.then(function(result) {
-		console.log('removed Firebase subscription for token ' + token + ' and deputy ' + deputyId + ' ==> result : ' +  result)
+		console.log('removed Firebase subscription for token ' + subscriber.token + ' and deputy ' + deputyId + ' ==> result : ' +  result)
 		return removeSubscriber(deputyId, subscriber.instanceId)
 		.then(function() {
 			return { code: 200 };
