@@ -4,7 +4,7 @@ let DateHelper = require('../../services/helpers/DateHelper.js');
 let ResponseHelper = require('../../services/helpers/ResponseHelper.js');
 let QuestionHelper = require('./QuestionHelper.js')
 let ThemeHelper = require('./ThemeHelper.js')
-let WorkAndBallotTypeHelper = require('./WorkAndBallotTypeHelper.js')
+let WorkAndBallotTypeHelper = require('../../services/helpers/WorkAndBallotTypeHelper.js')
 
 const BASE_URL = 'http://www2.assemblee-nationale.fr/';
 const PARAM_DEPUTY_ID = '{deputy_id}';
@@ -52,7 +52,7 @@ var self = module.exports = {
         response.theme = createThemeResponse(work.themeId, work.originalThemeName);
 
         let description = work.description;
-        if (work.type.name === WorkAndBallotTypeHelper.QUESTION) {
+        if (WorkAndBallotTypeHelper.isQuestion(work.type.displayName)) {
             description = QuestionHelper.formatQuestionWithLineBreaks(description);
         }
         response.description = description;
@@ -62,11 +62,11 @@ var self = module.exports = {
                 response.extraInfos[extraInfos[i].info] = extraInfos[i].value;
             }
         }
-        if (work.type.name === WorkAndBallotTypeHelper.COMMISSION) {
+        if (WorkAndBallotTypeHelper.isCommission(work.type.displayName)) {
             response.title = response.extraInfos['commissionName']
-        } else if (work.type.name === WorkAndBallotTypeHelper.PUBLIC_SESSION) {
+        } else if (WorkAndBallotTypeHelper.isPublicSession(work.type.displayName)) {
             response.title = 'Séance publique'
-        }  else if (work.type.displayName == WorkAndBallotTypeHelper.PROPOSITION && !work.isAuthor) {
+        }  else if (WorkAndBallotTypeHelper.isProposition(work.type.displayName) && !work.isAuthor) {
             response.type = 'cosigned_law_proposal'
         } else {
             response.title = work.title

@@ -1,13 +1,15 @@
 let Promise = require('bluebird');
 let DateHelper = require('./helpers/DateHelper.js');
+let WorkAndBallotTypeHelper = require('./helpers/WorkAndBallotTypeHelper.js');
 
 module.exports = {
-    findLastCreatedWorksForDeputyAfterDate: function(deputyId, date) {
-        let options = { createdAt: { '>=': date } }
+    findLastWorksToPushForDeputy: function(deputyId, afterDate) {
+        let options = { createdAt: { '>=': afterDate } }
         return findWorksForDeputyWithOptions(deputyId, options)
         .then(function(works) {
             return Promise.filter(works, function(work) {
-                return work && DateHelper.isLaterOrSame(work.date, work.createdAt);
+                return work && DateHelper.isLaterOrSame(work.date, work.createdAt)
+                    && WorkAndBallotTypeHelper.isEligibleForPush(work.type.displayName);
             })
         })
     },

@@ -13,9 +13,9 @@ module.exports = {
         })
     },
 
-    findNewWorks: function(deputyId) {
+    findNewWorksToPush: function(deputyId) {
         if (lastScanTime) {
-            return WorkService.findLastCreatedWorksForDeputyAfterDate(deputyId, lastScanTime);
+            return WorkService.findLastWorksToPushForDeputy(deputyId, lastScanTime);
         } else {
             console.log('last scan time is undefined')
             return new Promise(function(resolve) {

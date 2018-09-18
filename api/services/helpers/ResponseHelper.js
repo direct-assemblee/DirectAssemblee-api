@@ -1,9 +1,9 @@
 let DateHelper = require('./DateHelper.js');
-let WorkAndBallotTypeHelper = require('../../controllers/helpers/WorkAndBallotTypeHelper.js');
+let WorkAndBallotTypeHelper = require('./WorkAndBallotTypeHelper.js');
 
 let self = module.exports = {
     createVoteValueForWS: function(ballotType, voteValue) {
-        if (ballotType.displayName == WorkAndBallotTypeHelper.BALLOT_MOTION) {
+        if (WorkAndBallotTypeHelper.isMotion(ballotType.displayName)) {
             return voteValue === 'for' ? 'signed' : 'not_signed'
         } else {
             return voteValue ? voteValue : 'missing';

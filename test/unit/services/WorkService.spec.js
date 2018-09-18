@@ -73,7 +73,7 @@ describe('The WorkService', function () {
     // });
 
     it('should return last created works for deputy after date date', function(done) {
-        WorkService.findLastCreatedWorksForDeputyAfterDate(33, '2014-08-14')
+        WorkService.findLastWorksToPushForDeputy(33, '2014-08-14')
         .then(function(works) {
             should.exist(works);
             works.length.should.equal(2);
@@ -91,7 +91,7 @@ describe('The WorkService', function () {
     });
 
     it('should return no work for deputy from given date too recent date', function(done) {
-        WorkService.findLastCreatedWorksForDeputyAfterDate(33, '2017-01-01')
+        WorkService.findLastWorksToPushForDeputy(33, '2017-01-01')
         .then(function(works) {
             should.exist(works);
             works.length.should.equal(0);
@@ -101,7 +101,7 @@ describe('The WorkService', function () {
     });
 
     it('should return no work for deputy from given date - wrong deputy', function(done) {
-        WorkService.findLastCreatedWorksForDeputyAfterDate(3, '2014-08-14')
+        WorkService.findLastWorksToPushForDeputy(3, '2014-08-14')
         .then(function(works) {
             should.exist(works);
             works.length.should.equal(0);

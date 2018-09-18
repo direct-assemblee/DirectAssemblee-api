@@ -36,7 +36,7 @@ module.exports = {
 };
 
 let findWorksForUpdatedDeputy = function(deputyId) {
-	return LastWorksService.findNewWorks(deputyId)
+	return LastWorksService.findNewWorksToPush(deputyId)
 	.then(function(newWorks) {
 		if (newWorks && newWorks.length > 0) {
 			console.log('- deputy ' + deputyId + ' has ' + newWorks.length + ' new works to be pushed')
