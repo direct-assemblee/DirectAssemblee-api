@@ -27,6 +27,7 @@ var self = module.exports = {
 		let options = { departmentId: departmentId, district: district, currentMandateStartDate: { '<=': date } };
 		return Deputy.find()
 		.where(options)
+		.populate('parliamentGroup')
 		.then(function(deputies) {
 			if (deputies && deputies.length > 0) {
 				return Promise.filter(deputies, function(deputy) {
@@ -43,6 +44,7 @@ var self = module.exports = {
 		var options = { currentMandateStartDate:  {'!=': ''}, mandateEndDate: '' };
 		return Deputy.find()
 		.where(options)
+		.populate('parliamentGroup')
 		.sort('lastname ASC');
 	},
 

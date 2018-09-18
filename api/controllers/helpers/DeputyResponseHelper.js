@@ -52,6 +52,7 @@ var self = module.exports = {
         deputy.photoUrl = DEPUTY_PHOTO_URL.replace(PARAM_DEPUTY_ID, deputy.officialId)
         deputy.age = DateHelper.findAge(deputy.birthDate);
         deputy.declarations = self.prepareDeclarationsResponse(deputy.declarations);
+        deputy.parliamentGroup = deputy.parliamentGroup ? deputy.parliamentGroup.name : "Aucun groupe parlementaire"
         if (deputy.currentMandateStartDate) {
             deputy.currentMandateStartDate = DateHelper.formatDateForWS(deputy.currentMandateStartDate);
         }

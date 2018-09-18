@@ -1,4 +1,7 @@
 module.exports = {
+    GENDER_FEMALE: 'F',
+    GENDER_MALE: 'M',
+
     primaryKey: 'officialId',
     attributes: {
         createdAt: { type: 'string', autoCreatedAt: true, },
@@ -21,7 +24,7 @@ module.exports = {
             type: 'string'
         },
         parliamentGroup: {
-            type: 'string'
+            model: 'ParliamentGroup'
         },
         departmentId: {
             type: 'number'

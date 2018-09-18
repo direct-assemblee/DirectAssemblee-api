@@ -2,8 +2,6 @@ let Promise = require('bluebird');
 let RoleService = require('../RoleService.js');
 let InstanceTypeService = require('../InstanceTypeService.js');
 
-const GENDER_MALE = 'M'
-
 let self = module.exports = {
     retrieveRolesForDeputy: function(deputy) {
     	return RoleService.find(deputy.officialId)
@@ -51,5 +49,5 @@ let getTypeNameForInstance = function(instanceTypeId, types) {
 }
 
 let getPositionName = function(roleType, gender) {
-    return gender === GENDER_MALE ? roleType.maleName : roleType.femaleName
+    return gender === Deputy.GENDER_MALE ? roleType.maleName : roleType.femaleName
 }
