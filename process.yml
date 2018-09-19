@@ -1,5 +1,5 @@
 apps:
-  - script : ./api/app.js
+  - script : ./DirectAssemblee-api/app.js
     name   : 'directass_api'
     error_file : '/var/log/api-err.log'
     out_file : '/var/log/api-out.log'
