@@ -3,9 +3,8 @@ let request = require('request-promise')
 let Promise = require('bluebird');
 let CronJob = require('cron').CronJob;
 let ResponseHelper = require('./helpers/ResponseHelper.js');
-let serviceAccount = require('../../assets/firebase/' + sails.config.firebase.configFile);
-
-const serverKey = sails.config.firebase.serverKey;
+let serviceAccount = require('../../config/env/firebase_service_account.js');
+const serverKey = serviceAccount.serverKey;
 
 const PUSH_DAILY_REPORT_TIME = sails.config.cronPush
 const COLLAPSE_KEY = 'NOTIF_VOTE';
