@@ -9,7 +9,7 @@ module.exports = {
         .then(function(works) {
             return Promise.filter(works, function(work) {
                 return work && DateHelper.isLaterOrSame(work.date, work.createdAt)
-                    && WorkAndBallotTypeHelper.isEligibleForPush(work.type.displayName);
+                    && WorkAndBallotTypeHelper.isEligibleForPush(work.type);
             })
         })
     },
@@ -23,10 +23,8 @@ module.exports = {
 let findWorksForDeputyWithOptions = function(deputyId, options) {
     return Work.find()
     .where(options)
-    .populate('themeId')
     .populate('authors')
     .populate('participants')
-    .populate('type')
     .then(function(works) {
         return Promise.map(works, function(work) {
             let author = workContributorsContainsDeputyId(work.authors, deputyId);

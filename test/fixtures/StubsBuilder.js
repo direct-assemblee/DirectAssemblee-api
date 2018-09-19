@@ -151,8 +151,8 @@ module.exports = {
                 } else {
                     resolve([
                         {
-                            'themeId': {
-                                'id': 29,
+                            'theme': {
+                                'id': 1,
                                 'name': 'Travail',
                                 'typeName': 'TRAVAIL'
                             },
@@ -182,6 +182,16 @@ module.exports = {
             });
         }
         return timelineServiceStub;
+    },
+
+    buildThemeServiceStub: function(id, themeName, typeName) {
+        let themeServiceStub = function(){};
+        themeServiceStub.getThemefromId = function(id) {
+            return new Promise(function(resolve) {
+                resolve({ id: id, name: themeName, typeName: typeName });
+            })
+        }
+        return themeServiceStub;
     },
 
     buildStub: function(classPathFromApi, stubs) {

@@ -3,7 +3,7 @@ let ResponseBuilder = require('./ResponseBuilder.js');
 let DateHelper = require('../../services/helpers/DateHelper.js');
 let ResponseHelper = require('../../services/helpers/ResponseHelper.js');
 let QuestionHelper = require('./QuestionHelper.js')
-let ThemeHelper = require('./ThemeHelper.js')
+let ShortThemeHelper = require('./ShortThemeHelper.js')
 let WorkAndBallotTypeHelper = require('../../services/helpers/WorkAndBallotTypeHelper.js')
 
 const BASE_URL = 'http://www2.assemblee-nationale.fr/';
@@ -15,21 +15,20 @@ const NUMBER_OF_DEPUTIES = 577;
 
 var self = module.exports = {
     formatTimelineResponse: function(items, deputy) {
-    	let results = [];
+    	let promises = [];
     	for (let i in items) {
     		let item = items[i];
     		if (item.totalVotes > 0) {
-    			item = self.createBallotDetailsResponse(item, deputy);
+    			promises.push(self.createBallotDetailsResponse(item, deputy));
     		} else {
-    			item = self.createWorkForTimeline(item, item.extraInfos);
+    			promises.push(self.createWorkForTimeline(item, item.extraInfos));
     		}
-    		results.push(item);
     	}
-    	return results;
+    	return Promise.all(promises);
     },
 
-    createBallotDetailsResponse: function(ballot, deputy) {
-        let ballotResponse = self.prepareBallotResponse(ballot);
+    createBallotDetailsResponse: async function(ballot, deputy) {
+        let ballotResponse = await self.prepareBallotResponse(ballot);
         let voteValue = ResponseHelper.createVoteValueForWS(ballot.type, ballot.deputyVote)
         ballotResponse.extraBallotInfo.deputyVote = {
             'voteValue': voteValue,
@@ -38,21 +37,21 @@ var self = module.exports = {
                 'lastname': deputy.lastname
             }
         }
-        return ballotResponse;
+        return ballotResponse
     },
 
-    createWorkForTimeline: function(work, extraInfos) {
+    createWorkForTimeline: async function(work, extraInfos) {
         let response = {
             id: work.id,
-            type: work.type.name,
+            type: work.type,
             date: DateHelper.formatDateForWS(work.date),
             fileUrl: work.url
         }
 
-        response.theme = createThemeResponse(work.themeId, work.originalThemeName);
+        response.theme = await createThemeResponse(work.theme, work.originalThemeName);
 
         let description = work.description;
-        if (WorkAndBallotTypeHelper.isQuestion(work.type.displayName)) {
+        if (WorkAndBallotTypeHelper.isQuestion(work.type)) {
             description = QuestionHelper.formatQuestionWithLineBreaks(description);
         }
         response.description = description;
@@ -62,11 +61,13 @@ var self = module.exports = {
                 response.extraInfos[extraInfos[i].info] = extraInfos[i].value;
             }
         }
-        if (WorkAndBallotTypeHelper.isCommission(work.type.displayName)) {
-            response.title = response.extraInfos['commissionName']
-        } else if (WorkAndBallotTypeHelper.isPublicSession(work.type.displayName)) {
+        if (WorkAndBallotTypeHelper.isCommission(work.type)) {
+            if (response.extraInfos) {
+                response.title = response.extraInfos['commissionName']
+            }
+        } else if (WorkAndBallotTypeHelper.isPublicSession(work.type)) {
             response.title = 'Séance publique'
-        }  else if (WorkAndBallotTypeHelper.isProposition(work.type.displayName) && !work.isAuthor) {
+        }  else if (WorkAndBallotTypeHelper.isProposition(work.type) && !work.isAuthor) {
             response.type = 'cosigned_law_proposal'
         } else {
             response.title = work.title
@@ -74,14 +75,15 @@ var self = module.exports = {
         return response;
     },
 
-    prepareBallotResponse: function(ballot) {
+    prepareBallotResponse: async function(ballot) {
+        let theme = await createThemeResponse(ballot.theme.id, ballot.originalThemeName);
         return {
             id: parseInt(ballot.officialId),
             date: DateHelper.formatDateForWS(ballot.date),
             description: ballot.title,
             title: ballot.type.displayName,
             type: ballot.type.name,
-            theme: createThemeResponse(ballot.themeId, ballot.originalThemeName),
+            theme: theme,
             fileUrl: ballot.fileUrl,
             extraBallotInfo: {
                 totalVotes: parseInt(ballot.totalVotes),
@@ -96,21 +98,24 @@ var self = module.exports = {
     }
 }
 
-let createThemeResponse = function(theme, originalName) {
-    if (theme) {
-        delete theme.typeName;
-    } else {
-        theme = {
-            id: 0,
-            name: 'Catégorisation à venir'
+let createThemeResponse = function(themeId, originalName) {
+    return ThemeService.getThemefromId(themeId)
+    .then(function(theme) {
+        if (theme) {
+            delete theme.typeName;
+        } else {
+            theme = {
+                id: 0,
+                name: 'Catégorisation à venir'
+            }
         }
-    }
 
-    if (shouldShowThemeSubName(theme.name, originalName)) {
-        theme.fullName = originalName;
-        theme.shortName = ThemeHelper.findShorterName(originalName);
-    }
-    return theme;
+        if (shouldShowThemeSubName(theme.name, originalName)) {
+            theme.fullName = originalName;
+            theme.shortName = ShortThemeHelper.findShorterName(originalName);
+        }
+        return theme;
+    })
 }
 
 let shouldShowThemeSubName = function(themeName, originalThemeName) {

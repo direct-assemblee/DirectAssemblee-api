@@ -10,13 +10,11 @@ module.exports = {
         : { date: { '>': searchedDate } };
         return Ballot.find()
         .where(options)
-        .populate('themeId')
     },
 
     findBallotsBetweenDates: function(beforeDate, afterDate) {
         return Ballot.find()
         .where({ date: { '<=': beforeDate , '>': afterDate } })
-        .populate('themeId')
         .populate('type');
     }
 }

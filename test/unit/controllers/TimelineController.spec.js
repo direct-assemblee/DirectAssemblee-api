@@ -2,11 +2,23 @@ require('../../bootstrap.test');
 
 let StubsBuilder = require('../../fixtures/StubsBuilder');
 
+let createTheme = function() {
+    let promises = [];
+    promises.push(Theme.create({ name: 'Travail', typeName: 'travail' }))
+    return Promise.all(promises)
+    .then(function() {
+        return Theme.findOne({ name: 'Travail' })
+        .then(function(theme) {
+            return theme.id;
+        })
+    })
+}
+
 describe('The TimelineController', function() {
     describe('with an invalid deputy', function() {
         it('should return error message with 404 - no deputy', function(done) {
             let stubs = {
-                '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(false, false),
+                '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(false, false)
             }
             let TimelineController = StubsBuilder.buildStub('controllers/TimelineController', stubs);
 
@@ -38,6 +50,13 @@ describe('The TimelineController', function() {
     })
 
     describe('with a valid deputy', function() {
+        before(function(done) {
+            createTheme()
+            .then(function(createdThemeId) {
+                done();
+            })
+        });
+
         it('should return empty timeline', function(done) {
             let stubs = {
                 '../services/DeputyService.js': StubsBuilder.buildDeputyServiceStub(true, true),
@@ -75,7 +94,7 @@ describe('The TimelineController', function() {
                 ballot.title.should.equal('Scrutin ordinaire');
                 ballot.type.should.equal('vote_ordinary');
                 should.exist(ballot.theme);
-                ballot.theme.id.should.equal(29);
+                ballot.theme.id.should.equal(1);
                 ballot.theme.name.should.equal('Travail');
                 ballot.fileUrl.should.equal('http://www.assemblee-nationale.fr/15/dossiers/habilitation_ordonnances_dialogue_social.asp');
                 should.exist(ballot.extraBallotInfo);

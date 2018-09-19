@@ -1,15 +1,9 @@
-let WorkTypeService = require('../../services/WorkTypeService')
-let BallotTypeService = require('../../services/BallotTypeService')
-
-let workTypes;
-let ballotTypes;
-
 let self = module.exports = {
-    QUESTION: 'Question',
-    REPORT: 'Rapport',
-    PROPOSITION: 'Proposition',
-    COMMISSION: 'Commission',
-    PUBLIC_SESSION: 'Séance publique',
+    QUESTION: { id: 1, name: 'Question' },
+    REPORT: { id: 2, name: 'Rapport' },
+    PROPOSITION: { id: 3, name: 'Proposition' },
+    COMMISSION: { id: 4, name: 'Commission' },
+    PUBLIC_SESSION: { id: 5, name: 'Séance publique' },
 
     BALLOT_SOLEMN: 'Scrutin solennel',
     BALLOT_ORDINARY: 'Scrutin ordinaire',
@@ -22,19 +16,27 @@ let self = module.exports = {
     },
 
     isPublicSession: function(workType) {
-        return workType == self.WORK_OFFICIAL_PATH_PUBLIC_SESSIONS
+        return self.isWorkType(workType, self.PUBLIC_SESSION)
     },
 
     isQuestion: function(workType) {
-        return workType == self.WORK_OFFICIAL_PATH_QUESTIONS
+        return self.isWorkType(workType, self.QUESTION)
     },
 
     isCommission: function(workType) {
-        return workType == self.WORK_OFFICIAL_PATH_COMMISSIONS
+        return self.isWorkType(workType, self.COMMISSION)
     },
 
     isProposition: function(workType) {
-        return workType == self.WORK_OFFICIAL_PATH_PROPOSITIONS || workType == self.WORK_OFFICIAL_PATH_COSIGNED_PROPOSITIONS
+        return self.isWorkType(workType, self.PROPOSITION)
+    },
+
+    isWorkType: function(searchWorkType, referenceWorkType) {
+        if (searchWorkType.name) {
+            return searchWorkType.name == referenceWorkType.name
+        } else {
+            return searchWorkType == referenceWorkType.id
+        }
     },
 
     isMotion: function(ballotType) {

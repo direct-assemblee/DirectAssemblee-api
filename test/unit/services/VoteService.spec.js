@@ -31,11 +31,11 @@ let createDeputiesAndBallots = function() {
     return Promise.all(promises)
     .then(function() {
         return Theme.findOne({ name: 'themeName' })
-        .then(function(themeId) {
+        .then(function(theme) {
             let otherPromises = [];
-            otherPromises.push(Ballot.create({ 'title': 'a title', 'officialId': 14, 'date': '2017-06-18', 'createdAt': '2017-06-18', 'type': 2, themeId: themeId.id }));
-            otherPromises.push(Ballot.create({ 'title': 'another title', 'officialId': 12, 'date': '2017-06-15', 'createdAt': '2017-06-15', 'type': 1, themeId: themeId.id }));
-            otherPromises.push(Ballot.create({ 'title': 'a third title', 'officialId': 1222, 'date': '2017-06-15', 'createdAt': '2017-06-15', 'type': 1, themeId: themeId.id }));
+            otherPromises.push(Ballot.create({ 'title': 'a title', 'officialId': 14, 'date': '2017-06-18', 'createdAt': '2017-06-18', 'type': 2, theme: theme.id }));
+            otherPromises.push(Ballot.create({ 'title': 'another title', 'officialId': 12, 'date': '2017-06-15', 'createdAt': '2017-06-15', 'type': 1, theme: theme.id }));
+            otherPromises.push(Ballot.create({ 'title': 'a third title', 'officialId': 1222, 'date': '2017-06-15', 'createdAt': '2017-06-15', 'type': 1, theme: theme.id }));
             return Promise.all(otherPromises);
         })
     });

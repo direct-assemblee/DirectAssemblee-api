@@ -39,7 +39,9 @@ let self = module.exports = {
 			} else {
 				return TimelineService.getTimeline(deputy, page)
 				.then(function(timelineItems) {
-					let formattedItems = TimelineResponseHelper.formatTimelineResponse(timelineItems, deputy);
+					return TimelineResponseHelper.formatTimelineResponse(timelineItems, deputy)
+				})
+				.then(function(formattedItems) {
 					return { code: 200, content: formattedItems }
 				})
 			}

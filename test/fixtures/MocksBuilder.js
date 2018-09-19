@@ -13,9 +13,10 @@ let self = module.exports = {
                 birthDate: birthDate,
                 firstname: 'JM',
                 lastname: 'Député',
-                parliamentGroup: 'FI',
+                parliamentGroup: null,
                 activityRate: 40.2
             };
+
             if (hasCurrentMandate) {
                 deputy.currentMandateStartDate = '2016-06-18';
                 deputy.mandateEndDate = '';
@@ -40,8 +41,8 @@ let self = module.exports = {
         return items;
     },
 
-    buildWork: function(id, title, themeId, officialId, date, type, deputyId) {
-        return { id: id, title: title, themeId: themeId, officialId: officialId, date: date, type: type, deputyId: deputyId }
+    buildWork: function(id, title, theme, officialId, date, type, deputyId) {
+        return { id: id, title: title, theme: theme, officialId: officialId, date: date, type: type, deputyId: deputyId }
     },
 
     buildWorks: function(count, deputyId) {

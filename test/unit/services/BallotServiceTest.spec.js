@@ -72,7 +72,7 @@ let createOneBallotADay = function(size, type, startingId) {
     for (let i = 0 ; i < size ; i++) {
         let date = moment(startingDate).subtract(startingId + i - 1, 'days').format('YYYY-MM-DD');
         // console.log('push : ' + (i+startingId) + " -- date " + date + ' -- type ' + type)
-        promises.push(Ballot.create({ 'officialId': startingId + i, 'date': date, 'type': type, themeId: themeCreatedId }));
+        promises.push(Ballot.create({ 'officialId': startingId + i, 'date': date, 'type': type, theme: themeCreatedId }));
     }
     return promises;
 }

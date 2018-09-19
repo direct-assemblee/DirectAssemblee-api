@@ -1,5 +1,6 @@
 let DateHelper = require('./DateHelper.js');
 let WorkAndBallotTypeHelper = require('./WorkAndBallotTypeHelper.js');
+let ThemeService = require('../ThemeService.js')
 
 let self = module.exports = {
     createVoteValueForWS: function(ballotType, voteValue) {
@@ -17,8 +18,8 @@ let self = module.exports = {
             deputyId : vote.deputyId.officialId,
             value : self.createVoteValueForWS(ballot.type, vote.value)
         }
-        if (ballot.themeId) {
-            push.theme = ballot.themeId.name
+        if (ballot.theme) {
+            push.theme = ballot.theme.name
         }
         return push;
     },
@@ -30,15 +31,16 @@ let self = module.exports = {
             deputyId : deputy.officialId,
             value : 'missing'
         }
-        if (ballot.themeId) {
-            push.theme = ballot.themeId.name
+        if (ballot.theme) {
+            push.theme = ballot.theme.name
         }
         return push;
     },
 
     createPayloadForActivity: function(deputyId, work) {
         let title = createWorkTitleForPush(work)
-        let body = work.themeId ? work.themeId.name + ' : ' : '';
+        let theme = ThemeService.getThemefromId(work.theme)
+        let body = theme ? theme.name + ' : ' : '';
         body += work.description;
         let payload = {
             notification: {

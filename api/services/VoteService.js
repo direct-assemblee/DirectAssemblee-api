@@ -26,7 +26,7 @@ module.exports = {
 	findLastVotesByDeputy: function(afterDate, currentDeputies) {
 		return Ballot.find()
 		.where({ createdAt: { '>=': afterDate }})
-		.populate('themeId')
+		.populate('theme')
 		.then(function(lastBallots) {
 			if (lastBallots.length > 0) {
 				return Promise.filter(lastBallots, function(ballot) {

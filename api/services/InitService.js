@@ -1,8 +1,8 @@
-let ThemeHelper = require('../controllers/helpers/ThemeHelper')
+let ShortThemeHelper = require('../controllers/helpers/ShortThemeHelper')
 
 module.exports = {
     init: function() {
-        ThemeHelper.initThemes();
+        ShortThemeHelper.initThemes();
         LastWorksService.initLastScanTime();
         if (process.env.NODE_APP_INSTANCE === '0') {
             PushNotifService.startDailyVotesCron();

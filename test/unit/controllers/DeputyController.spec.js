@@ -238,7 +238,7 @@ let verifyDeputySimpleResponse = function(deputy, departmentCode, district) {
     deputy.id.should.equal(14);
     deputy.firstname.should.equal('JM');
     deputy.lastname.should.equal('Député');
-    deputy.parliamentGroup.should.equal('FI');
+    deputy.parliamentGroup.should.equal('Aucun groupe parlementaire');
     deputy.seatNumber.should.equal(44);
     deputy.photoUrl.should.equal('http://www2.assemblee-nationale.fr/static/tribun/15/photos/14.jpg');
 
