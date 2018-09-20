@@ -44,7 +44,7 @@ config/env
 config/env/development.js
 config/env/production.js
 
-config/env/firebase_service_account.json
+config/env/firebase_service_account.js
 
 
 
