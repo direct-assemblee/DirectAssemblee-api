@@ -11,9 +11,33 @@ module.exports = {
         new CronJob(ACTIVITY_RATE_UPDATE_TIME, function() {
             updateActivityRates()
         }, null, true, 'Europe/Paris');
+    },
+
+    getSortedActivityRatesByParliamentGroup: function() {
+        return getGroupedActivityRates()
+        .then(groupedRates => {
+            return groupedRates.sort((a, b) => {
+                return b.activityRate - a.activityRate;
+            });
+        })
     }
 }
 
+let getGroupedActivityRates = function() {
+    return DeputyService.findGroupedDeputies()
+    .then(groupedDeputies => {
+        let groupedRates = []
+        groupedDeputies.forEach(function(groupAndDeputies, groupId) {
+            let deputies = groupAndDeputies.deputies
+            let ratesSum = 0
+            for (let i in deputies) {
+                ratesSum += deputies[i].activityRate
+            }
+            groupedRates[groupId] = { group: groupAndDeputies.group, activityRate: Math.round(ratesSum / deputies.length)}
+        })
+        return groupedRates
+    })
+}
 
 let updateActivityRates = function() {
     console.log('start updating activity rates')

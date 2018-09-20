@@ -48,6 +48,26 @@ var self = module.exports = {
 		.sort('lastname ASC');
 	},
 
+	findGroupedDeputies: function() {
+		return self.findCurrentDeputies()
+		.then(deputies => {
+			var groups = new Map()
+			var nonGrouped = { id: 0, name: 'Non-inscrits' }
+			for (let i in deputies) {
+				let deputy = deputies[i]
+				let group = deputy.parliamentGroup
+				if (!group) {
+					group = nonGrouped
+				}
+				if (!groups.has(group.id)) {
+					groups.set(group.id, { group: group, deputies: [] })
+				}
+				groups.get(group.id).deputies.push(deputy)
+			}
+			return groups
+		})
+	},
+
 	hasSubscribers: function(deputyId) {
 		return self.findDeputyAndSubscribers(deputyId)
 		.then(function(deputy) {
