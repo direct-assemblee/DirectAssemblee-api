@@ -6,7 +6,7 @@ let DeputyResponseHelper = require('./helpers/DeputyResponseHelper.js');
 const PARAM_GROUP_ID = 'groupId'
 
 module.exports = {
-	getActivityRatesByGroup: function(req, res) {
+	getActivityRates: function(req, res) {
 		return getRates(req.param(PARAM_GROUP_ID))
 		.then(result => {
 			return ResponseBuilder.build(res, 200, result)
