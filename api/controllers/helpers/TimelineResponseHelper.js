@@ -76,7 +76,7 @@ var self = module.exports = {
     },
 
     prepareBallotResponse: async function(ballot) {
-        let theme = await createThemeResponse(ballot.theme.id, ballot.originalThemeName);
+        let theme = await createThemeResponse(ballot.theme, ballot.originalThemeName);
         return {
             id: parseInt(ballot.officialId),
             date: DateHelper.formatDateForWS(ballot.date),
