@@ -66,5 +66,5 @@ module.exports.routes = {
 'POST /v1/resetCache' : 'CacheController.resetCache',
 'GET /v1/votes': 'VoteController.getVotes',
 'GET /v1/features': 'FeatureController.getFeatures',
-'GET /v1/activityRatesByGroup': 'StatsController.getActivityRatesByGroup', // ?groupId=1 (optional)
+'GET /v1/activityRates': 'StatsController.getActivityRates', // ?groupId=1 (optional)
 };
