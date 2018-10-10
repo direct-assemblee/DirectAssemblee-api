@@ -196,7 +196,6 @@ let verifyDeputyFullResponse = function(deputy) {
     deputy.salary.should.equal(7200);
     deputy.currentMandateStartDate.should.equal('18/06/2016');
 
-
     let declarations = deputy.declarations;
     should.exist(declarations);
     declarations.length.should.equal(2);

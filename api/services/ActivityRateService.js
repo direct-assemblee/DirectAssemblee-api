@@ -1,5 +1,6 @@
 let Promise = require('bluebird');
 let CronJob = require('cron').CronJob;
+let DeputyService = require('./DeputyService.js');
 let DateHelper = require('./helpers/DateHelper.js');
 
 const ACTIVITY_RATE_UPDATE_TIME = '0 30 3 * * *'
@@ -17,6 +18,15 @@ module.exports = {
         return getGroupedActivityRates()
         .then(groupedRates => {
             return groupedRates.sort((a, b) => {
+                return b.activityRate - a.activityRate;
+            });
+        })
+    },
+
+    getSortedActivityRatesForParliamentGroup: function(groupId) {
+        return DeputyService.findDeputiesForGroup(groupId)
+        .then(deputies => {
+            return deputies.sort((a, b) => {
                 return b.activityRate - a.activityRate;
             });
         })

@@ -48,6 +48,12 @@ var self = module.exports = {
 		.sort('lastname ASC');
 	},
 
+	findDeputiesForGroup: function(groupId) {
+		var options = { currentMandateStartDate:  {'!=': ''}, mandateEndDate: '', parliamentGroup: groupId };
+		return Deputy.find()
+		.where(options);
+	},
+
 	findGroupedDeputies: function() {
 		return self.findCurrentDeputies()
 		.then(deputies => {

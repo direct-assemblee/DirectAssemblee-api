@@ -1,7 +1,7 @@
 let moment = require('moment')
 
 let self = module.exports = {
-    buildDeputy: function(isValid, hasCurrentMandate, departmentId, district, officialId) {
+    buildDeputy: function(isValid, hasCurrentMandate, departmentId, district, officialId, parliamentGroup, activityRate) {
         let deputy;
         if (isValid) {
             let birthDate = moment().subtract(20, 'year').format('YYYY-MM-DD');
@@ -13,8 +13,8 @@ let self = module.exports = {
                 birthDate: birthDate,
                 firstname: 'JM',
                 lastname: 'Député',
-                parliamentGroup: null,
-                activityRate: 40.2
+                parliamentGroup: parliamentGroup,
+                activityRate: activityRate ? activityRate : 40.2
             };
 
             if (hasCurrentMandate) {
@@ -26,6 +26,41 @@ let self = module.exports = {
             }
         }
         return deputy;
+    },
+
+    buildGroupedDeputies: function() {
+        let deputiesGroup1 = []
+        let deputiesGroup2 = []
+        var nonGroupedDeputies = []
+        deputiesGroup1.push(self.buildDeputy(true, true, 1, 1, 72001, 1, 15))
+        deputiesGroup1.push(self.buildDeputy(true, true, 1, 5, 72004, 1, 20))
+        deputiesGroup1.push(self.buildDeputy(true, true, 3, 1, 72005, 1, 10))
+        deputiesGroup2.push(self.buildDeputy(true, true, 2, 1, 72002, 2, 10))
+        deputiesGroup2.push(self.buildDeputy(true, true, 1, 3, 72003, 2, 30))
+        nonGroupedDeputies.push(self.buildDeputy(true, true, 30, 3, 72006, 0, 5))
+        let result = new Map()
+        result.set(0, {
+            group: {
+                id: 0,
+                name: 'Non-inscrits'
+            },
+            deputies: nonGroupedDeputies
+        })
+        result.set(1, {
+            group: {
+                id: 1,
+                name: 'La REM'
+            },
+            deputies: deputiesGroup1
+        })
+        result.set(2, {
+            group: {
+                id: 2,
+                name: 'La FI'
+            },
+            deputies: deputiesGroup2
+        })
+        return result
     },
 
     buildBallot: function(id, officialId, title, date) {
@@ -60,6 +95,5 @@ let self = module.exports = {
             items.push(self.buildWork(54, 'work 54', 1, 54, '2016-12-14', 'commission', deputyId));
         }
         return items;
-    },
-
+    }
 }

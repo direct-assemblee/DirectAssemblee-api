@@ -26,6 +26,4 @@ describe('The TimelineService', function() {
             .catch(done);
         })
     })
-
-
 });
