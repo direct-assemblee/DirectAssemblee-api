@@ -43,6 +43,11 @@ module.exports = {
                 resolve(MocksBuilder.buildDeputy(isValid, hasCurrentMandate));
             });
         }
+        deputyServiceStub.findGroupedDeputies = function() {
+            return new Promise(function(resolve) {
+                resolve(MocksBuilder.buildGroupedDeputies());
+            });
+        }
         return deputyServiceStub;
     },
 
