@@ -43,7 +43,7 @@ let subscribe = function(instanceId, token, deputyId) {
 				return PushNotifService.addSubscriberToDeputy(token, deputyId)
 				.then(function(result) {
 					console.log('added Firebase subscription with token ' + token + ' and deputy ' + deputyId + ' ==> result : ' +  result)
-					return { code: 200 };
+					return { code: 200, content: 'OK' };
 				})
 				.catch(function(err) {
 					console.log('error on Firebase subcription with token ' + token + ' and deputy ' + deputyId + ' ==> removing subscriber with id ' + subscriber.id + ' from deputy');
@@ -95,7 +95,7 @@ let unsubscribe = function(instanceId, deputyId) {
 			})
 		} else {
 			console.log('subscriber with instanceId ' + instanceId + ' doesn\'t exist in DB')
-			return { code: 200 };
+			return { code: 200, content: 'OK' };
 		}
 	})
 }
@@ -106,7 +106,7 @@ let removeSubscriptionFromFirebase = function(subscriber, deputyId) {
 		console.log('removed Firebase subscription for token ' + subscriber.token + ' and deputy ' + deputyId + ' ==> result : ' +  result)
 		return removeSubscriber(deputyId, subscriber.instanceId)
 		.then(function() {
-			return { code: 200 };
+			return { code: 200, content: 'OK' };
 		})
 	})
 	.catch(function(err) {
