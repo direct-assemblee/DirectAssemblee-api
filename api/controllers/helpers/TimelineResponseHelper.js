@@ -41,9 +41,10 @@ var self = module.exports = {
     },
 
     createWorkForTimeline: async function(work, extraInfos) {
+        let type = await createWorkTypeResponse(work.type);
         let response = {
             id: work.id,
-            type: work.type,
+            type: type,
             date: DateHelper.formatDateForWS(work.date),
             fileUrl: work.url
         }
@@ -96,6 +97,10 @@ var self = module.exports = {
             }
         }
     }
+}
+
+let createWorkTypeResponse = function(workType) {
+    return WorkAndBallotTypeHelper.getWorkTypeName(workType)
 }
 
 let createThemeResponse = function(themeId, originalName) {

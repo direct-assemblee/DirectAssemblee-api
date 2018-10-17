@@ -1,3 +1,7 @@
+let WorkTypeService = require('../WorkTypeService')
+
+let allWorkTypes;
+
 let self = module.exports = {
     QUESTION: { id: 1, name: 'Question' },
     REPORT: { id: 2, name: 'Rapport' },
@@ -10,6 +14,20 @@ let self = module.exports = {
     BALLOT_MOTION: 'Motion de censure',
     BALLOT_OTHER: 'Autre scrutin',
     BALLOT_UNDEFINED: 'Scrutin (type à venir)',
+
+    getWorkTypeName: async function(workTypeId) {
+        let workTypeName = "Activity parlementaire (type inconnu)"
+        if (allWorkTypes == null) {
+            allWorkTypes = await WorkTypeService.findAllWorkTypes()
+        }
+        for (let i in allWorkTypes) {
+            if (allWorkTypes[i].id == workTypeId) {
+                workTypeName = allWorkTypes[i].name
+                break;
+            }
+        }
+        return workTypeName
+    },
 
     isEligibleForPush: function(workType) {
         return !self.isPublicSession(workType) && !self.isCommission(workType)
@@ -32,7 +50,7 @@ let self = module.exports = {
     },
 
     isWorkType: function(searchWorkType, referenceWorkType) {
-        if (searchWorkType.name) {
+        if (searchWorkType && searchWorkType.name) {
             return searchWorkType.name == referenceWorkType.name
         } else {
             return searchWorkType == referenceWorkType.id
