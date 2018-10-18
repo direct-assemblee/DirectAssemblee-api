@@ -68,9 +68,10 @@ var self = module.exports = {
             }
         } else if (WorkAndBallotTypeHelper.isPublicSession(work.type)) {
             response.title = 'Séance publique'
-        }  else if (WorkAndBallotTypeHelper.isProposition(work.type) && !work.isAuthor) {
-            response.type = 'cosigned_law_proposal'
         } else {
+            if (WorkAndBallotTypeHelper.isProposition(work.type) && !work.isAuthor) {
+                response.type = 'cosigned_law_proposal'
+            }
             response.title = work.title
         }
         return response;

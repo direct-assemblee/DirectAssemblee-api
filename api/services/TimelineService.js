@@ -1,4 +1,5 @@
 let DateHelper = require('./helpers/DateHelper.js');
+let WorkAndBallotTypeHelper = require('./helpers/WorkAndBallotTypeHelper.js');
 let BallotService = require('./BallotService.js');
 let WorkService = require('./WorkService.js');
 let Constants = require('./Constants.js');
@@ -78,7 +79,7 @@ let handleTimelineResults = function(deputy, timelineItems) {
         if (timelineItem.totalVotes) {
             return retrieveVoteExtra(timelineItem, deputy);
         } else {
-            if (timelineItem.type === Constants.WORK_TYPE_PROPOSITIONS || timelineItem.type === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS || timelineItem.type === Constants.WORK_TYPE_COMMISSIONS) {
+            if (WorkAndBallotTypeHelper.workHasExtra(timelineItem.type)) {
                 return ExtraInfoService.findExtraInfosForWork(timelineItem.id)
                 .then(function(extraInfos) {
                     timelineItem.extraInfos = extraInfos;

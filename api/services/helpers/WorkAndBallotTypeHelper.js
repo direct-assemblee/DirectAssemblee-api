@@ -29,6 +29,12 @@ let self = module.exports = {
         return workTypeName
     },
 
+    workHasExtra: async function(workTypeId) {
+        let workTypeName = await self.getWorkTypeName(workTypeId);
+        return workTypeName === Constants.WORK_TYPE_PROPOSITIONS || workTypeName === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS
+            || workTypeName === Constants.WORK_TYPE_COMMISSIONS
+    },
+
     isEligibleForPush: function(workType) {
         return !self.isPublicSession(workType) && !self.isCommission(workType)
     },
