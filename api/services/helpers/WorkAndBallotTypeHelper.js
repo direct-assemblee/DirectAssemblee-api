@@ -47,6 +47,10 @@ let self = module.exports = {
         return self.isWorkType(workType, self.QUESTION)
     },
 
+    isReport: function(workType) {
+        return self.isWorkType(workType, self.REPORT)
+    },
+
     isCommission: function(workType) {
         return self.isWorkType(workType, self.COMMISSION)
     },

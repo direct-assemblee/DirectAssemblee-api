@@ -105,23 +105,21 @@ let createWorkTypeResponse = function(workType) {
 }
 
 let createThemeResponse = function(themeId, originalName) {
-    return ThemeService.getThemefromId(themeId)
-    .then(function(theme) {
-        if (theme) {
-            delete theme.typeName;
-        } else {
-            theme = {
-                id: 0,
-                name: 'Catégorisation à venir'
-            }
+    let theme = ThemeService.getThemefromId(themeId)
+    if (theme) {
+        delete theme.typeName;
+    } else {
+        theme = {
+            id: 0,
+            name: 'Catégorisation à venir'
         }
+    }
 
-        if (shouldShowThemeSubName(theme.name, originalName)) {
-            theme.fullName = originalName;
-            theme.shortName = ShortThemeHelper.findShorterName(originalName);
-        }
-        return theme;
-    })
+    if (shouldShowThemeSubName(theme.name, originalName)) {
+        theme.fullName = originalName;
+        theme.shortName = ShortThemeHelper.findShorterName(originalName);
+    }
+    return theme;
 }
 
 let shouldShowThemeSubName = function(themeName, originalThemeName) {

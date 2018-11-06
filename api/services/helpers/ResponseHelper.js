@@ -39,20 +39,22 @@ let self = module.exports = {
 
     createPayloadForActivity: function(deputyId, work) {
         let title = createWorkTitleForPush(work)
-        let theme = ThemeService.getThemefromId(work.theme)
-        let body = theme ? theme.name + ' : ' : '';
-        body += work.description;
-        let payload = {
-            notification: {
-                title: title,
-                body: body.substring(0, 197) + '...'
-            },
-            data: {
-                deputyId: '' + deputyId,
-                workId: '' + work.id
+        return ThemeService.getThemefromId(work.theme)
+        .then(function(theme) {
+            let body = theme ? theme.name + ' : ' : '';
+            body += work.description;
+            let payload = {
+                notification: {
+                    title: title,
+                    body: body.substring(0, 197) + '...'
+                },
+                data: {
+                    deputyId: '' + deputyId,
+                    workId: '' + work.id
+                }
             }
-        }
-        return payload;
+            return payload;
+        })
     },
 
     createPayloadForDailyVotes: function(deputyId, ballotsCount, theme, sameValue, counts) {
@@ -149,25 +151,16 @@ let voteValueWording = function(voteValue) {
 
 let createWorkTitleForPush = function(work) {
     let title = 'Votre député ';
-    switch(work.type) {
-        case Constants.WORK_TYPE_QUESTIONS:
+    if (WorkAndBallotTypeHelper.isQuestion(work.type)) {
         title += 'a posé une question';
-        break;
-        case Constants.WORK_TYPE_REPORTS:
+    } else if (WorkAndBallotTypeHelper.isReport(work.type)) {
         title += 'a rédigé un rapport';
-        break;
-        case Constants.WORK_TYPE_PROPOSITIONS:
-        title += 'a proposé une loi';
-        break;
-        case Constants.WORK_TYPE_COSIGNED_PROPOSITIONS:
-        title += 'a co-signé une proposition de loi';
-        break;
-        case Constants.WORK_TYPE_COMMISSIONS:
+    } else if (WorkAndBallotTypeHelper.isProposition(work.type)) {
+        title += work.isAuthor ? 'a proposé une loi' : 'a co-signé une proposition de loi';
+    } else if (WorkAndBallotTypeHelper.isCommission(work.type)) {
         title += 'a participé à une commission';
-        break;
-        case Constants.WORK_TYPE_PUBLIC_SESSIONS:
+    } else if (WorkAndBallotTypeHelper.isPublicSession(work.type)) {
         title += 'a participé à une séance publique';
-        break;
     }
     return title;
 }

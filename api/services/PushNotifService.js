@@ -212,12 +212,14 @@ let pushDeputyActivities = function(deputyId, activities) {
 }
 
 let pushDeputyActivity = function(deputyId, deputyActivity) {
-    let payload = ResponseHelper.createPayloadForActivity(deputyId, deputyActivity)
-    // console.log('title : ' + payload.notification.title)
-    // console.log('body : ' + payload.notification.body)
-    // console.log('deputyId : ' + payload.data.deputyId)
-    // console.log('workId : ' + payload.data.workId)
-    return pushPayloadForSubject(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload)
+    return ResponseHelper.createPayloadForActivity(deputyId, deputyActivity)
+    .then(function(payload) {
+        // console.log('title : ' + payload.notification.title)
+        // console.log('body : ' + payload.notification.body)
+        // console.log('deputyId : ' + payload.data.deputyId)
+        // console.log('workId : ' + payload.data.workId)
+        return pushPayloadForSubject(PARAM_TOPIC_PREFIX_DEPUTY + deputyId, payload)
+    })
 }
 
 let pushPayloadForSubject = function(subject, payload) {
