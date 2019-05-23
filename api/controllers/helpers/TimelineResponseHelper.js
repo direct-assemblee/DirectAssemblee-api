@@ -130,7 +130,7 @@ let shouldShowThemeSubName = function(themeName, originalThemeName) {
     } else if (themeName == originalThemeName) {
         shouldShow = false;
     } else {
-        if (themeName != null && themeName.toLowerCase().includes(originalThemeName.toLowerCase()) && (100 * originalThemeName.length / themeName.length >= 50)) {
+        if (themeName !== undefined && themeName.toLowerCase().includes(originalThemeName.toLowerCase()) && (100 * originalThemeName.length / themeName.length >= 50)) {
             shouldShow = false;
         }
     }
