@@ -46,7 +46,7 @@ let subscribe = function(instanceId, token, deputyId) {
 					return { code: 200, content: 'OK' };
 				})
 				.catch(function(err) {
-					console.log('error on Firebase subcription with token ' + token + ' and deputy ' + deputyId + ' ==> removing subscriber with id ' + subscriber.id + ' from deputy');
+					console.log('error on Firebase subcription with token ' + token + ' and deputy ' + deputyId + ' ==> removing subscriber with id ' + subscriber.instanceId + ' from deputy');
 					return { code: 400, content: err };
 				})
 			})
