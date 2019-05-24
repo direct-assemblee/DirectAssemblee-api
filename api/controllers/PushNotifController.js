@@ -26,7 +26,7 @@ module.exports = {
 		let deputyId = req.param(PARAM_DEPUTY_ID);
 		let type = req.param(PARAM_TYPE);
 		let workId = req.param(PARAM_WORK_ID);
-		if (deputyId && workId && Constants.WORK_TYPES.includes(type)) {
+		if (deputyId && workId && Constants.WORK_OFFICIAL_TYPES.includes(type)) {
 			TestService.sendPush(deputyId, type, workId);
 			return res.status(200).json('OK');
 		} else {
