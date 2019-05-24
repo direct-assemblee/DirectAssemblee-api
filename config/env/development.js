@@ -18,6 +18,7 @@ module.exports = {
 
     routes: {
         'GET /api/v1/testPushNotif' : 'PushNotifController.sendTestPushNotif', // ?deputyId=13&type={question/ballot/...}&workId=1212
+        'GET /v1/testPushNotif' : 'PushNotifController.sendTestPushNotif'
     },
 
     cronPush: '0 15 18 * * *'
