@@ -43,6 +43,7 @@ var self = module.exports = {
     createLawForTimeline: async function(law) {
         let response = {
             id: law.id,
+            title:law.title,
             lastBallotDate: DateHelper.formatDateForWS(law.lastBallotDate),
             ballotsCount: law.ballotsCount,
             fileUrl: law.fileUrl,
