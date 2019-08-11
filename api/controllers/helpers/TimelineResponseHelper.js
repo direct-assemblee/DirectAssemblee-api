@@ -41,9 +41,10 @@ var self = module.exports = {
     },
 
     createLawForTimeline: async function(law) {
+        let title = 'Scrutins de ' + law.title.charAt(0).toLowerCase() + law.title.slice(1);
         let response = {
             id: law.id,
-            title:law.title,
+            title: title,
             lastBallotDate: DateHelper.formatDateForWS(law.lastBallotDate),
             ballotsCount: law.ballotsCount,
             fileUrl: law.fileUrl,
