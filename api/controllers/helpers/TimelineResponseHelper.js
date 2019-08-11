@@ -18,8 +18,8 @@ var self = module.exports = {
     	let promises = [];
     	for (let i in items) {
     		let item = items[i];
-    		if (item.totalVotes > 0) {
-    			promises.push(self.createBallotDetailsResponse(item, deputy));
+    		if (item.lastBallotDate) {
+    			promises.push(self.createLawForTimeline(item, deputy));
     		} else {
     			promises.push(self.createWorkForTimeline(item, item.extraInfos));
     		}
@@ -38,6 +38,17 @@ var self = module.exports = {
             }
         }
         return ballotResponse
+    },
+
+    createLawForTimeline: async function(law) {
+        let response = {
+            id: law.id,
+            lastBallotDate: DateHelper.formatDateForWS(law.lastBallotDate),
+            ballotsCount: law.ballotsCount,
+            fileUrl: law.fileUrl,
+            theme: await createThemeResponse(law.theme, law.originalThemeName)
+        }
+        return response;
     },
 
     createWorkForTimeline: async function(work, extraInfos) {

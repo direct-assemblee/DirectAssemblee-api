@@ -44,7 +44,7 @@ let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, befo
         }
 
         if (!skipTheseItems) {
-            let sortedItems = sortItemsWithDateAndOfficialId(validItems)
+            let sortedItems = sortItemsWithDate(validItems)
             for (let i = offset ; i < sortedItems.length ; i++) {
                 foundItems.push(sortedItems[i])
             }
@@ -76,29 +76,23 @@ let getValidItems = function(items) {
 
 let handleTimelineResults = function(deputy, timelineItems) {
     return Promise.map(timelineItems, function(timelineItem) {
-        if (timelineItem.totalVotes) {
-            return retrieveVoteExtra(timelineItem, deputy);
-        } else {
-            if (WorkAndBallotTypeHelper.workHasExtra(timelineItem.type)) {
-                return ExtraInfoService.findExtraInfosForWork(timelineItem.id)
-                .then(function(extraInfos) {
-                    timelineItem.extraInfos = extraInfos;
-                    return timelineItem;
-                })
-            } else {
+        if (WorkAndBallotTypeHelper.workHasExtra(timelineItem.type)) {
+            return ExtraInfoService.findExtraInfosForWork(timelineItem.id)
+            .then(function(extraInfos) {
+                timelineItem.extraInfos = extraInfos;
                 return timelineItem;
-            }
+            })
+        } else {
+            return timelineItem;
         }
     })
 }
 
-let sortItemsWithDateAndOfficialId = function(items) {
+let sortItemsWithDate = function(items) {
     items.sort(function(a, b) {
-        var diff = DateHelper.getDiffInDays(a.date, b.date);
+        var diff = DateHelper.getDiffInDays(getTimelineItemDate(a), getTimelineItemDate(b));
         var result = diff === 0 ? 0 : diff > 0 ? 1 : -1;
-        if (result === 0 && a.officialId && b.officialId) {
-            result = parseInt(a.officialId) < parseInt(b.officialId) ? 1 : -1;
-        } else if (result === 0) {
+        if (result === 0) {
             let diff = DateHelper.getDiffInSeconds(a.createdAt, b.createdAt)
             result = diff === 0 ? 0 : diff > 0 ? 1 : -1
         }
@@ -107,13 +101,15 @@ let sortItemsWithDateAndOfficialId = function(items) {
     return items;
 }
 
+let getTimelineItemDate = function(timelineItem) {
+    return timelineItem.date ? timelineItem.date : timelineItem.lastBallotDate;
+}
+
 let findTimelineItems = function(deputy, afterDate, beforeDate) {
-    return BallotService.findBallotsBetweenDates(beforeDate, afterDate)
-    .then(function(results) {
+    return LawService.findLawsAndBallotsCountBetweenDates(beforeDate, afterDate)
+    .then(results => {
         return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
-        .then(function(works) {
-            return results.concat(works)
-        })
+        .then(works => results.concat(works))
     })
 }
 

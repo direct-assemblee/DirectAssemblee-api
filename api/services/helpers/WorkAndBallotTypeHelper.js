@@ -16,7 +16,7 @@ let self = module.exports = {
     BALLOT_UNDEFINED: 'Scrutin (type à venir)',
 
     getWorkTypeName: async function(workTypeId) {
-        let workTypeName = "Activity parlementaire (type inconnu)"
+        let workTypeName = "Activité parlementaire (type inconnu)"
         if (allWorkTypes == null) {
             allWorkTypes = await WorkTypeService.findAllWorkTypes()
         }
