@@ -16,7 +16,7 @@ var self = module.exports = {
     	for (let i in items) {
     		let item = items[i];
     		if (item.lastBallotDate) {
-    			promises.push(LawResponseHelper.createLawForTimeline(item, deputy));
+    			promises.push(LawResponseHelper.createLawResponse(item));
     		} else {
     			promises.push(self.createWorkForTimeline(item, item.extraInfos));
     		}
