@@ -4,8 +4,8 @@ let DateHelper = require('../../services/helpers/DateHelper.js');
 let ResponseHelper = require('../../services/helpers/ResponseHelper.js');
 let ThemeResponseHelper = require('./ThemeResponseHelper.js');
 let LawResponseHelper = require('./LawResponseHelper.js');
+let BallotResponseHelper = require('./BallotResponseHelper.js');
 let QuestionHelper = require('./QuestionHelper.js')
-let ShortThemeHelper = require('./ShortThemeHelper.js')
 let WorkAndBallotTypeHelper = require('../../services/helpers/WorkAndBallotTypeHelper.js')
 
 const NUMBER_OF_DEPUTIES = 577;
@@ -17,11 +17,26 @@ var self = module.exports = {
     		let item = items[i];
     		if (item.lastBallotDate) {
     			promises.push(LawResponseHelper.createLawResponse(item));
-    		} else {
+    		} else if (item.totalVotes > 0) {
+    			promises.push(BallotResponseHelper.createBallotDetailsResponse(item, deputy));
+            } else {
     			promises.push(self.createWorkForTimeline(item, item.extraInfos));
     		}
     	}
     	return Promise.all(promises);
+    },
+
+    createBallotDetailsResponse: async function(ballot, deputy) {
+        let ballotResponse = await self.prepareBallotResponse(ballot);
+        let voteValue = ResponseHelper.createVoteValueForWS(ballot.type, ballot.deputyVote)
+        ballotResponse.extraBallotInfo.deputyVote = {
+            'voteValue': voteValue,
+            'deputy': {
+                'firstname': deputy.firstname,
+                'lastname': deputy.lastname
+            }
+        }
+        return ballotResponse
     },
 
     createWorkForTimeline: async function(work, extraInfos) {

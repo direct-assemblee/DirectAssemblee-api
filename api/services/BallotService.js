@@ -16,10 +16,10 @@ module.exports = {
         .where({ date: { '>': searchedDate }})
     },
 
-    findBallotsBetweenDates: function(beforeDate, afterDate) {
+    findUncategorizedBallotsBetweenDates: function(beforeDate, afterDate) {
         return Ballot.find()
-        .where({ date: { '<=': beforeDate , '>': afterDate } })
-        .populate('type');
+        .where({ lawId: null, date: { '<=': beforeDate , '>': afterDate } })
+        .populate('type')
     },
 
     countBallotsForLaw: function(law) {
