@@ -4,6 +4,13 @@ const BALLOTS_PAGE_ITEMS_COUNT = 30;
 const BALLOT_TYPE_SOLEMN = 'SSO';
 
 module.exports = {
+    findBallotsForLaw: function(lawId) {
+        return Ballot.find()
+        .where({ lawId: lawId })
+        .populate('type')
+        .sort('officialId DESC')
+    },
+
     findBallotsFromDate: function(searchedDate) {
         return Ballot.find()
         .where({ date: { '>': searchedDate }})

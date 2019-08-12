@@ -6,10 +6,28 @@ let LRU = require('lru-cache'),
     },
     cache = LRU(options);
 
-let KEY_TIMELINE_PREFIX = 'timeline'
+const KEY_TIMELINE_PREFIX = 'timeline'
+const KEY_LAW_BALLOTS_PREFIX = 'lawBallots'
+
 let useCount = 0;
 
 let self = module.exports = {
+    getLawBallots: function(lawId) {
+        return self.get(buildLawballotsKeyStart(lawId))
+    },
+
+    setLawBallots: function(lawId, content) {
+        self.set(buildLawballotsKeyStart(lawId), content)
+    },
+
+    getLawBallotsForDeputy: function(lawId, deputyId) {
+        return self.get(buildLawBallotsForDeputyKey(lawId, deputyId))
+    },
+
+    setLawBallotsForDeputy: function(lawId, deputyId, content) {
+        self.set(buildLawBallotsForDeputyKey(lawId, deputyId), content)
+    },
+
     getTimeline: function(deputyId, page) {
         return self.get(buildTimelineKey(deputyId, page))
     },
@@ -51,8 +69,16 @@ let self = module.exports = {
     }
 }
 
+let buildLawBallotsForDeputyKey = function(lawId, deputyId) {
+    return buildLawballotsKeyStart(lawId) + '_' + deputyId
+}
+
 let buildTimelineKey = function(deputyId, page) {
     return buildTimelineKeyStart(deputyId) + '_' + page
+}
+
+let buildLawballotsKeyStart = function(lawId) {
+    return KEY_LAW_BALLOTS_PREFIX + '_' + lawId
 }
 
 let buildTimelineKeyStart = function(deputyId) {

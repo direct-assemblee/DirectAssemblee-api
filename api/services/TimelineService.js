@@ -112,15 +112,3 @@ let findTimelineItems = function(deputy, afterDate, beforeDate) {
         .then(works => results.concat(works))
     })
 }
-
-let retrieveVoteExtra = function(ballot, deputy) {
-    if (deputy) {
-        return VoteService.findVoteForDeputyAndBallot(deputy.officialId, ballot.officialId)
-        .then(function(vote) {
-            ballot.deputyVote = vote ? vote.value : 'missing';
-            return ballot;
-        })
-    } else {
-        return ballot;
-    }
-}

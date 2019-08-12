@@ -4,6 +4,11 @@ const BALLOTS_PAGE_ITEMS_COUNT = 30;
 const BALLOT_TYPE_SOLEMN = 'SSO';
 
 module.exports = {
+    findLaw: function(lawId) {
+        return Law.findOne()
+        .where({ id: lawId })
+    },
+
     findLawsFromDate: function(searchedDate) {
         return Law.find()
         .where({ lastBallotDate: { '>': searchedDate }})
