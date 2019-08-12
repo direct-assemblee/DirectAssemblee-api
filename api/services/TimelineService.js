@@ -5,20 +5,18 @@ let WorkService = require('./WorkService.js');
 let Constants = require('./Constants.js');
 let Promise = require('bluebird');
 
-const TIMELINE_PAGE_ITEMS_COUNT = 20;
-const TIMELINE_MONTHS_INCREMENT_STEP = 1;
+const NUMBER_OF_MONTHS = 1;
+const TIMELINE_PAGE_ITEMS_MIN_COUNT = 20;
 
 module.exports = {
     getTimeline: function(deputy, offset) {
         let beforeDate = DateHelper.getFormattedNow();
-        let afterDate = DateHelper.getDateForMonthsBack(TIMELINE_MONTHS_INCREMENT_STEP);
-        let itemsOffset = offset * TIMELINE_PAGE_ITEMS_COUNT;
-        return getDeputyTimeline(deputy, deputy.currentMandateStartDate, afterDate, beforeDate, itemsOffset)
+        let afterDate = DateHelper.getDayBeforeAPreviousMonth(NUMBER_OF_MONTHS - 1, beforeDate)
+        return getTimelineForMonth(deputy, deputy.currentMandateStartDate, afterDate, beforeDate)
     }
 }
 
-let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, beforeDate, requestedOffset) {
-    let offset = requestedOffset;
+let getTimelineForMonth = async function(deputy, mandateStartDate, afterDate, beforeDate) {
     let reachedMandateStartDate = false;
     if (mandateStartDate > afterDate) {
         afterDate = mandateStartDate
@@ -26,59 +24,31 @@ let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, befo
 
     var foundItems = [];
     do {
+        console.log(beforeDate + ' => ' + afterDate)
+
         var items = await findTimelineItems(deputy, afterDate, beforeDate)
         if (items.length == 0 && afterDate < mandateStartDate) {
-            break;
+            return;
         }
 
-        var validItems = getValidItems(items);
+        var validItems = items.filter(item => item != null);
+        foundItems = foundItems.concat(sortItemsWithDate(validItems))
 
-        let tmpOffset = offset - validItems.length;
-        let skipTheseItems = tmpOffset >= 0;
-        let needEvenMore = validItems.length - offset + foundItems.length < TIMELINE_PAGE_ITEMS_COUNT;
-        reachedMandateStartDate = mandateStartDate === afterDate;
-
-        if ((skipTheseItems || needEvenMore) && !reachedMandateStartDate) {
-            beforeDate = DateHelper.subtractAndFormat(beforeDate, TIMELINE_MONTHS_INCREMENT_STEP, 'months');
-            afterDate = DateHelper.subtractAndFormat(afterDate, TIMELINE_MONTHS_INCREMENT_STEP, 'months');
+        let needEvenMore = foundItems.length < TIMELINE_PAGE_ITEMS_MIN_COUNT;
+        if (needEvenMore && !reachedMandateStartDate) {
+            beforeDate = afterDate;
+            afterDate = DateHelper.getDayBeforeAPreviousMonth(0, beforeDate)
         }
+    } while(foundItems.length < TIMELINE_PAGE_ITEMS_MIN_COUNT && !reachedMandateStartDate);
 
-        if (!skipTheseItems) {
-            let sortedItems = sortItemsWithDate(validItems)
-            for (let i = offset ; i < sortedItems.length ; i++) {
-                foundItems.push(sortedItems[i])
-            }
-        }
-
-        offset = skipTheseItems ? tmpOffset : needEvenMore ? 0 : offset;
-    } while(foundItems.length < TIMELINE_PAGE_ITEMS_COUNT && !reachedMandateStartDate);
-
-    return handlePageItems(deputy, foundItems);
-}
-
-let handlePageItems = function(deputy, validItems) {
-    let results = []
-    for (let i = 0 ; i < validItems.length && results.length < TIMELINE_PAGE_ITEMS_COUNT ; i++) {
-        results.push(validItems[i]);
-    }
-    return handleTimelineResults(deputy, results)
-}
-
-let getValidItems = function(items) {
-    let validItems = [];
-    for (let i in items) {
-        if (items[i]) {
-            validItems.push(items[i])
-        }
-    }
-    return validItems;
+    return handleTimelineResults(deputy, foundItems);
 }
 
 let handleTimelineResults = function(deputy, timelineItems) {
-    return Promise.map(timelineItems, function(timelineItem) {
+    return Promise.map(timelineItems, timelineItem => {
         if (WorkAndBallotTypeHelper.workHasExtra(timelineItem.type)) {
             return ExtraInfoService.findExtraInfosForWork(timelineItem.id)
-            .then(function(extraInfos) {
+            .then(extraInfos => {
                 timelineItem.extraInfos = extraInfos;
                 return timelineItem;
             })
@@ -108,7 +78,11 @@ let getTimelineItemDate = function(timelineItem) {
 let findTimelineItems = function(deputy, afterDate, beforeDate) {
     return LawService.findLawsAndBallotsCountBetweenDates(beforeDate, afterDate)
     .then(results => {
-        return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
-        .then(works => results.concat(works))
+        // return BallotService.findUncategorizedBallotsBetweenDates(beforeDate, afterDate)
+        // .then(ballots => {
+            return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
+            // .then(works => results.concat(ballots).concat(works))
+            .then(works => results.concat(works))
+        // })
     })
 }

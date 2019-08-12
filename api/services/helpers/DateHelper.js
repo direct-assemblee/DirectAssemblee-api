@@ -59,6 +59,21 @@ let self = module.exports = {
         return self.subtractAndFormat(moment(), numberOfMonths, 'months');
     },
 
+    getDayBeforeAPreviousMonth: function(numberOfMonthsBack, date) {
+        var firstDayOfAPreviousMonth = self.getFirstDayOfAPreviousMonth(numberOfMonthsBack, date)
+        return self.subtractAndFormat(firstDayOfAPreviousMonth, 1, 'days');
+    },
+
+    getFirstDayOfAPreviousMonth: function(numberOfMonthsBack, date) {
+        var givenDate = moment(date);
+        var previousMonthDate = self.subtract(givenDate, numberOfMonthsBack, 'months');
+        return self.getFirstDayOfMonth(previousMonthDate);
+    },
+
+    getFirstDayOfMonth: function(date) {
+        return self.subtractAndFormat(date, date.date() - 1, 'days');
+    },
+
     getDateForDaysBack: function(numberOfDays) {
         return self.subtractAndFormat(moment(), numberOfDays, 'days');
     },
@@ -66,6 +81,10 @@ let self = module.exports = {
     subtractAndFormat: function(date, quantity, timeUnit) {
         var newDate = moment(date).subtract(quantity, timeUnit);
         return newDate.format('YYYY-MM-DD');
+    },
+
+    subtract: function(date, quantity, timeUnit) {
+        return  moment(date).subtract(quantity, timeUnit);
     },
 
     isLaterOrSame: function(date1, date2) {
