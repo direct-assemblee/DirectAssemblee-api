@@ -9,8 +9,17 @@ let ResponseBuilder = require('./helpers/ResponseBuilder.js');
 
 const PARAM_DEPUTY_ID = 'deputyId'
 const PARAM_LAW_ID = 'lawId'
+const PARAM_TIMELINE_PAGE = 'page'
 
 let self = module.exports = {
+	getUndefinedBallots: function(req, res) {
+		let deputyId = req.param(PARAM_DEPUTY_ID);
+		let page = req.param(PARAM_TIMELINE_PAGE);
+		if (deputyId && page) {
+
+		}
+	},
+
 	getLawBallots: function(req, res) {
 		let deputyId = req.param(PARAM_DEPUTY_ID);
 		let lawId = req.param(PARAM_LAW_ID);
