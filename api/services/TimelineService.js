@@ -121,9 +121,16 @@ let findTimelineItems = function(deputy, afterDate, beforeDate) {
 
 let createGroupedBallots = function(ballots) {
     let title = ' - type non déterminé'
+    var lastBallotDate;
+    ballots.forEach(ballot => {
+        if (lastBallotDate == null || DateHelper.isLaterOrSame(lastBallotDate, ballot.date)) {
+            lastBallotDate = ballot.date;
+        }
+    })
     return {
         title: title,
-        lastBallotDate: DateHelper.formatDateForWS(ballots[0].date),
-        ballotsCount: ballots.length
+        lastBallotDate: DateHelper.formatDateForWS(lastBallotDate),
+        ballotsCount: ballots.length,
+        ballots: ballots
     }
 }
