@@ -19,8 +19,6 @@ module.exports = {
     findUncategorizedBallotsBetweenDates: function(beforeDate, afterDate) {
         return Ballot.find()
         .where({ lawId: null, date: { '<=': beforeDate , '>': afterDate } })
-        .populate('type')
-        .sort('officialId DESC')
     },
 
     countBallotsForLaw: function(law) {

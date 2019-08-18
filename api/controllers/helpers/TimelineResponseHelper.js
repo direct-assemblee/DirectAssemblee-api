@@ -17,26 +17,11 @@ var self = module.exports = {
     		let item = items[i];
     		if (item.lastBallotDate) {
     			promises.push(LawResponseHelper.createLawResponse(item));
-    		} else if (item.totalVotes > 0) {
-    			promises.push(BallotResponseHelper.createBallotDetailsResponse(item, deputy));
-            } else {
+    	    } else {
     			promises.push(self.createWorkForTimeline(item, item.extraInfos));
     		}
     	}
     	return Promise.all(promises);
-    },
-
-    createBallotDetailsResponse: async function(ballot, deputy) {
-        let ballotResponse = await self.prepareBallotResponse(ballot);
-        let voteValue = ResponseHelper.createVoteValueForWS(ballot.type, ballot.deputyVote)
-        ballotResponse.extraBallotInfo.deputyVote = {
-            'voteValue': voteValue,
-            'deputy': {
-                'firstname': deputy.firstname,
-                'lastname': deputy.lastname
-            }
-        }
-        return ballotResponse
     },
 
     createWorkForTimeline: async function(work, extraInfos) {

@@ -22,7 +22,10 @@ var self = module.exports = {
     },
 
     createLawResponse: async function(law) {
-        let title = law.ballotsCount > 1 ? law.id != null ? 'Scrutins de ' : 'Scrutins - ' : law.id != null ? 'Scrutin de ' : 'Scrutin - '
+        let title = law.ballotsCount > 1 ? 'Scrutins' : 'Scrutin'
+        if (law.id) {
+            title += ' de '
+        }
         title += law.title.charAt(0).toLowerCase() + law.title.slice(1);
         let response = {
             id: law.id,

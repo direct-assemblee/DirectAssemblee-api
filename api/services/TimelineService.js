@@ -106,22 +106,24 @@ let getTimelineItemDate = function(timelineItem) {
 }
 
 let findTimelineItems = function(deputy, afterDate, beforeDate) {
-    return LawService.findLawsAndBallotsCountBetweenDates(beforeDate, afterDate)
+    return LawService.findLawsCountBetweenDates(beforeDate, afterDate)
     .then(results => {
-        return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
-        .then(works => {
-            return BallotService.findUncategorizedBallotsBetweenDates(beforeDate, afterDate)
-            .then(ballots => {
-                var groupepBallots;
-                if (ballots != null && ballots.length > 0) {
-                    groupedBallots = {
-                        title: 'type non déterminé',
-                        lastBallotDate: DateHelper.formatDateForWS(ballots[0].date),
-                        ballotsCount: ballots.length
-                    }
-                }
-                return results.concat(works).concat(groupedBallots)
-            })
+        return BallotService.findUncategorizedBallotsBetweenDates(beforeDate, afterDate)
+        .then(ballots => {
+            if (ballots != null && ballots.length > 0) {
+                results.push(createGroupedBallots(ballots))
+            }
+            return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
+            .then(works => results.concat(works))
         })
     })
+}
+
+let createGroupedBallots = function(ballots) {
+    let title = ' - type non déterminé'
+    return {
+        title: title,
+        lastBallotDate: DateHelper.formatDateForWS(ballots[0].date),
+        ballotsCount: ballots.length
+    }
 }

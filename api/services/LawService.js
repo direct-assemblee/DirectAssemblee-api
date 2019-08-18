@@ -14,7 +14,7 @@ module.exports = {
         .where({ lastBallotDate: { '>': searchedDate }})
     },
 
-    findLawsAndBallotsCountBetweenDates: function(beforeDate, afterDate) {
+    findLawsCountBetweenDates: function(beforeDate, afterDate) {
         return findLawsBetweenDates(beforeDate, afterDate)
         .then(laws => {
             let promises = [];
