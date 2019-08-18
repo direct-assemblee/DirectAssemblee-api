@@ -1,5 +1,6 @@
 let DateHelper = require('./helpers/DateHelper.js');
 let WorkAndBallotTypeHelper = require('./helpers/WorkAndBallotTypeHelper.js');
+let BallotHelper = require('./helpers/BallotHelper.js');
 let BallotService = require('./BallotService.js');
 let WorkService = require('./WorkService.js');
 let Constants = require('./Constants.js');
@@ -111,7 +112,13 @@ let findTimelineItems = function(deputy, afterDate, beforeDate) {
         return BallotService.findUncategorizedBallotsBetweenDates(beforeDate, afterDate)
         .then(ballots => {
             if (ballots != null && ballots.length > 0) {
-                results.push(createGroupedBallots(ballots))
+                return Promise.map(ballots, ballot => {
+                    return BallotHelper.getDeputyVote(deputy.officialId, ballot)
+                })
+                .then(ballotsWithVotes => {
+                    results.push(createGroupedBallots(ballotsWithVotes))
+                    return results
+                })
             }
             return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
             .then(works => results.concat(works))

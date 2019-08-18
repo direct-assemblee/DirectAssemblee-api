@@ -5,6 +5,7 @@ let BallotService = require('../services/BallotService.js');
 let VoteService = require('../services/VoteService.js');
 let CacheService = require('../services/CacheService.js');
 let LawResponseHelper = require('./helpers/LawResponseHelper.js');
+let BallotHelper = require('../services/helpers/BallotHelper.js');
 let ResponseBuilder = require('./helpers/ResponseBuilder.js');
 
 const PARAM_DEPUTY_ID = 'deputyId'
@@ -65,7 +66,7 @@ let getLawBallots = function(lawId, deputyId) {
 			return getValidLawWithBallots(lawId)
 			.then(lawWithBallots => {
 				return Promise.map(lawWithBallots.ballots, ballot => {
-					return getDeputyVote(deputyId, ballot)
+					return BallotHelper.getDeputyVote(deputyId, ballot)
 				})
 				.then(ballotsWithVotes => {
 					lawWithBallots.ballots = ballotsWithVotes;
@@ -103,12 +104,4 @@ let getValidLawWithBallots = function(lawId) {
 			})
 		}
 	})
-}
-
-let getDeputyVote = function(deputyId, ballot) {
-    return VoteService.findVoteForDeputyAndBallot(deputyId, ballot.officialId)
-    .then(vote => {
-        ballot.deputyVote = vote ? vote.value : 'missing';
-        return ballot;
-    })
 }
