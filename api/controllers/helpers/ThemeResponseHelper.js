@@ -13,25 +13,7 @@ var self = module.exports = {
                     name: 'Catégorisation à venir'
                 }
             }
-            if (shouldShowThemeSubName(theme.name, originalName)) {
-                theme.fullName = originalName;
-                theme.shortName = ShortThemeHelper.findShorterName(originalName);
-            }
             return theme;
         })
     }
-}
-
-let shouldShowThemeSubName = function(themeName, originalThemeName) {
-    let shouldShow = true;
-    if (!originalThemeName || originalThemeName.length === 0) {
-        shouldShow = false;
-    } else if (themeName == originalThemeName) {
-        shouldShow = false;
-    } else {
-        if (themeName !== undefined && themeName.toLowerCase().includes(originalThemeName.toLowerCase()) && (100 * originalThemeName.length / themeName.length >= 50)) {
-            shouldShow = false;
-        }
-    }
-    return shouldShow;
 }

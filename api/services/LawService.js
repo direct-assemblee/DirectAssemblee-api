@@ -7,14 +7,16 @@ module.exports = {
     findLaw: function(lawId) {
         return Law.findOne()
         .where({ id: lawId })
+        .populate('typeId')
     },
 
     findLawsFromDate: function(searchedDate) {
         return Law.find()
         .where({ lastBallotDate: { '>': searchedDate }})
+        .populate('typeId')
     },
 
-    findLawsCountBetweenDates: function(beforeDate, afterDate) {
+    findLawsBetweenDates: function(beforeDate, afterDate) {
         return findLawsBetweenDates(beforeDate, afterDate)
         .then(laws => {
             let promises = [];
@@ -36,5 +38,6 @@ let addBallotsCountToLaw = function(law) {
 
 let findLawsBetweenDates = function(beforeDate, afterDate) {
     return Law.find()
-    .where({ lastBallotDate: { '<=': beforeDate , '>': afterDate }});
+    .where({ lastBallotDate: { '<=': beforeDate , '>': afterDate }})
+    .populate('typeId');
 }

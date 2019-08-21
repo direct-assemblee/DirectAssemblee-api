@@ -70,5 +70,5 @@ module.exports.routes = {
 'GET /v1/votes': 'VoteController.getVotes',
 'GET /v1/features': 'FeatureController.getFeatures',
 'GET /v1/activityRates': 'StatsController.getActivityRates', // ?groupId=1 (optional)
-'GET /v1/lawBallots': 'LawController.getLawBallots', // ?lawId=22
+'GET /v1/lawBallots': 'LawController.getLawBallots', // ?lawId=22&?deputyId=13
 };

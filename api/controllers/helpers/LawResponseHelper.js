@@ -22,18 +22,21 @@ var self = module.exports = {
     },
 
     createLawResponse: async function(law) {
-        let title = law.ballotsCount > 1 ? 'Scrutins' : 'Scrutin'
+        let typeName = law.typeId != null ? law.typeId.name : ' - type non déterminé'
+        let contentType = law.ballotsCount > 1 ? 'Scrutins' : 'Scrutin'
         if (law.id) {
-            title += ' de '
+            contentType += ' de '
         }
-        title += law.title.charAt(0).toLowerCase() + law.title.slice(1);
+        contentType += typeName.charAt(0).toLowerCase() + typeName.slice(1);
         let response = {
             id: law.id,
-            title: title,
+            contentType: contentType,
+            subject: law.name,
+            type: law.typeId,
             lastBallotDate: DateHelper.formatDateForWS(law.lastBallotDate),
             ballotsCount: law.ballotsCount,
             fileUrl: law.fileUrl,
-            theme: await ThemeResponseHelper.createThemeResponse(law.theme, law.originalThemeName)
+            theme: await ThemeResponseHelper.createThemeResponse(law.theme, law.name)
         }
         return response;
     }

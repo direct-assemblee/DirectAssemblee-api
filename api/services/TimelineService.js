@@ -107,7 +107,7 @@ let getTimelineItemDate = function(timelineItem) {
 }
 
 let findTimelineItems = function(deputy, afterDate, beforeDate) {
-    return LawService.findLawsCountBetweenDates(beforeDate, afterDate)
+    return LawService.findLawsBetweenDates(beforeDate, afterDate)
     .then(results => {
         return BallotService.findUncategorizedBallotsBetweenDates(beforeDate, afterDate)
         .then(ballots => {
@@ -127,7 +127,6 @@ let findTimelineItems = function(deputy, afterDate, beforeDate) {
 }
 
 let createGroupedBallots = function(ballots) {
-    let title = ' - type non déterminé'
     var lastBallotDate;
     ballots.forEach(ballot => {
         if (lastBallotDate == null || DateHelper.isLaterOrSame(lastBallotDate, ballot.date)) {
@@ -135,7 +134,6 @@ let createGroupedBallots = function(ballots) {
         }
     })
     return {
-        title: title,
         lastBallotDate: DateHelper.formatDateForWS(lastBallotDate),
         ballotsCount: ballots.length,
         ballots: ballots
