@@ -1,6 +1,7 @@
 let WorkTypeService = require('../WorkTypeService')
+let WorkSubtypeService = require('../WorkSubtypeService')
 
-let allWorkTypes;
+let allWorkSubtypes;
 
 let self = module.exports = {
     QUESTION: { id: 1, name: 'Question' },
@@ -9,24 +10,21 @@ let self = module.exports = {
     COMMISSION: { id: 4, name: 'Commission' },
     PUBLIC_SESSION: { id: 5, name: 'Séance publique' },
 
-    BALLOT_SOLEMN: 'Scrutin solennel',
-    BALLOT_ORDINARY: 'Scrutin ordinaire',
-    BALLOT_MOTION: 'Motion de censure',
-    BALLOT_OTHER: 'Autre scrutin',
-    BALLOT_UNDEFINED: 'Scrutin (type à venir)',
-
-    getWorkTypeName: async function(workTypeId) {
+    getNameForSubtype: async function(subtypeId) {
         let workTypeName = "Activité parlementaire (type inconnu)"
-        if (allWorkTypes == null) {
-            allWorkTypes = await WorkTypeService.findAll()
+        if (allWorkSubtypes == null) {
+            allWorkSubtypes = await WorkSubtypeService.findAll()
         }
-        for (let i in allWorkTypes) {
-            if (allWorkTypes[i].id === workTypeId) {
-                workTypeName = allWorkTypes[i].name
-                break;
+        allWorkSubtypes.forEach(workSubtype => {
+            if (workSubtype.id == subtypeId) {
+                if (workSubtype.parentTypeId.id == self.COMMISSION.id || workSubtype.parentTypeId.id == self.PUBLIC_SESSION.id) {
+                    workTypeName = workSubtype.parentTypeId.displayName;
+                } else {
+                    workTypeName = workSubtype.name;
+                }
             }
-        }
-        return workTypeName
+        })
+        return workTypeName;
     },
 
     workHasExtra: async function(workTypeId) {
@@ -65,9 +63,5 @@ let self = module.exports = {
         } else {
             return searchWorkType == referenceWorkType.id
         }
-    },
-
-    isMotion: function(ballotType) {
-        return ballotType == self.BALLOT_MOTION
     }
 }

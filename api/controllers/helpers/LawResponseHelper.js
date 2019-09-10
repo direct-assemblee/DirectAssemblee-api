@@ -31,7 +31,7 @@ var self = module.exports = {
         let response = {
             id: law.id,
             contentType: contentType,
-            subject: law.name,
+            name: law.name,
             type: law.typeId,
             lastBallotDate: DateHelper.formatDateForWS(law.lastBallotDate),
             ballotsCount: law.ballotsCount,

@@ -1,5 +1,5 @@
 let self = module.exports = {
-    findAllWorkTypes: function() {
+    findAll: function() {
         return WorkType.find()
     }
 }
