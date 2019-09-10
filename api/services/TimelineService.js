@@ -1,5 +1,5 @@
 let DateHelper = require('./helpers/DateHelper.js');
-let WorkAndBallotTypeHelper = require('./helpers/WorkAndBallotTypeHelper.js');
+let WorkTypeHelper = require('./helpers/WorkTypeHelper.js');
 let BallotHelper = require('./helpers/BallotHelper.js');
 let BallotService = require('./BallotService.js');
 let WorkService = require('./WorkService.js');
@@ -76,8 +76,8 @@ let getValidItems = function(items) {
 }
 
 let handleTimelineResults = function(deputy, timelineItems) {
-    return Promise.map(timelineItems, function(timelineItem) {
-        if (WorkAndBallotTypeHelper.workHasExtra(timelineItem.type)) {
+    return Promise.map(timelineItems, async function(timelineItem) {
+        if (await WorkTypeHelper.workHasExtra(timelineItem.type)) {
             return ExtraInfoService.findExtraInfosForWork(timelineItem.id)
             .then(function(extraInfos) {
                 timelineItem.extraInfos = extraInfos;

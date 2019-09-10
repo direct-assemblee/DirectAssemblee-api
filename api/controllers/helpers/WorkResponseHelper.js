@@ -20,7 +20,7 @@ var self = module.exports = {
         response.theme = subtheme.theme;
 
         let description = work.description;
-        if (WorkTypeHelper.isQuestion(work.type)) {
+        if (await WorkTypeHelper.isQuestion(work.subtypeId)) {
             description = QuestionHelper.formatQuestionWithLineBreaks(description);
         }
         response.description = description;
@@ -30,16 +30,13 @@ var self = module.exports = {
                 response.extraInfos[extraInfos[i].info] = extraInfos[i].value;
             }
         }
-        if (WorkTypeHelper.isCommission(work.type)) {
+        if (await WorkTypeHelper.isCommission(work.subtypeId)) {
             if (response.extraInfos) {
                 response.title = response.extraInfos['commissionName']
             }
-        } else if (WorkTypeHelper.isPublicSession(work.type)) {
+        } else if (await WorkTypeHelper.isPublicSession(work.subtypeId)) {
             response.title = 'Séance publique'
         } else {
-            if (WorkTypeHelper.isProposition(work.type) && !work.isAuthor) {
-                response.type = 'cosigned_law_proposal'
-            }
             response.title = work.title
         }
         return response;

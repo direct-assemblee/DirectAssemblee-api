@@ -1,10 +1,11 @@
 let DateHelper = require('./DateHelper.js');
-let WorkAndBallotTypeHelper = require('./WorkAndBallotTypeHelper.js');
+let BallotTypeHelper = require('./BallotTypeHelper.js');
+let WorkTypeHelper = require('./WorkTypeHelper.js');
 let ThemeService = require('../ThemeService.js')
 
 let self = module.exports = {
     createVoteValueForWS: function(ballotType, voteValue) {
-        if (WorkAndBallotTypeHelper.isMotion(ballotType.displayName)) {
+        if (BallotTypeHelper.isMotion(ballotType.displayName)) {
             return voteValue === 'for' ? 'signed' : 'not_signed'
         } else {
             return voteValue ? voteValue : 'missing';
@@ -37,8 +38,8 @@ let self = module.exports = {
         return push;
     },
 
-    createPayloadForActivity: function(deputyId, work) {
-        let title = createWorkTitleForPush(work)
+    createPayloadForActivity: async function(deputyId, work) {
+        let title = await createWorkTitleForPush(work)
         return ThemeService.getThemefromId(work.theme)
         .then(function(theme) {
             let body = theme ? theme.name + ' : ' : '';
@@ -149,17 +150,17 @@ let voteValueWording = function(voteValue) {
     return wording
 }
 
-let createWorkTitleForPush = function(work) {
+let createWorkTitleForPush = async function(work) {
     let title = 'Votre député ';
-    if (WorkAndBallotTypeHelper.isQuestion(work.type)) {
+    if (await WorkTypeHelper.isQuestion(work.subtypeId)) {
         title += 'a posé une question';
-    } else if (WorkAndBallotTypeHelper.isReport(work.type)) {
+    } else if (await WorkTypeHelper.isReport(work.subtypeId)) {
         title += 'a rédigé un rapport';
-    } else if (WorkAndBallotTypeHelper.isProposition(work.type)) {
+    } else if (await WorkTypeHelper.isProposition(work.subtypeId)) {
         title += work.isAuthor ? 'a proposé une loi' : 'a co-signé une proposition de loi';
-    } else if (WorkAndBallotTypeHelper.isCommission(work.type)) {
+    } else if (await WorkTypeHelper.isCommission(work.subtypeId)) {
         title += 'a participé à une commission';
-    } else if (WorkAndBallotTypeHelper.isPublicSession(work.type)) {
+    } else if (await WorkTypeHelper.isPublicSession(work.subtypeId)) {
         title += 'a participé à une séance publique';
     }
     return title;

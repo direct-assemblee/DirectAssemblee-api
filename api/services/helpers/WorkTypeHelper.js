@@ -1,7 +1,5 @@
-let WorkTypeService = require('../WorkTypeService')
 let WorkSubtypeService = require('../WorkSubtypeService')
-
-let allWorkSubtypes;
+let Promise = require('bluebird');
 
 let self = module.exports = {
     QUESTION: { id: 1, name: 'Question' },
@@ -11,57 +9,75 @@ let self = module.exports = {
     PUBLIC_SESSION: { id: 5, name: 'Séance publique' },
 
     getNameForSubtype: async function(subtypeId) {
-        let workTypeName = "Activité parlementaire (type inconnu)"
-        if (allWorkSubtypes == null) {
-            allWorkSubtypes = await WorkSubtypeService.findAll()
-        }
-        allWorkSubtypes.forEach(workSubtype => {
-            if (workSubtype.id == subtypeId) {
-                if (workSubtype.parentTypeId.id == self.COMMISSION.id || workSubtype.parentTypeId.id == self.PUBLIC_SESSION.id) {
-                    workTypeName = workSubtype.parentTypeId.displayName;
-                } else {
-                    workTypeName = workSubtype.name;
+        return WorkSubtypeService.findAll()
+        .then(subtypes => {
+            let workTypeName = "Activité parlementaire (type inconnu)"
+            subtypes.forEach(workSubtype => {
+                if (workSubtype.id == subtypeId) {
+                    if (workSubtype.parentTypeId.id == self.COMMISSION.id || workSubtype.parentTypeId.id == self.PUBLIC_SESSION.id) {
+                        workTypeName = workSubtype.parentTypeId.displayName;
+                    } else {
+                        workTypeName = workSubtype.name;
+                    }
                 }
-            }
+            })
+            return workTypeName;
         })
-        return workTypeName;
     },
 
-    workHasExtra: async function(workTypeId) {
-        let workTypeName = await self.getWorkTypeName(workTypeId);
-        return workTypeName === Constants.WORK_TYPE_PROPOSITIONS || workTypeName === Constants.WORK_TYPE_COSIGNED_PROPOSITIONS
-            || workTypeName === Constants.WORK_TYPE_COMMISSIONS
+    workHasExtra: async function(workSubtype) {
+        let isProposition = await self.isProposition(workSubtype)
+        let isCommission = await self.isCommission(workSubtype)
+        return isProposition || isCommission
     },
 
-    isEligibleForPush: function(workType) {
-        return !self.isPublicSession(workType) && !self.isCommission(workType)
+    isEligibleForPush: async function(workSubtype) {
+        let isPublicSession = await self.isPublicSession(workSubtype)
+        let isCommission = await self.isCommission(workSubtype)
+        return !(isPublicSession || isCommission)
     },
 
-    isPublicSession: function(workType) {
-        return self.isWorkType(workType, self.PUBLIC_SESSION)
+    isPublicSession: async function(workSubtype) {
+        return await isWorkType(workSubtype, self.PUBLIC_SESSION)
     },
 
-    isQuestion: function(workType) {
-        return self.isWorkType(workType, self.QUESTION)
+    isQuestion: async function(workSubtype) {
+        return await isWorkType(workSubtype, self.QUESTION)
     },
 
-    isReport: function(workType) {
-        return self.isWorkType(workType, self.REPORT)
+    isReport: async function(workSubtype) {
+        return await isWorkType(workSubtype, self.REPORT)
     },
 
-    isCommission: function(workType) {
-        return self.isWorkType(workType, self.COMMISSION)
+    isCommission: async function(workSubtype) {
+        return await isWorkType(workSubtype, self.COMMISSION)
     },
 
-    isProposition: function(workType) {
-        return self.isWorkType(workType, self.PROPOSITION)
-    },
-
-    isWorkType: function(searchWorkType, referenceWorkType) {
-        if (searchWorkType && searchWorkType.name) {
-            return searchWorkType.name == referenceWorkType.name
-        } else {
-            return searchWorkType == referenceWorkType.id
-        }
+    isProposition: async function(workSubtype) {
+        return await isWorkType(workSubtype, self.PROPOSITION)
     }
+}
+
+let isWorkType = async function(searchWorkSubtype, referenceWorkType) {
+    let parentTypeId = await findParentTypeId(searchWorkSubtype)
+    return referenceWorkType.id == parentTypeId
+}
+
+let findParentTypeId = function(searchedTypeNameOrId) {
+    return WorkSubtypeService.findAll()
+    .then(subtypes => {
+        let id;
+        for (let i in subtypes) {
+            if (isCorrectType(subtypes[i], searchedTypeNameOrId)) {
+                id = subtypes[i].parentTypeId.id
+                break;
+            }
+        }
+        return id
+    })
+}
+
+let isCorrectType = function(referenceType, searchedTypeNameOrId) {
+    return searchedTypeNameOrId == referenceType.id
+        || (typeof searchedTypeNameOrId === 'string' && searchedTypeNameOrId.startsWith(referenceType.officialPath))
 }
