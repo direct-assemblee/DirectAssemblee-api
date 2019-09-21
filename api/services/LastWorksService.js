@@ -24,7 +24,7 @@ module.exports = {
         }
     },
 
-    find24hVotes: function() {
+    findLast24hVotes: function() {
         return findVotesAfterDate(DateHelper.getYesterdaySameTime());
     },
 

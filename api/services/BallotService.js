@@ -11,9 +11,15 @@ module.exports = {
         .sort('officialId DESC')
     },
 
-    findBallotsFromDate: function(searchedDate) {
+    findBallotsAfterDate: function(searchedDate) {
         return Ballot.find()
         .where({ date: { '>': searchedDate }})
+    },
+
+    findBallotsWithLawCreatedFromDate: function(searchedDate) {
+        return Ballot.find()
+        .where({ createdAt: { '>=': searchedDate }})
+        .populate('lawId')
     },
 
     findUncategorizedBallotsBetweenDates: function(beforeDate, afterDate) {

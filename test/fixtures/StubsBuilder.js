@@ -96,7 +96,7 @@ module.exports = {
 
     buildBallotServiceStub: function(wantedCount) {
         let ballotServiceStub = function(){};
-        ballotServiceStub.findBallotsFromDate = function(currentMandateStartDate, solemnBallotsOnly) {
+        ballotServiceStub.findBallotsAfterDate = function(currentMandateStartDate, solemnBallotsOnly) {
             return new Promise(function(resolve) {
                 // if (wantedCount > 0)
                     resolve([{ id: 33, officialId: 33, title: 'ballot title 33', date: '2016-12-13' }, { id: 64, officialId: 64, title: 'ballot title 64', date: '2016-12-14' }, { id: 35, officialId: 35, title: 'ballot title 35', date: '2016-12-12' }, { id: 301, officialId: 301, title: 'ballot title 301', date: '2016-12-01' }]);

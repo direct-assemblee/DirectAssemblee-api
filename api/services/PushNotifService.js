@@ -87,8 +87,8 @@ let self = module.exports = {
     pushDeputyDailyVotes: async function(deputyId, dailyVotes) {
         if (await DeputyService.hasSubscribers(deputyId)) {
             return Promise.delay(60000)
-            .then(function() {
-                let payload = self.createPayloadForDailyVotes(deputyId, dailyVotes)
+            .then(async () => {
+                let payload = await self.createPayloadForDailyVotes(deputyId, dailyVotes)
                 // console.log('title : ' + payload.notification.title)
                 // console.log('body : ' + payload.notification.body)
                 // console.log('deputyId : ' + payload.data.deputyId)
@@ -102,11 +102,11 @@ let self = module.exports = {
 
     sendDailyReportForBallots: function() {
         console.log('start preparing daily reports')
-        return LastWorksService.find24hVotes()
-        .then(function(newVotesByDeputy) {
+        return LastWorksService.findLast24hVotes()
+        .then(newVotesByDeputy => {
             if (newVotesByDeputy && newVotesByDeputy.length > 0) {
                 console.log('- new votes to be pushed for the last 24h')
-                return Promise.map(newVotesByDeputy, function(deputyVotes) {
+                return Promise.map(newVotesByDeputy, deputyVotes => {
                     return self.pushDeputyDailyVotes(deputyVotes.deputyId, deputyVotes.activities);
                 }, {concurrency: 10})
             } else {
@@ -116,28 +116,33 @@ let self = module.exports = {
         })
     },
 
-    createPayloadForDailyVotes: function(deputyId, dailyVotes) {
-        let payload = self.getPayloadValuesForDailyVotes(dailyVotes)
+    createPayloadForDailyVotes: async function(deputyId, dailyVotes) {
+        let payload = await self.getPayloadValuesForDailyVotes(dailyVotes)
         return ResponseHelper.createPayloadForDailyVotes(deputyId, dailyVotes.length,
-            payload.theme,
-            payload.value,
-            payload.counts)
+            payload.theme, payload.value,payload.counts)
     },
 
-    getPayloadValuesForDailyVotes: function(dailyVotes) {
-        let counts = initCountsToZero();
+    getPayloadValuesForDailyVotes: async function(dailyVotes) {
+        let counts = {
+            for : 0,
+            against : 0,
+            blank : 0,
+            missing : 0,
+            nonVoting : 0,
+        };
+
         let allSameValue = true;
-        let allSameTheme = true;
+        let allSameThemeId = true;
         let firstValue;
-        let firstTheme;
+        let firstThemeId;
         for (let i in dailyVotes) {
             let vote =  dailyVotes[i];
             if (!firstValue) {
                 firstValue = vote.value;
-                firstTheme = vote.theme;
+                firstThemeId = vote.themeId;
             } else {
                 allSameValue = allSameValue && vote.value === firstValue;
-                allSameTheme = allSameTheme && vote.theme === firstTheme;
+                allSameThemeId = allSameThemeId && vote.themeId === firstThemeId;
             }
             switch (dailyVotes[i].value) {
                 case 'for':
@@ -157,21 +162,18 @@ let self = module.exports = {
                 break;
             }
         }
+        let theme = null;
+        if (allSameThemeId) {
+            theme = await SubthemeService.find(firstThemeId);
+            if (theme != null) {
+                theme = theme.name
+            }
+        }
         return {
-            theme: allSameTheme ? firstTheme : null,
+            theme: theme,
             value: allSameValue ? firstValue : null,
             counts: counts,
         }
-    }
-}
-
-let initCountsToZero = function() {
-    return {
-        for : 0,
-        against : 0,
-        blank : 0,
-        missing : 0,
-        nonVoting : 0,
     }
 }
 

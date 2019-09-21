@@ -39,7 +39,7 @@ describe('The BallotService', function () {
 
         it('should return all ballots from given date', function(done) {
             let date = moment('12/02/2017', 'DD/MM/YYYY').format('YYYY-MM-DD');
-            BallotService.findBallotsFromDate(date)
+            BallotService.findBallotsAfterDate(date)
             .then(function(ballots) {
                 ballots.length.should.equal(10);
                 done();
@@ -48,7 +48,7 @@ describe('The BallotService', function () {
 
         it('should return only solemn ballots from given date', function(done) {
             let date = moment('12/02/2017', 'DD/MM/YYYY').format('YYYY-MM-DD');
-            BallotService.findBallotsFromDate(date)
+            BallotService.findBallotsAfterDate(date)
             .then(function(ballots) {
                 ballots.length.should.equal(10);
                 done();
@@ -57,7 +57,7 @@ describe('The BallotService', function () {
 
         it('should return no ballot from given date', function(done) {
             let date = moment('12/02/2018', 'DD/MM/YYYY').format('YYYY-MM-DD');
-            BallotService.findBallotsFromDate(date)
+            BallotService.findBallotsAfterDate(date)
             .then(function(ballots) {
                 ballots.length.should.equal(0);
                 done();

@@ -19,8 +19,8 @@ let self = module.exports = {
             deputyId : vote.deputyId.officialId,
             value : self.createVoteValueForWS(ballot.type, vote.value)
         }
-        if (ballot.theme) {
-            push.theme = ballot.theme.name
+        if (ballot.lawId != null && ballot.lawId.theme) {
+            push.themeId = ballot.lawId.theme
         }
         return push;
     },
@@ -32,8 +32,8 @@ let self = module.exports = {
             deputyId : deputy.officialId,
             value : 'missing'
         }
-        if (ballot.theme) {
-            push.theme = ballot.theme.name
+        if (ballot.lawId != null && ballot.lawId.theme) {
+            push.themeId = ballot.lawId.theme
         }
         return push;
     },
@@ -41,7 +41,7 @@ let self = module.exports = {
     createPayloadForActivity: async function(deputyId, work) {
         let title = await createWorkTitleForPush(work)
         return ThemeService.getThemefromId(work.theme)
-        .then(function(theme) {
+        .then(theme => {
             let body = theme ? theme.name + ' : ' : '';
             body += work.description;
             let payload = {

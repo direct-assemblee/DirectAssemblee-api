@@ -24,21 +24,19 @@ module.exports = {
 	},
 
 	findLastVotesByDeputy: function(afterDate, currentDeputies) {
-		return Ballot.find()
-		.where({ createdAt: { '>=': afterDate }})
-		.populate('theme')
-		.then(function(lastBallots) {
-			if (lastBallots.length > 0) {
-				return Promise.filter(lastBallots, function(ballot) {
-					return DateHelper.isLaterOrSame(ballot.date, afterDate);
+		return BallotService.findBallotsWithLawCreatedFromDate(afterDate)
+		.then(lastBallotsWithLaw => {
+			if (lastBallotsWithLaw.length > 0) {
+				return Promise.filter(lastBallotsWithLaw, function(ballotWithLaw) {
+					return DateHelper.isLaterOrSame(ballotWithLaw.date, afterDate);
 				})
-				.map(function(ballot) {
-					return findVotesForBallot(ballot, currentDeputies)
+				.map(ballotWithLaw => {
+					return findVotesForBallot(ballotWithLaw, currentDeputies)
 				})
-				.reduce(function(prev, cur) {
+				.reduce((prev, cur) => {
 					return prev.concat(cur);
 				})
-				.then(function(allVotes) {
+				.then(allVotes => {
 					return mapVotesByDeputy(allVotes);
 				});
 			}
@@ -55,7 +53,7 @@ let findVotesForBallot = function(ballot, currentDeputies) {
 	return Vote.find()
 	.where({ ballotId: ballot.officialId })
 	.populate('deputyId')
-	.then(function(votes) {
+	.then(votes => {
 		let votesIncludingMissing = [];
 		let formattedVote;
 		for (let i in currentDeputies) {

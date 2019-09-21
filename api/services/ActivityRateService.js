@@ -60,7 +60,7 @@ let updateActivityRates = function() {
 let updateActivityRate = function(solemnBallotsOnly) {
     return DeputyService.findCurrentDeputies()
     .then(function(currentDeputies) {
-        return BallotService.findBallotsFromDate(MANDATE_START_DATE, solemnBallotsOnly)
+        return BallotService.findBallotsAfterDate(MANDATE_START_DATE, solemnBallotsOnly)
         .then(function(allBallots) {
             return VoteService.findVotesOrderedByDeputy()
             .then(function(votes) {
@@ -94,7 +94,7 @@ let findDeputyBallots = function(deputy, allBallots, solemnBallotsOnly) {
             resolve(allBallots)
         })
     } else {
-        return BallotService.findBallotsFromDate(deputy.currentMandateStartDate, solemnBallotsOnly)
+        return BallotService.findBallotsAfterDate(deputy.currentMandateStartDate, solemnBallotsOnly)
     }
 }
 
