@@ -85,6 +85,10 @@ let self = module.exports = {
         return moment().subtract(1, 'day');
     },
 
+    getFormattedPreviousDay: function(date) {
+        return self.formatSimpleDate(moment(date).subtract(1, 'day'));
+    },
+
     getNowUtc: function() {
         return moment().utc().format(DATE_AND_HOUR_TEMPLATE);
     },

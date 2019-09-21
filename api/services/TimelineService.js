@@ -19,6 +19,8 @@ module.exports = {
 }
 
 let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, beforeDate, requestedOffset) {
+    let ballotSearchStartDate = beforeDate;
+
     let offset = requestedOffset;
     let reachedMandateStartDate = false;
     if (mandateStartDate > afterDate) {
@@ -44,35 +46,42 @@ let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, befo
             afterDate = DateHelper.subtractAndFormat(afterDate, TIMELINE_MONTHS_INCREMENT_STEP, 'months');
         }
 
-        if (!skipTheseItems) {
+        if (skipTheseItems) {
+            if (ballotSearchStartDate == null) {
+                ballotSearchStartDate = DateHelper.getFormattedFollowingDay(getOldestDateInItems(validItems))
+            }
+        } else {
             let sortedItems = sortItemsWithDate(validItems)
             for (let i = offset ; i < sortedItems.length ; i++) {
                 foundItems.push(sortedItems[i])
+            }
+            if (offset > 0) {
+                ballotSearchStartDate = DateHelper.getFormattedPreviousDay(getTimelineItemDate(sortedItems[offset - 1]))
             }
         }
 
         offset = skipTheseItems ? tmpOffset : needEvenMore ? 0 : offset;
     } while(foundItems.length < TIMELINE_PAGE_ITEMS_COUNT && !reachedMandateStartDate);
 
-    return handlePageItems(deputy, foundItems);
-}
-
-let handlePageItems = function(deputy, validItems) {
     let results = []
-    for (let i = 0 ; i < validItems.length && results.length < TIMELINE_PAGE_ITEMS_COUNT ; i++) {
-        results.push(validItems[i]);
+    for (let i = 0 ; i < foundItems.length && results.length < TIMELINE_PAGE_ITEMS_COUNT ; i++) {
+        results.push(foundItems[i]);
     }
-    return handleTimelineResults(deputy, results)
-}
 
-let getValidItems = function(items) {
-    let validItems = [];
-    for (let i in items) {
-        if (items[i]) {
-            validItems.push(items[i])
-        }
+    let ballotSearchEndDate;
+    if (reachedMandateStartDate && foundItems.length <= results.length) {
+        ballotSearchEndDate = mandateStartDate
+    } else {
+        ballotSearchEndDate = getOldestDateInItems(results);
     }
-    return validItems;
+
+    return getUncategorizedBallots(deputy, ballotSearchEndDate, ballotSearchStartDate)
+    .then(uncategorizedBallotsGroup => {
+        if (uncategorizedBallotsGroup) {
+            results.push(uncategorizedBallotsGroup)
+        }
+        return handleTimelineResults(deputy, sortItemsWithDate(results))
+    })
 }
 
 let handleTimelineResults = function(deputy, timelineItems) {
@@ -89,6 +98,48 @@ let handleTimelineResults = function(deputy, timelineItems) {
     })
 }
 
+let findTimelineItems = function(deputy, afterDate, beforeDate) {
+    return LawService.findLawsBetweenDates(beforeDate, afterDate)
+    .then(results => {
+        return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
+        .then(works => results.concat(works))
+    })
+}
+
+let getUncategorizedBallots = function(deputy, afterDate, beforeDate) {
+    return BallotService.findUncategorizedBallotsBetweenDates(beforeDate, afterDate)
+    .then(ballots => {
+        if (ballots != null && ballots.length > 0) {
+            return Promise.map(ballots, ballot => {
+                return BallotHelper.getDeputyVote(deputy.officialId, ballot)
+            })
+            .then(ballotsWithVotes => {
+                return createGroupedBallots(ballotsWithVotes)
+            })
+        }
+    })
+}
+
+let createGroupedBallots = function(ballots) {
+    var lastBallotDate;
+    ballots.forEach(ballot => {
+        if (lastBallotDate == null || DateHelper.isLaterOrSame(ballot.date, lastBallotDate)) {
+            lastBallotDate = ballot.date;
+        }
+    })
+    return {
+        lastBallotDate: lastBallotDate,
+        ballots: ballots
+    }
+}
+
+let getValidItems = function(items) {
+    if (items != null) {
+        return items.filter(item => item != null)
+    }
+    return items;
+}
+
 let sortItemsWithDate = function(items) {
     items.sort(function(a, b) {
         var diff = DateHelper.getDiffInDays(getTimelineItemDate(a), getTimelineItemDate(b));
@@ -102,40 +153,17 @@ let sortItemsWithDate = function(items) {
     return items;
 }
 
+let getOldestDateInItems = function(validItems) {
+    let oldestDate;
+    for (let i = 0 ; i < validItems.length ; i++) {
+        let itemDate = getTimelineItemDate(validItems[i]);
+        if (oldestDate == null || DateHelper.isLaterOrSame(oldestDate, itemDate)) {
+            oldestDate = itemDate;
+        }
+    }
+    return oldestDate;
+}
+
 let getTimelineItemDate = function(timelineItem) {
     return timelineItem.date ? timelineItem.date : timelineItem.lastBallotDate;
-}
-
-let findTimelineItems = function(deputy, afterDate, beforeDate) {
-    return LawService.findLawsBetweenDates(beforeDate, afterDate)
-    .then(results => {
-        return BallotService.findUncategorizedBallotsBetweenDates(beforeDate, afterDate)
-        .then(ballots => {
-            if (ballots != null && ballots.length > 0) {
-                return Promise.map(ballots, ballot => {
-                    return BallotHelper.getDeputyVote(deputy.officialId, ballot)
-                })
-                .then(ballotsWithVotes => {
-                    results.push(createGroupedBallots(ballotsWithVotes))
-                    return results
-                })
-            }
-            return WorkService.findWorksForDeputyBetweenDates(deputy.officialId, afterDate, beforeDate)
-            .then(works => results.concat(works))
-        })
-    })
-}
-
-let createGroupedBallots = function(ballots) {
-    var lastBallotDate;
-    ballots.forEach(ballot => {
-        if (lastBallotDate == null || DateHelper.isLaterOrSame(lastBallotDate, ballot.date)) {
-            lastBallotDate = ballot.date;
-        }
-    })
-    return {
-        lastBallotDate: DateHelper.formatDateForWS(lastBallotDate),
-        ballotsCount: ballots.length,
-        ballots: ballots
-    }
 }
