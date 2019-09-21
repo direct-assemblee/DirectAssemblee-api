@@ -92,7 +92,7 @@ let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, befo
 
 let handleTimelineResults = function(deputy, timelineItems) {
     return Promise.map(timelineItems, async function(timelineItem) {
-        if (await WorkTypeHelper.workHasExtra(timelineItem.type)) {
+        if (!timelineItem.lastBallotDate && await WorkTypeHelper.workHasExtra(timelineItem.subtypeId)) {
             return ExtraInfoService.findExtraInfosForWork(timelineItem.id)
             .then(function(extraInfos) {
                 timelineItem.extraInfos = extraInfos;
@@ -135,7 +135,8 @@ let createGroupedBallots = function(ballots) {
     })
     return {
         lastBallotDate: lastBallotDate,
-        ballots: ballots
+        ballots: ballots,
+        ballotsCount: ballots.length
     }
 }
 

@@ -25,6 +25,23 @@ let self = module.exports = {
         })
     },
 
+    getSubtype: async function(subtypeId) {
+        return WorkSubtypeService.find(subtypeId)
+        .then(foundSubtype => {
+            if (foundSubtype != null) {
+                let subtype = {
+                    id: foundSubtype.id,
+                    name: foundSubtype.name,
+                    parentType: {
+                        id: foundSubtype.parentTypeId.id,
+                        name: foundSubtype.parentTypeId.displayName
+                    }
+                }
+                return subtype
+            }
+        })
+    },
+
     workHasExtra: async function(workSubtype) {
         let isProposition = await self.isProposition(workSubtype)
         let isCommission = await self.isCommission(workSubtype)

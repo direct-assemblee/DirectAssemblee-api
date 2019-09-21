@@ -22,22 +22,23 @@ var self = module.exports = {
     },
 
     createLawResponse: async function(law) {
-        let typeName = law.typeId != null ? law.typeId.name : ' - type non déterminé'
-        let contentType = law.ballotsCount > 1 ? 'Scrutins' : 'Scrutin'
-        if (law.id) {
-            contentType += ' de '
-        }
-        contentType += typeName.charAt(0).toLowerCase() + typeName.slice(1);
+        let typeName = law.typeId != null ? law.typeId.name : 'Non déterminé'
+        let contentDescription = law.ballotsCount > 1 ? 'Scrutins' : 'Scrutin'
+        contentDescription += law.id ? ' de ' : ' - type '
+        contentDescription +=  typeName.charAt(0).toLowerCase() + typeName.slice(1);
+
         let response = {
             id: law.id,
-            contentType: contentType,
             name: law.name,
-            type: law.typeId,
+            contentDescription: contentDescription,
+            lawType: law.typeId,
             lastBallotDate: DateHelper.formatDateForWS(law.lastBallotDate),
             ballotsCount: law.ballotsCount,
-            fileUrl: law.fileUrl,
-            theme: await ThemeResponseHelper.createThemeResponse(law.theme, law.name)
+            fileUrl: law.fileUrl
+        };
+        if (law.id) {
+            response.theme = await ThemeResponseHelper.createThemeResponse(law.theme, law.name)
         }
-        return response;
+        return response
     }
 }

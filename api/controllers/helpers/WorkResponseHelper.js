@@ -7,29 +7,30 @@ let QuestionHelper = require('./QuestionHelper.js');
 
 var self = module.exports = {
     createWorkResponse: async function(work, extraInfos) {
-        let type = await WorkTypeHelper.getNameForSubtype(work.subtypeId)
+        let description = work.description;
+        if (await WorkTypeHelper.isQuestion(work.subtypeId)) {
+            description = QuestionHelper.formatQuestionWithLineBreaks(description);
+        }
+        let type = await WorkTypeHelper.getSubtype(work.subtypeId)
         let response = {
             id: work.id,
-            type: type,
             name: work.name,
             date: DateHelper.formatDateForWS(work.date),
-            fileUrl: work.url
+            fileUrl: work.url,
+            description: description,
+            type: type
         }
 
         var subtheme = await ThemeResponseHelper.createThemeResponse(work.subthemeId, work.unclassifiedTemporaryTheme);
         response.theme = subtheme;
 
-        let description = work.description;
-        if (await WorkTypeHelper.isQuestion(work.subtypeId)) {
-            description = QuestionHelper.formatQuestionWithLineBreaks(description);
-        }
-        response.description = description;
         if (extraInfos && extraInfos.length > 0) {
             response.extraInfos = {};
             for (let i in extraInfos) {
                 response.extraInfos[extraInfos[i].info] = extraInfos[i].value;
             }
         }
+
         if (await WorkTypeHelper.isCommission(work.subtypeId)) {
             if (response.extraInfos) {
                 response.title = response.extraInfos['commissionName']
