@@ -147,10 +147,14 @@ let retrieveDeputyForGeoDistrict = function(departmentCode, district) {
 					let formattedNow = DateHelper.getFormattedNow();
 					return DeputyService.findMostRecentDeputyAtDate(department.id, district, formattedNow)
 					.then(function(deputy) {
-						deputy.department = department
-						deputy = DeputyResponseHelper.prepareSimpleDeputyResponse(deputy);
-						CacheService.set(key, deputy)
-						return deputy;
+						if (deputy != null) {
+							deputy.department = department
+							deputy = DeputyResponseHelper.prepareSimpleDeputyResponse(deputy);
+							CacheService.set(key, deputy)
+							return deputy;
+						} else {
+							return { code: 404, content: 'Could not find deputy, sorry.' };
+						}
 					})
 				}
 			})
