@@ -18,7 +18,7 @@ var self = module.exports = {
             date: DateHelper.formatDateForWS(work.date),
             fileUrl: work.url,
             description: description,
-            type: type
+            workType: type
         }
 
         var subtheme = await ThemeResponseHelper.createThemeResponse(work.subthemeId, work.unclassifiedTemporaryTheme);
@@ -29,16 +29,6 @@ var self = module.exports = {
             for (let i in extraInfos) {
                 response.extraInfos[extraInfos[i].info] = extraInfos[i].value;
             }
-        }
-
-        if (await WorkTypeHelper.isCommission(work.subtypeId)) {
-            if (response.extraInfos) {
-                response.title = response.extraInfos['commissionName']
-            }
-        } else if (await WorkTypeHelper.isPublicSession(work.subtypeId)) {
-            response.title = 'Séance publique'
-        } else {
-            response.title = work.title
         }
         return response;
     }

@@ -31,10 +31,10 @@ var self = module.exports = {
             id: law.id,
             name: law.name,
             contentDescription: contentDescription,
-            lawType: law.typeId,
             lastBallotDate: DateHelper.formatDateForWS(law.lastBallotDate),
             ballotsCount: law.ballotsCount,
-            fileUrl: law.fileUrl
+            fileUrl: law.fileUrl,
+            lawType: law.typeId
         };
         if (law.id) {
             response.theme = await ThemeResponseHelper.createThemeResponse(law.theme, law.name)
