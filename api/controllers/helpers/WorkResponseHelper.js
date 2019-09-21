@@ -17,7 +17,7 @@ var self = module.exports = {
         }
 
         var subtheme = await ThemeResponseHelper.createThemeResponse(work.subthemeId, work.unclassifiedTemporaryTheme);
-        response.theme = subtheme.theme;
+        response.theme = subtheme;
 
         let description = work.description;
         if (await WorkTypeHelper.isQuestion(work.subtypeId)) {
