@@ -19,8 +19,8 @@ module.exports = {
 }
 
 let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, beforeDate, requestedOffset) {
-    let ballotSearchStartDate = beforeDate;
-
+    let ballotSearchStartDate;
+    let initialBeforeDate = beforeDate;
     let offset = requestedOffset;
     let reachedMandateStartDate = false;
     if (mandateStartDate > afterDate) {
@@ -47,8 +47,8 @@ let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, befo
         }
 
         if (skipTheseItems) {
-            if (ballotSearchStartDate == null) {
-                ballotSearchStartDate = DateHelper.getFormattedFollowingDay(getOldestDateInItems(validItems))
+            if (validItems.length > 0) {
+                ballotSearchStartDate = DateHelper.getFormattedPreviousDay(getOldestDateInItems(validItems))
             }
         } else {
             let sortedItems = sortItemsWithDate(validItems)
@@ -68,20 +68,26 @@ let getDeputyTimeline = async function(deputy, mandateStartDate, afterDate, befo
         results.push(foundItems[i]);
     }
 
-    let ballotSearchEndDate;
-    if (reachedMandateStartDate && foundItems.length <= results.length) {
-        ballotSearchEndDate = mandateStartDate
-    } else {
-        ballotSearchEndDate = getOldestDateInItems(results);
-    }
-
-    return getUncategorizedBallots(deputy, ballotSearchEndDate, ballotSearchStartDate)
-    .then(uncategorizedBallotsGroup => {
-        if (uncategorizedBallotsGroup) {
-            results.push(uncategorizedBallotsGroup)
+    if (results.length > 0) {
+        if (ballotSearchStartDate == null) {
+            ballotSearchStartDate = initialBeforeDate;
         }
-        return handleTimelineResults(deputy, sortItemsWithDate(results))
-    })
+
+        let ballotSearchEndDate;
+        if (reachedMandateStartDate && foundItems.length <= results.length) {
+            ballotSearchEndDate = mandateStartDate
+        } else {
+            ballotSearchEndDate = getOldestDateInItems(results);
+        }
+
+        return getUncategorizedBallots(deputy, ballotSearchEndDate, ballotSearchStartDate)
+        .then(uncategorizedBallotsGroup => {
+            if (uncategorizedBallotsGroup) {
+                results.push(uncategorizedBallotsGroup)
+            }
+            return handleTimelineResults(deputy, sortItemsWithDate(results))
+        })
+    }
 }
 
 let handleTimelineResults = function(deputy, timelineItems) {
