@@ -1,5 +1,4 @@
 let Promise = require('bluebird');
-let ThemeResponseHelper = require('./ThemeResponseHelper.js');
 let LawResponseHelper = require('./LawResponseHelper.js');
 let WorkResponseHelper = require('./WorkResponseHelper.js');
 let BallotResponseHelper = require('./BallotResponseHelper.js');

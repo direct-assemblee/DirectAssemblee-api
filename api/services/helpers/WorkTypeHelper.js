@@ -8,6 +8,20 @@ let self = module.exports = {
     COMMISSION: { id: 4, name: 'Commission' },
     PUBLIC_SESSION: { id: 5, name: 'Séance publique' },
 
+    getWorkTypeName: async function(workTypeId) {
+        let workTypeName = "Activity parlementaire (type inconnu)"
+        if (allWorkTypes == null) {
+            allWorkTypes = await WorkTypeService.findAll()
+        }
+        for (let i in allWorkTypes) {
+            if (allWorkTypes[i].id == workTypeId) {
+                workTypeName = allWorkTypes[i].name
+                break;
+            }
+        }
+        return workTypeName
+    },
+
     getNameForSubtype: async function(subtypeId) {
         return WorkSubtypeService.findAll()
         .then(subtypes => {

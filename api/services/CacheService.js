@@ -28,12 +28,12 @@ let self = module.exports = {
         self.set(buildLawBallotsForDeputyKey(lawId, deputyId), content)
     },
 
-    getTimeline: function(deputyId, page) {
-        return self.get(buildTimelineKey(deputyId, page))
+    getTimeline: function(deputyId, page, v1) {
+        return self.get(buildTimelineKey(deputyId, page, v1))
     },
 
-    setTimeline: function(deputyId, page, content) {
-        self.set(buildTimelineKey(deputyId, page), content)
+    setTimeline: function(deputyId, page, content, v1) {
+        self.set(buildTimelineKey(deputyId, page, v1), content)
     },
 
     resetTimeline: function(deputyId) {
@@ -73,8 +73,12 @@ let buildLawBallotsForDeputyKey = function(lawId, deputyId) {
     return buildLawballotsKeyStart(lawId) + '_' + deputyId
 }
 
-let buildTimelineKey = function(deputyId, page) {
-    return buildTimelineKeyStart(deputyId) + '_' + page
+let buildTimelineKey = function(deputyId, page, v1) {
+    let key = buildTimelineKeyStart(deputyId) + '_' + page
+    if (v1) {
+        key += '_' + v1
+    }
+    return key
 }
 
 let buildLawballotsKeyStart = function(lawId) {

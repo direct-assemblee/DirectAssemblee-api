@@ -16,6 +16,13 @@ module.exports = {
         .where({ date: { '>': searchedDate }})
     },
 
+    findBallotsBetweenDates: function(beforeDate, afterDate) {
+        return Ballot.find()
+        .where({ date: { '<=': beforeDate , '>': afterDate } })
+        .populate('type')
+        .populate('lawId');
+    },
+
     findBallotsWithLawCreatedFromDate: function(searchedDate) {
         return Ballot.find()
         .where({ createdAt: { '>=': searchedDate }})

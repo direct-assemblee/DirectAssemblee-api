@@ -48,7 +48,7 @@ module.exports.routes = {
 'GET /api/v1/alldeputies': 'DeputyController.getAllDeputiesResponse',
 'GET /api/v1/deputies': 'DeputyController.getDeputiesResponse',  // optional ?latitude=XXX&longitude=YYY
 'GET /api/v1/deputy': 'DeputyController.getDeputyResponse',  // ?departmentId=13&district=12
-'GET /api/v1/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
+'GET /api/v1/timeline': 'TimelineController.getTimelineV1', // ?deputyId=13&page=12 (page is optional)
 'POST /api/v1/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
 'POST /api/v1/unsubscribe' : 'SubscriberController.unsubscribeToDeputy', // ?deputyId=13
 'POST /api/v1/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
@@ -61,7 +61,7 @@ module.exports.routes = {
 'GET /v1/alldeputies': 'DeputyController.getAllDeputiesResponse',
 'GET /v1/deputies': 'DeputyController.getDeputiesResponse',  // optional ?latitude=XXX&longitude=YYY
 'GET /v1/deputy': 'DeputyController.getDeputyResponse',  // ?departmentId=13&district=12
-'GET /v1/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
+'GET /v1/timeline': 'TimelineController.getTimelineV1', // ?deputyId=13&page=12 (page is optional)
 'POST /v1/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
 'POST /v1/unsubscribe' : 'SubscriberController.unsubscribeToDeputy', // ?deputyId=13
 'POST /v1/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
@@ -70,5 +70,18 @@ module.exports.routes = {
 'GET /v1/votes': 'VoteController.getVotes',
 'GET /v1/features': 'FeatureController.getFeatures',
 'GET /v1/activityRates': 'StatsController.getActivityRates', // ?groupId=1 (optional)
-'GET /v1/lawBallots': 'LawController.getLawBallots', // ?lawId=22&?deputyId=13
+
+'GET /v2/alldeputies': 'DeputyController.getAllDeputiesResponse',
+'GET /v2/deputies': 'DeputyController.getDeputiesResponse',  // optional ?latitude=XXX&longitude=YYY
+'GET /v2/deputy': 'DeputyController.getDeputyResponse',  // ?departmentId=13&district=12
+'GET /v2/timeline': 'TimelineController.getTimeline', // ?deputyId=13&page=12 (page is optional)
+'POST /v2/subscribe' : 'SubscriberController.subscribeToDeputy', // ?deputyId=13
+'POST /v2/unsubscribe' : 'SubscriberController.unsubscribeToDeputy', // ?deputyId=13
+'POST /v2/deputiesUpdated' : 'PushNotifController.deputiesUpdated', // ?deputyId=13
+'POST /v2/ballotsUpdated' : 'PushNotifController.ballotsUpdated',
+'POST /v2/resetCache' : 'CacheController.resetCache',
+'GET /v2/votes': 'VoteController.getVotes',
+'GET /v2/features': 'FeatureController.getFeatures',
+'GET /v2/activityRates': 'StatsController.getActivityRates', // ?groupId=1 (optional)
+'GET /v2/lawBallots': 'LawController.getLawBallots', // ?lawId=22&?deputyId=13
 };
