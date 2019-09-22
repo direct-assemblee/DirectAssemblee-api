@@ -12,6 +12,9 @@ var self = module.exports = {
             description = QuestionHelper.formatQuestionWithLineBreaks(description);
         }
         let type = await WorkTypeHelper.getSubtype(work.subtypeId)
+        if (type.parentType.id == WorkTypeHelper.PROPOSITION.id) {
+            type.name += work.isAuthor ? ' écrite' : ' co-signée'
+        }
         let response = {
             id: work.id,
             name: work.name,
